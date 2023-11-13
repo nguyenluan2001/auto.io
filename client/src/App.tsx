@@ -5,7 +5,7 @@ import { useFlow } from '@/store/flow';
 import { axiosInstance } from '@/utils/axios';
 
 function App() {
-  const flows = useFlow((state) => state.flows);
+  const flows = useFlow((state: any) => state.flows);
   const handleClick = async () => {
     const response = await axiosInstance.post('/test', flows);
     console.log('🚀 ===== handleClick ===== response:', response);

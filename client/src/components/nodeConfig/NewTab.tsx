@@ -1,15 +1,17 @@
-import { EventHandler } from 'react';
-import { Controller, useForm } from 'react-hook-form';
+import { Controller, FieldValues, useForm } from 'react-hook-form';
+import { Button, TextField } from '@mui/material';
 import { useFlow } from '@/store/flow';
 
 function NewTab() {
-  const updateNodeInformation = useFlow((state) => state.updateNodeInformation);
+  const updateNodeInformation = useFlow(
+    (state: any) => state.updateNodeInformation
+  );
   const { control, handleSubmit } = useForm({
     defaultValues: {
       url: '',
     },
   });
-  const onSubmit = (values) => {
+  const onSubmit = (values: FieldValues) => {
     updateNodeInformation(values);
   };
   return (
@@ -19,11 +21,11 @@ function NewTab() {
         control={control}
         name="url"
         render={({ field }) => (
-          <input {...field} placeholder="https://example.com" />
+          <TextField {...field} placeholder="https://example.com" />
         )}
       />
 
-      <button onClick={handleSubmit(onSubmit)}>Update</button>
+      <Button onClick={handleSubmit(onSubmit)}>Update</Button>
     </div>
   );
 }

@@ -47,16 +47,6 @@ const initialNodes = [
     position: { x: 100, y: 300 },
     type: 'customNode',
   },
-  {
-    id: uuidv4(),
-    data: {
-      label: 'Click element',
-      name: 'event-click',
-      selector: '#menu > li:nth-child(1) > a',
-    },
-    position: { x: 500, y: 100 },
-    type: 'customNode',
-  },
 ];
 const initialEdges = [{ id: '1-2', source: '1', target: '2' }];
 const convertFlow = ({ nodes, edges }) => {
@@ -94,6 +84,7 @@ const useFlow = create((set, get) => ({
     set((state) => ({ selectedNode: node }));
   },
   updateNodeInformation: (data) => {
+    console.log('🚀 ===== useFlow ===== data:', data);
     const { selectedNode, nodes, edges } = get();
     console.log('🚀 ===== useFlow ===== edges:', edges);
     console.log('🚀 ===== useFlow ===== selectedNode:', selectedNode);

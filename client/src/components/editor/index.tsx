@@ -7,6 +7,7 @@ import ReactFlow, {
   EdgeChange,
   Node,
   NodeChange,
+  NodeTypes,
   addEdge,
   applyEdgeChanges,
   applyNodeChanges,
@@ -19,7 +20,25 @@ import CustomNode from '../nodes/CustomNode';
 function Editor() {
   // const [nodes, setNodes] = useState<Node[]>(initialNodes);
   // const [edges, setEdges] = useState<Edge[]>([]);
-  const { nodes, edges, setNodes, setEdges } = useFlow((state) => state);
+  const nodes: Node[] = useFlow((state: any) => state.nodes);
+  const edges: Edge[] = useFlow((state: any) => state.edges);
+  const setNodes: (cb: (nds: Node[]) => void) => void = useFlow(
+    (state: any) => state.setNodes
+  );
+  const setEdges: (cb: (params: any) => void) => void = useFlow(
+    (state: any) => state.setEdges
+  );
+  // const {
+  //   nodes,
+  //   edges,
+  //   setNodes,
+  //   setEdges,
+  // }: {
+  //   nodes: Node[];
+  //   edges: Edge[];
+  //   setNodes: () => void;
+  //   setEdges: () => void;
+  // } = useFlow((state) => state);
   const nodeTypes = useMemo(() => ({ customNode: CustomNode }), []);
 
   console.log('🚀 ===== Editor ===== edges:', edges);
@@ -31,16 +50,9 @@ function Editor() {
     },
     [setNodes]
   );
-  const onEdgesChange = useCallback(
-    (changes: EdgeChange[]) => setEdges(applyEdgeChanges(changes, edges)),
-    [setEdges]
-  );
   const onConnect = useCallback(
     (connection: Connection) => {
-      // console.log('🚀 ===== Editor ===== edges:', edges);
-      // const newEdges = addEdge(connection, edges);
-      // console.log('🚀 ===== Editor ===== newEdges:', newEdges);
-      setEdges((eds) => addEdge(connection, eds));
+      setEdges((eds) => addEdge(connection, eds as Edge[]));
     },
     [setEdges]
   );
@@ -48,7 +60,7 @@ function Editor() {
     <div style={{ height: '100vh', flex: 1 }}>
       <ReactFlow
         onNodesChange={onNodesChange}
-        onEdgesChange={onEdgesChange}
+        // onEdgesChange={onEdgesChange}
         fitView
         nodes={nodes}
         edges={edges}
