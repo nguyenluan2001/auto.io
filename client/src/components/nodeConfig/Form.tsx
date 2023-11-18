@@ -1,46 +1,56 @@
 import { EventHandler, useEffect } from 'react';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
-import { Button, TextField, Typography } from '@mui/material';
+import { Box, Button, Stack, TextField, Typography } from '@mui/material';
 import { useFlow } from '@/store/flow';
+import { CustomTextArea } from '../common/styled';
 
-function Form() {
-  const updateNodeInformation = useFlow(
-    (state: any) => state.updateNodeInformation
-  );
-  const selectedNode = useFlow((state: any) => state.selectedNode);
-  const { control, handleSubmit, setValue } = useForm({
+type Props = {
+  selector: string;
+  value: string;
+  setValues: (values: FieldValues) => void;
+};
+
+function Form({ selector, value, setValues }: Props) {
+  const { control, setValue, watch } = useForm({
     defaultValues: {
       selector: '',
       value: '',
     },
   });
   useEffect(() => {
-    if (selectedNode?.id) {
-      setValue('selector', selectedNode?.selector);
-      setValue('value', selectedNode?.value);
-    }
-  }, [selectedNode, setValue]);
-  const onSubmit = (values: FieldValues) => {
-    updateNodeInformation(values);
-  };
+    setValue('selector', selector);
+    setValue('value', value);
+  }, [selector, value, setValue]);
+  useEffect(() => {
+    setValues(watch());
+  }, [setValues, watch()]);
   return (
-    <div>
-      <Typography variant="body1">CSS Selector</Typography>
-      <Controller
-        control={control}
-        name="selector"
-        render={({ field }) => (
-          <TextField {...field} placeholder="Input selector" />
-        )}
-      />
-      <Typography variant="body1">Value</Typography>
-      <Controller
-        control={control}
-        name="value"
-        render={({ field }) => <TextField {...field} placeholder="Value" />}
-      />
-      <Button onClick={handleSubmit(onSubmit)}>Update</Button>
-    </div>
+    <Stack direction="column" spacing={2}>
+      <Box>
+        <Typography variant="body2">CSS Selector</Typography>
+        <Controller
+          control={control}
+          name="selector"
+          render={({ field }) => (
+            <CustomTextArea
+              minRows={5}
+              {...field}
+              placeholder="Input selector"
+            />
+          )}
+        />
+      </Box>
+      <Box>
+        <Typography variant="body2">Value</Typography>
+        <Controller
+          control={control}
+          name="value"
+          render={({ field }) => (
+            <CustomTextArea minRows={5} {...field} placeholder="Value" />
+          )}
+        />
+      </Box>
+    </Stack>
   );
 }
 

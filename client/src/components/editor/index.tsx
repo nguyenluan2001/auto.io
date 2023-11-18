@@ -5,6 +5,7 @@ import ReactFlow, {
   Controls,
   Edge,
   EdgeChange,
+  MarkerType,
   Node,
   NodeChange,
   NodeTypes,
@@ -14,10 +15,12 @@ import ReactFlow, {
 } from 'reactflow';
 
 import 'reactflow/dist/style.css';
+import { Box } from '@mui/material';
 import { useFlow } from '../../store/flow';
 import CustomNode from '../nodes/CustomNode';
+import Toolbar from './Toolbar';
 
-function Editor() {
+function Editor({ onDragOver, onDrop, setReactFlowInstance }) {
   // const [nodes, setNodes] = useState<Node[]>(initialNodes);
   // const [edges, setEdges] = useState<Edge[]>([]);
   const nodes: Node[] = useFlow((state: any) => state.nodes);
@@ -52,25 +55,42 @@ function Editor() {
   );
   const onConnect = useCallback(
     (connection: Connection) => {
-      setEdges((eds) => addEdge(connection, eds as Edge[]));
+      console.log('🚀 ===== Editor ===== connection:', connection);
+      setEdges((eds) =>
+        addEdge(
+          {
+            ...(connection || {}),
+            type: 'smoothstep',
+            markerEnd: {
+              type: MarkerType.ArrowClosed,
+            },
+          },
+          eds as Edge[]
+        )
+      );
     },
     [setEdges]
   );
   return (
-    <div style={{ height: '100vh', flex: 1 }}>
+    <Box sx={{ height: '100vh', width: '100%' }}>
+      <Toolbar />
       <ReactFlow
         onNodesChange={onNodesChange}
+        style={{ background: '#F5F5F5' }}
         // onEdgesChange={onEdgesChange}
         fitView
         nodes={nodes}
         edges={edges}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
+        onDragOver={onDragOver}
+        onDrop={onDrop}
+        onInit={setReactFlowInstance}
       >
-        <Background />
+        <Background gap={10} variant="dots" />
         <Controls />
       </ReactFlow>
-    </div>
+    </Box>
   );
 }
 

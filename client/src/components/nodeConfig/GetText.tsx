@@ -9,7 +9,7 @@ type Props = {
   setValues: (values: FieldValues) => void;
 };
 
-function EventClick({ selector, setValues }: Props) {
+function GetText({ selector, setValues }: Props) {
   const { control, setValue, watch } = useForm({
     defaultValues: {
       selector: '',
@@ -35,4 +35,4 @@ function EventClick({ selector, setValues }: Props) {
   );
 }
 
-export default EventClick;
+export default GetText;

@@ -1,32 +1,41 @@
 import { Controller, FieldValues, useForm } from 'react-hook-form';
-import { Button, TextField } from '@mui/material';
+import { Box, Button, TextField, Typography } from '@mui/material';
+import { useEffect } from 'react';
 import { useFlow } from '@/store/flow';
+import { CustomTextArea } from '../common/styled';
 
-function NewTab() {
-  const updateNodeInformation = useFlow(
-    (state: any) => state.updateNodeInformation
-  );
-  const { control, handleSubmit } = useForm({
+type Props = {
+  url: string;
+  setValues: (params: FieldValues) => void;
+};
+
+function NewTab({ url, setValues }: Props) {
+  const { control, handleSubmit, setValue, watch } = useForm({
     defaultValues: {
       url: '',
     },
   });
-  const onSubmit = (values: FieldValues) => {
-    updateNodeInformation(values);
-  };
+  useEffect(() => {
+    setValues(watch());
+  }, [setValues, watch('url')]);
+  useEffect(() => {
+    setValue('url', url);
+  }, [url, setValue]);
   return (
-    <div>
-      <p>URL</p>
+    <Box sx={{ width: '100%' }}>
+      <Typography variant="body2">URL</Typography>
       <Controller
         control={control}
         name="url"
         render={({ field }) => (
-          <TextField {...field} placeholder="https://example.com" />
+          <CustomTextArea
+            minRows={5}
+            {...field}
+            placeholder="https://example.com"
+          />
         )}
       />
-
-      <Button onClick={handleSubmit(onSubmit)}>Update</Button>
-    </div>
+    </Box>
   );
 }
 

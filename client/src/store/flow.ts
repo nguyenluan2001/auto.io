@@ -1,52 +1,59 @@
 import { Edge } from 'reactflow';
 import { create } from 'zustand';
 import { v4 as uuidv4 } from 'uuid';
+import { generateNode } from '@/utils/generateNode';
 
+// const initialNodes = [
+//   {
+//     id: uuidv4(),
+//     data: { title: 'Trigger', key: 'trigger' },
+//     position: { x: 0, y: 0 },
+//     type: 'customNode',
+//   },
+//   // {
+//   //   id: uuidv4(),
+//   //   data: { label: 'New tab', name: 'new-tab', url: 'https://devnoob.id.vn' },
+//   //   position: { x: 0, y: 200 },
+//   //   type: 'customNode',
+//   // },
+//   // {
+//   //   id: uuidv4(),
+//   //   data: {
+//   //     label: 'Form',
+//   //     name: 'form',
+//   //     selector: '#APjFqb',
+//   //     value: 'Puppeteer',
+//   //   },
+//   //   position: { x: 200, y: 200 },
+//   //   type: 'customNode',
+//   // },
+//   // {
+//   //   id: uuidv4(),
+//   //   data: {
+//   //     label: 'Form',
+//   //     name: 'form',
+//   //     selector: '#APjFqb',
+//   //     value: 'Puppeteer',
+//   //   },
+//   //   position: { x: 400, y: 200 },
+//   //   type: 'customNode',
+//   // },
+//   // {
+//   //   id: uuidv4(),
+//   //   data: {
+//   //     label: 'Click element',
+//   //     name: 'event-click',
+//   //     selector: '#menu > li:nth-child(1) > a',
+//   //   },
+//   //   position: { x: 600, y: 200 },
+//   //   type: 'customNode',
+//   // },
+// ];
 const initialNodes = [
-  {
-    id: uuidv4(),
-    data: { label: 'Trigger', name: 'trigger' },
+  generateNode({
+    type: 'trigger',
     position: { x: 0, y: 0 },
-    type: 'customNode',
-  },
-  {
-    id: uuidv4(),
-    data: { label: 'New tab', name: 'new-tab', url: 'https://devnoob.id.vn' },
-    position: { x: 100, y: 100 },
-    type: 'customNode',
-  },
-  {
-    id: uuidv4(),
-    data: {
-      label: 'Click element',
-      name: 'event-click',
-      selector: '#menu > li:nth-child(1) > a',
-    },
-    position: { x: 500, y: 100 },
-    type: 'customNode',
-  },
-  {
-    id: uuidv4(),
-    data: {
-      label: 'Form',
-      name: 'form',
-      selector: '#APjFqb',
-      value: 'Puppeteer',
-    },
-    position: { x: 100, y: 300 },
-    type: 'customNode',
-  },
-  {
-    id: uuidv4(),
-    data: {
-      label: 'Form',
-      name: 'form',
-      selector: '#APjFqb',
-      value: 'Puppeteer',
-    },
-    position: { x: 100, y: 300 },
-    type: 'customNode',
-  },
+  }),
 ];
 const initialEdges = [{ id: '1-2', source: '1', target: '2' }];
 const convertFlow = ({ nodes, edges }) => {
@@ -75,9 +82,7 @@ const useFlow = create((set, get) => ({
   setEdges: (cb) =>
     set((state) => {
       const newEdges = cb(state.edges);
-      console.log('🚀 ===== setEdges: ===== newEdges:', newEdges);
       const flows = convertFlow({ nodes: state.nodes, edges: newEdges });
-      console.log('🚀 ===== setEdges: ===== flows:', flows);
       return { edges: newEdges, flows };
     }),
   setSelectedNode: (node) => {
