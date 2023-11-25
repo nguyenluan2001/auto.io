@@ -14,7 +14,8 @@ model Workflows {
   id        Int      @id @default(autoincrement())
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  title     String   @db.VarChar(255)
+  name     String   @db.VarChar(255) @default(dbgenerated())
   description   String?
+  config Json @db.JsonB() @default("{}")	
   published Boolean  @default(false)
 }

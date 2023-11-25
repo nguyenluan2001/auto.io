@@ -121,12 +121,12 @@ app.get('/loop', async(req,res) => {
     
     return res.json({message:'connect oke'})
 })
-app.get('/create', async(req,res) => {
+app.post('/create', async(req,res) => {
+
+  const body=req?.body
+  console.log("🚀 ===== app.get ===== body:", body);
   const workflows = await prisma.workflows.create({
-    data:{
-        title:"Workflow 1",
-        description: "This is my workflow",
-    }
+    data:body
   })
   return res.json(workflows)
 })

@@ -9,8 +9,11 @@ import stopCircleOutline from '@iconify/icons-mdi/stop-circle-outline';
 
 import { Icon } from '@iconify/react';
 
-import { Box } from '@mui/material';
+import { Box, Stack, TextField, Typography } from '@mui/material';
+import SimpleBar from 'simplebar-react';
 import Group from './Group';
+import { CustomTextArea } from '../common/styled';
+import { useFlow } from '@/store/flow';
 
 // const widgets = [
 //   {
@@ -83,7 +86,25 @@ const groups = {
       icon: <Icon icon={autorenewIcon} />,
     },
     {
-      id: 1,
+      id: 2,
+      title: 'Break loop',
+      key: 'break-loop',
+      icon: <Icon icon={stopCircleOutline} />,
+    },
+    {
+      id: 2,
+      title: 'Break loop',
+      key: 'break-loop',
+      icon: <Icon icon={stopCircleOutline} />,
+    },
+    {
+      id: 2,
+      title: 'Break loop',
+      key: 'break-loop',
+      icon: <Icon icon={stopCircleOutline} />,
+    },
+    {
+      id: 2,
       title: 'Break loop',
       key: 'break-loop',
       icon: <Icon icon={stopCircleOutline} />,
@@ -92,12 +113,46 @@ const groups = {
 };
 
 function Menu() {
+  // const setName = useFlow((state: any) => state.setName);
+  // const setDescription = useFlow((state: any) => state.setDescription);
+  const { setName, setDescription, name, description } = useFlow(
+    (state) => state
+  );
+  const handleChangeName = (value: string) => setName(value);
+  const handleChangeDescription = (value: string) => setDescription(value);
   return (
-    <Box>
-      {Object.entries(groups)?.map(([label, widgets]) => (
-        <Group label={label} widgets={widgets} />
-      ))}
-    </Box>
+    <Stack direction="column" spacing={2} sx={{ height: '100vh' }}>
+      <Box>
+        <Typography variant="body1">Workflow name</Typography>
+        <TextField
+          fullWidth
+          value={name}
+          onChange={(e) => handleChangeName(e.target.value)}
+        />
+      </Box>
+      <Box>
+        <Typography variant="body1">Description</Typography>
+        <CustomTextArea
+          minRows={5}
+          value={description}
+          onChange={(e) => handleChangeDescription(e.target.value)}
+        />
+      </Box>
+      <SimpleBar
+        style={{
+          flex: 1,
+          '& .simplebar-content': {
+            height: '100%',
+            // display: 'flex',
+            // flexDirection: 'column',
+          },
+        }}
+      >
+        {Object.entries(groups)?.map(([label, widgets]) => (
+          <Group label={label} widgets={widgets} />
+        ))}
+      </SimpleBar>
+    </Stack>
   );
 }
 

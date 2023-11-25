@@ -73,6 +73,8 @@ const convertFlow = ({ nodes, edges }) => {
   return [...map.values()];
 };
 const useFlow = create((set, get) => ({
+  name: '',
+  description: '',
   nodes: initialNodes,
   edges: [],
   flows: [],
@@ -88,6 +90,8 @@ const useFlow = create((set, get) => ({
   setSelectedNode: (node) => {
     set((state) => ({ selectedNode: node }));
   },
+  setName: (name: string) => set((state) => ({ name })),
+  setDescription: (description: string) => set((state) => ({ description })),
   updateNodeInformation: (data) => {
     console.log('🚀 ===== useFlow ===== data:', data);
     const { selectedNode, nodes, edges } = get();
