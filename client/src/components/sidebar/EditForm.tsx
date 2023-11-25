@@ -34,6 +34,7 @@ export function EditForm() {
   };
   return (
     <Stack direction="column" spacing={2}>
+      {selectedNode?.id}
       <Box>
         <Typography variant="body2">Description</Typography>
         <CustomTextArea

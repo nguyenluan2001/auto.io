@@ -4,6 +4,8 @@ import alarmIcon from '@iconify/icons-mdi/alarm';
 import cursorDefaultOutline from '@iconify/icons-mdi/cursor-default-outline';
 import formTextbox from '@iconify/icons-mdi/form-textbox';
 import formatText from '@iconify/icons-mdi/format-text';
+import autorenewIcon from '@iconify/icons-mdi/autorenew';
+import stopCircleOutline from '@iconify/icons-mdi/stop-circle-outline';
 
 import { Icon } from '@iconify/react';
 
@@ -71,6 +73,20 @@ const groups = {
       title: 'Get Text',
       key: 'get-text',
       icon: <Icon icon={formatText} />,
+    },
+  ],
+  Control_flow: [
+    {
+      id: 1,
+      title: 'Loop data',
+      key: 'loop-data',
+      icon: <Icon icon={autorenewIcon} />,
+    },
+    {
+      id: 1,
+      title: 'Break loop',
+      key: 'break-loop',
+      icon: <Icon icon={stopCircleOutline} />,
     },
   ],
 };

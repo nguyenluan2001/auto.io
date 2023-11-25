@@ -10,13 +10,17 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@codemirror/lang-json": "^6.0.1",
     "@emotion/react": "^11.11.1",
     "@emotion/styled": "^11.11.0",
     "@iconify/icons-mdi": "^1.2.48",
     "@iconify/react": "^4.1.1",
     "@mui/base": "^5.0.0-beta.24",
     "@mui/material": "^5.14.17",
+    "@uiw/codemirror-theme-copilot": "^4.21.20",
+    "@uiw/react-codemirror": "^4.21.20",
     "axios": "^1.6.1",
+    "codemirror": "^6.0.1",
     "react": "^18.2.0",
     "react-dom": "^18.2.0",
     "react-hook-form": "^7.48.2",

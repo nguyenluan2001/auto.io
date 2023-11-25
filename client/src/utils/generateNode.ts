@@ -6,6 +6,8 @@ import alarmIcon from '@iconify/icons-mdi/alarm';
 import cursorDefaultOutline from '@iconify/icons-mdi/cursor-default-outline';
 import formTextbox from '@iconify/icons-mdi/form-textbox';
 import formatText from '@iconify/icons-mdi/format-text';
+import autorenewIcon from '@iconify/icons-mdi/autorenew';
+import stopCircleOutline from '@iconify/icons-mdi/stop-circle-outline';
 import React from 'react';
 
 const generateNode = ({ type, position }) => {
@@ -104,6 +106,34 @@ const generateNode = ({ type, position }) => {
           description: '',
           url: '',
           icon: React.createElement(Icon, { icon: formatText }),
+        },
+        position,
+        type: 'customNode',
+      };
+    }
+    case 'loop-data': {
+      return {
+        id: uuidv4(),
+        data: {
+          title: 'Loop data',
+          key: 'loop-data',
+          description: '',
+          url: '',
+          icon: React.createElement(Icon, { icon: autorenewIcon }),
+        },
+        position,
+        type: 'customNode',
+      };
+    }
+    case 'break-loop': {
+      return {
+        id: uuidv4(),
+        data: {
+          title: 'Break loop',
+          key: 'break-loop',
+          description: '',
+          url: '',
+          icon: React.createElement(Icon, { icon: stopCircleOutline }),
         },
         position,
         type: 'customNode',

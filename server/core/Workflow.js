@@ -1,3 +1,4 @@
+const { get, isEmpty } = require('lodash')
 const puppeteer = require('puppeteer')
 
 class Workflow {
@@ -10,8 +11,12 @@ class Workflow {
             'new-tab': async (data) => await this.newTab(data),
             form: async (data) => await this.form(data),
             'event-click': async(data) => await this.eventClick(data),
-            'get-text': async(data) => await this.getText(data)
+            'get-text': async(data) => await this.getText(data),
+            'loop-data': async(data) => await this.loop(data)
         }
+        this.loopData={}
+        this.loopControl=new Map()
+        this.currentLoopId=null
     }
 
     async launch() {
@@ -36,9 +41,18 @@ class Workflow {
         await this.page?.goto(url)
     }
 
-    async form({selector,value}) {
-        console.log('===== FORM =====')
-        await this.page.type(selector,value);
+    async form({selector,value, sourceData}) {
+        let newValue=''
+        if(value.match(/{{.*}}/)){
+            const path = value.replace('{{','').replace('}}','')
+            const attributePath = path.split('.').splice(2).join('.')
+            newValue=get(sourceData,attributePath)
+
+        }else{
+            newValue=value
+        }
+        await this.page.click(selector, {clickCount: 3})
+        await this.page.type(selector,newValue);
     }
 
     async eventClick({selector}) {
@@ -56,14 +70,56 @@ class Workflow {
         console.log("🚀 ===== Workflow ===== getText ===== text:", text);
     }
 
+    async loop({id,workflows}){
+        for(const data of this.loopData[id]){
+            for(let i=0;i<workflows?.length;i++){
+                const widget = workflows[i] 
+                await this.handlers?.[widget?.key]({
+                    ...widget,
+                    sourceData:data
+                })
+            }
+            await this.page.waitForTimeout(2000)
+        }
+    }
+
+    async breakLoop({loopID}){
+        const brokenLoop = this.loopControl.get(loopID)
+        console.log("🚀 ===== Workflow ===== run ===== brokenLoop:", brokenLoop);
+        this.loopData = {
+            ...this.loopData,
+            [loopID]: brokenLoop?.data
+        }
+        console.log('loopData',this.loopData)
+        this.loop({id:loopID,workflows: brokenLoop.workflows})
+        this.currentLoopId=null
+        this.loopControl.delete(loopID)
+    }
+
     async run() {
         await this.launch()
-        for(const item of this.workflows){
-            if(item?.key==='trigger'){
+        for(let i=0;i<this.workflows?.length; i++){
+            const widget = this.workflows[i]
+            if(widget?.key==='trigger'){
                 await this.trigger()
-            }else {
-                // await this.newTab(item)
-                await this.handlers?.[item?.key](item)
+            }else if(widget?.key==='loop-data'){
+                this.loopControl.set(widget?.id, {
+                        data: JSON.parse(widget?.data),
+                        workflows:[]
+                })
+                this.currentLoopId=widget?.id
+            } else if(widget?.key==='break-loop'){
+                this.breakLoop(widget)
+            } else {
+                if(this.loopControl.size===0){
+                    await this.handlers?.[widget?.key](widget)
+                }else{
+                    const currentLoop = this.loopControl.get(this.currentLoopId)
+                    this.loopControl.set(this.currentLoopId, {
+                        ...currentLoop,
+                        workflows:[...(currentLoop?.workflows||[]),widget]
+                    })
+                }
             }
         }
         console.log('END')

@@ -6,7 +6,7 @@ import { useFlow } from '@/store/flow';
 function Toolbar() {
   const flows = useFlow((state: any) => state.flows);
   const handleClick = async () => {
-    const response = await axiosInstance.post('/test', flows);
+    const response = await axiosInstance.post('/run', flows);
     console.log('🚀 ===== handleClick ===== response:', response);
   };
   return (

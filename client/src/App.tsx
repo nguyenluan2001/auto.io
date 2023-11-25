@@ -11,6 +11,8 @@ let id = 0;
 const getId = () => `dndnode_${id++}`;
 function App() {
   const setNodes = useFlow((state: any) => state.setNodes);
+  const nodes = useFlow((state: any) => state.nodes);
+  console.log('🚀 ===== App ===== nodes:', nodes);
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance>(null);
   const reactFlowWrapper = useRef(null);

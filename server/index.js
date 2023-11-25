@@ -1,14 +1,18 @@
 const express = require('express')
+const puppeteer = require('puppeteer')
 
 const app = express()
-const bodyParser = require('body-parser')
 const cors = require('cors')
-const puppeteer = require('puppeteer')
 const { map } = require('lodash')
+require('dotenv').config()
+const { PrismaClient } =require('@prisma/client')
 const Workflow = require('./core/Workflow')
+
 
 app.use(cors())
 app.use(express.json())
+const prisma = new PrismaClient()
+
 
 // const workflows = [
 //     {
@@ -76,12 +80,63 @@ const runWorkflows = async (workflows) => {
     }
 
 }
-app.post('/test', (req,res) => {
+app.post('/run', (req,res) => {
     const body=req?.body
-    runWorkflows(map(body,'data'))
+    const data = body.map((item) => ({
+      ...item?.data,
+      id: item?.id
+    }))
+    runWorkflows(data)
     return res.json({message:'connect oke'})
+})
+app.get('/loop', async(req,res) => {
+    const data = [
+      {
+        email:'abc@gmail.com',
+        password:'123456',
+      },
+      {
+        email:'xyz@gmail.com',
+        password:'123456',
+      }
+    ]
+    const browser = await puppeteer.launch({
+        headless: false
+    });
+    const page = await browser.newPage();
+    await page.goto('https://app.smartr.vn/login')
+    for(const item of data){
+        const emailEl='#__next > div > div > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.css-6dio9a-MuiGrid-root > div > div > div > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-ac3f91-MuiPaper-root-MuiCard-root > div > form > div.css-nen11g-MuiStack-root > div:nth-child(1) > div > div > input'
+        const passwordEl='#__next > div > div > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.css-6dio9a-MuiGrid-root > div > div > div > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-ac3f91-MuiPaper-root-MuiCard-root > div > form > div.css-nen11g-MuiStack-root > div:nth-child(3) > div > div > input'
+        await page.click(emailEl, {clickCount: 3})
+        await page.type(emailEl,item?.email);
+        await page.click(passwordEl, {clickCount: 3})
+        await page.type(passwordEl,item?.password);
+
+        const searchResultSelector ='#__next > div > div > div.MuiGrid-root.MuiGrid-item.MuiGrid-grid-xs-12.css-6dio9a-MuiGrid-root > div > div > div > div.MuiPaper-root.MuiPaper-elevation.MuiPaper-rounded.MuiPaper-elevation0.MuiCard-root.css-ac3f91-MuiPaper-root-MuiCard-root > div > form > button';
+        await page.waitForSelector(searchResultSelector);
+        await page.click(searchResultSelector);
+        await page.waitForTimeout(2000)
+    }
+    
+    return res.json({message:'connect oke'})
+})
+app.get('/create', async(req,res) => {
+  const workflows = await prisma.workflows.create({
+    data:{
+        title:"Workflow 1",
+        description: "This is my workflow",
+    }
+  })
+  return res.json(workflows)
+})
+
+app.get('/', async(req,res) => {
+  const workflows = await prisma.workflows.findMany()
+  return res.json(workflows)
 })
 
 app.listen(3000, () => {
+    console.log('url',process.env.DATABASE_URL)
    console.log('Server start at 3000') 
 })
