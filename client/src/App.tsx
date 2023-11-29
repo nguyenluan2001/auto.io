@@ -1,6 +1,9 @@
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
+import { QueryClient, QueryClientProvider } from 'react-query';
 import Homepage from './components/Homepage';
 import WorkflowEdit from './components/WorkflowEdit';
+
+const queryClient = new QueryClient();
 
 function App() {
   const router = createBrowserRouter([
@@ -13,7 +16,11 @@ function App() {
       element: <WorkflowEdit />,
     },
   ]);
-  return <RouterProvider router={router} />;
+  return (
+    <QueryClientProvider client={queryClient}>
+      <RouterProvider router={router} />
+    </QueryClientProvider>
+  );
 }
 
 export default App;

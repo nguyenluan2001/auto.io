@@ -1,7 +1,19 @@
 import React from 'react';
+import { Container, Stack } from '@mui/material';
+import { useWorkflows } from '@/hooks/useWorkflows';
+import { WorkflowList } from './homepage/WorkflowList';
 
 function Homepage() {
-  return <div>Homepage</div>;
+  const { data, isLoading } = useWorkflows();
+  console.log('🚀 ===== Homepage ===== data:', data);
+  if (isLoading) return <h1>Loading...</h1>;
+  return (
+    <Container maxWidth="xl">
+      <Stack>
+        <WorkflowList workflows={data} />
+      </Stack>
+    </Container>
+  );
 }
 
 export default Homepage;

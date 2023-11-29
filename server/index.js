@@ -1,5 +1,7 @@
 const express = require('express')
 const puppeteer = require('puppeteer')
+const { v4: uuidv4 } = require('uuid');
+
 
 const app = express()
 const cors = require('cors')
@@ -126,12 +128,14 @@ app.post('/create', async(req,res) => {
   const body=req?.body
   console.log("🚀 ===== app.get ===== body:", body);
   const workflows = await prisma.workflows.create({
-    data:body
+    data:{
+      ...body,
+      uuid: uuidv4()
+    }
   })
   return res.json(workflows)
 })
-
-app.get('/', async(req,res) => {
+app.get('/workflows', async(req,res) => {
   const workflows = await prisma.workflows.findMany()
   return res.json(workflows)
 })
