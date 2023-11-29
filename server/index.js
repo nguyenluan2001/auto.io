@@ -139,6 +139,28 @@ app.get('/workflows', async(req,res) => {
   const workflows = await prisma.workflows.findMany()
   return res.json(workflows)
 })
+app.get('/workflow/:uuid', async(req,res) => {
+  console.log('params', req.params)
+  const {uuid}=req.params
+  const workflow = await prisma.workflows.findFirst({
+  where: {
+    uuid,
+  },
+})
+  return res.json(workflow)
+})
+app.put('/workflow/:uuid', async(req,res) => {
+  console.log('params', req.params)
+  const {uuid}=req.params
+  const {body} = req
+  const workflow = await prisma.workflows.updateMany({
+  where: {
+    uuid,
+  },
+  data:body
+})
+  return res.json(workflow)
+})
 
 app.listen(3000, () => {
     console.log('url',process.env.DATABASE_URL)

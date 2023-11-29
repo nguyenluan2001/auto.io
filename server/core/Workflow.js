@@ -51,7 +51,13 @@ class Workflow {
         }else{
             newValue=value
         }
-        await this.page.click(selector, {clickCount: 3})
+        console.log("🚀 ===== Workflow ===== form ===== newValue:", newValue);
+        // await this.page.click(selector, {clickCount: 3})
+        await this.page.focus(selector);
+        await this.page.keyboard.down('Control');
+        await this.page.keyboard.press('A');
+        await this.page.keyboard.up('Control');
+        await this.page.keyboard.press('Backspace');
         await this.page.type(selector,newValue);
     }
 

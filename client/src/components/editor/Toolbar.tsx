@@ -3,20 +3,31 @@ import React from 'react';
 import { axiosInstance } from '@/utils/axios';
 import { useFlow } from '@/store/flow';
 
-function Toolbar() {
+function Toolbar({ refetch }) {
   // const flows = useFlow((state: any) => state.flows);
-  const { name, description, nodes, edges, flows } = useFlow((state) => state);
+  const { uuid, name, description, nodes, edges, flows } = useFlow(
+    (state) => state
+  );
   const handleRun = async () => {
     const response = await axiosInstance.post('/run', flows);
     console.log('🚀 ===== handleClick ===== response:', response);
   };
   const handleSave = async () => {
+    if (uuid) {
+      const response = await axiosInstance.put(`/workflow/${uuid}`, {
+        name,
+        description,
+        config: { nodes, edges },
+      });
+      refetch();
+      return;
+    }
     const response = await axiosInstance.post('/create', {
       name,
       description,
       config: { nodes, edges },
     });
-    console.log("🚀 ===== handleSave ===== response:", response);
+    console.log('🚀 ===== handleSave ===== response:', response);
   };
   return (
     <Stack

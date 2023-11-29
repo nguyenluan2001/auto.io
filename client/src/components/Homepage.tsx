@@ -8,7 +8,7 @@ function Homepage() {
   console.log('🚀 ===== Homepage ===== data:', data);
   if (isLoading) return <h1>Loading...</h1>;
   return (
-    <Container maxWidth="xl">
+    <Container maxWidth="xl" sx={{ p: 1 }}>
       <Stack>
         <WorkflowList workflows={data} />
       </Stack>

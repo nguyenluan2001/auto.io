@@ -9,7 +9,7 @@ import { generateNode } from '@/utils/generateNode';
 
 let id = 0;
 const getId = () => `dndnode_${id++}`;
-function WorkflowEdit() {
+function WorkflowEdit({ refetch }) {
   const setNodes = useFlow((state: any) => state.setNodes);
   const nodes = useFlow((state: any) => state.nodes);
   console.log('🚀 ===== App ===== nodes:', nodes);
@@ -69,6 +69,7 @@ function WorkflowEdit() {
               onDrop={onDrop}
               onDragOver={onDragOver}
               setReactFlowInstance={setReactFlowInstance}
+              refetch={refetch}
             />
           </Box>
         </Stack>

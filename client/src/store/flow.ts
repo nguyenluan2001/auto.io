@@ -75,10 +75,25 @@ const convertFlow = ({ nodes, edges }) => {
 const useFlow = create((set, get) => ({
   name: '',
   description: '',
+  uuid: '',
   nodes: initialNodes,
   edges: [],
   flows: [],
   selectedNode: null,
+  initNodes: (nodes) =>
+    set((state) => {
+      console.log('🚀 ===== initNodes: ===== nodes:', nodes);
+      return { nodes };
+    }),
+  initEdges: (edges) =>
+    set((state) => {
+      return { edges };
+    }),
+  initWorkflow: (nodes, edges) =>
+    set((state) => {
+      const flows = convertFlow({ nodes, edges });
+      return { flows };
+    }),
   setNodes: (cb) => set((state) => ({ nodes: cb(state.nodes) })),
   // setEdges: (eds: Edge[]) => set((state) => ({ edges: eds })),
   setEdges: (cb) =>
@@ -92,6 +107,7 @@ const useFlow = create((set, get) => ({
   },
   setName: (name: string) => set((state) => ({ name })),
   setDescription: (description: string) => set((state) => ({ description })),
+  setUUID: (uuid: string) => set((state) => ({ uuid })),
   updateNodeInformation: (data) => {
     console.log('🚀 ===== useFlow ===== data:', data);
     const { selectedNode, nodes, edges } = get();

@@ -21,38 +21,45 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import { Link } from 'react-router-dom';
+import { Workflow } from 'models/Workflow';
 
-function WorkflowItem({ workflow }) {
+type Props = {
+  workflow: Workflow;
+};
+function WorkflowItem({ workflow }: Props) {
   return (
     <Grid item md={3} sx={{ minHeight: '100px' }}>
-      <Box
-        sx={{
-          width: '100%',
-          border: '1px solid black',
-          p: 1,
-          boxSizing: 'border-box',
-        }}
-      >
-        <Stack
-          direction="row"
-          justifyContent="space-between"
-          alignItems="center"
+      <Link to={`/workflow/${workflow?.uuid}`}>
+        <Box
+          sx={{
+            width: '100%',
+            border: '1px solid black',
+            p: 1,
+            boxSizing: 'border-box',
+          }}
         >
-          <Icon icon={earthIcon} />
           <Stack
             direction="row"
             justifyContent="space-between"
             alignItems="center"
           >
-            <IconButton>
-              <Icon icon={playIcon} />
-            </IconButton>
-            <MoreMenu />
+            <Icon icon={earthIcon} />
+            <Stack
+              direction="row"
+              justifyContent="space-between"
+              alignItems="center"
+            >
+              <IconButton>
+                <Icon icon={playIcon} />
+              </IconButton>
+              <MoreMenu />
+            </Stack>
           </Stack>
-        </Stack>
-        <Typography variant="h5">{workflow?.name}</Typography>
-        <Typography variant="body1">{workflow?.description}</Typography>
-      </Box>
+          <Typography variant="h5">{workflow?.name}</Typography>
+          <Typography variant="body1">{workflow?.description}</Typography>
+        </Box>
+      </Link>
     </Grid>
   );
 }

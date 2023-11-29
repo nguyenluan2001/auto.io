@@ -25,7 +25,7 @@ function CustomNode(node: Node) {
         <Handle type="target" position={Position.Top} />
       )}
       <Stack direction="column" alignItems="center">
-        {Boolean(node?.data?.icon) && node?.data?.icon}
+        {/* {Boolean(node?.data?.icon) && node?.data?.icon} */}
         <Typography sx={{ fontWeight: '600' }}>{node?.data?.title}</Typography>
         {node?.data?.description && (
           <Typography variant="caption">{node?.data?.description}</Typography>
