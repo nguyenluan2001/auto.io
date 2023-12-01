@@ -80,23 +80,29 @@ const useFlow = create((set, get) => ({
   edges: [],
   flows: [],
   selectedNode: null,
-  initNodes: (nodes) =>
+  setNodes: (nodes) =>
     set((state) => {
       console.log('🚀 ===== initNodes: ===== nodes:', nodes);
       return { nodes };
     }),
-  initEdges: (edges) =>
+  setEdges: (edges) =>
     set((state) => {
       return { edges };
     }),
-  initWorkflow: (nodes, edges) =>
+  setWorkflow: (nodes, edges) =>
     set((state) => {
       const flows = convertFlow({ nodes, edges });
       return { flows };
     }),
-  setNodes: (cb) => set((state) => ({ nodes: cb(state.nodes) })),
+  addNode: (cb) => set((state) => ({ nodes: cb(state.nodes) })),
+  deleteNode: (nodeId) =>
+    set((state) => {
+      const newNodes = state.nodes?.filter((node) => node?.id !== nodeId);
+      const flows = convertFlow({ nodes: newNodes, edges: state.edges });
+      return { nodes: newNodes, flows };
+    }),
   // setEdges: (eds: Edge[]) => set((state) => ({ edges: eds })),
-  setEdges: (cb) =>
+  addEdge: (cb) =>
     set((state) => {
       const newEdges = cb(state.edges);
       const flows = convertFlow({ nodes: state.nodes, edges: newEdges });

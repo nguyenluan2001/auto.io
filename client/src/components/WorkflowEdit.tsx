@@ -7,10 +7,14 @@ import { useFlow } from '@/store/flow';
 
 import { generateNode } from '@/utils/generateNode';
 
+type Props = {
+  refetch?: () => {};
+};
+
 let id = 0;
 const getId = () => `dndnode_${id++}`;
-function WorkflowEdit({ refetch }) {
-  const setNodes = useFlow((state: any) => state.setNodes);
+function WorkflowEdit({ refetch }: Props) {
+  const addNode = useFlow((state: any) => state.addNode);
   const nodes = useFlow((state: any) => state.nodes);
   console.log('🚀 ===== App ===== nodes:', nodes);
   const [reactFlowInstance, setReactFlowInstance] =
@@ -40,16 +44,10 @@ function WorkflowEdit({ refetch }) {
         x: event.clientX,
         y: event.clientY,
       });
-      // const newNode = {
-      //   id: getId(),
-      //   type,
-      //   position,
-      //   data: { label: `${type}` },
-      // };
       const newNode = generateNode({ type, position });
       console.log('🚀 ===== App ===== newNode:', newNode);
 
-      setNodes((nds) => nds.concat(newNode));
+      addNode((nds) => nds.concat(newNode));
     },
     [reactFlowInstance]
   );

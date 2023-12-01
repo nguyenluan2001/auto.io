@@ -1,5 +1,6 @@
 const { get, isEmpty } = require('lodash')
 const puppeteer = require('puppeteer')
+const {PuppeteerScreenRecorder}=require('puppeteer-screen-recorder')
 
 class Workflow {
     constructor(workflows){
@@ -104,10 +105,19 @@ class Workflow {
 
     async run() {
         await this.launch()
+        const savePath = "./video/demo.mp4";
+        const screenRecorderOptions = {
+            followNewTab: true,
+            fps: 25,
+            aspectRatio: "16:9"
+        }
+        let screenRecorder=null
         for(let i=0;i<this.workflows?.length; i++){
             const widget = this.workflows[i]
             if(widget?.key==='trigger'){
                 await this.trigger()
+                screenRecorder = new PuppeteerScreenRecorder(this.page, screenRecorderOptions);
+                await screenRecorder.start(savePath);
             }else if(widget?.key==='loop-data'){
                 this.loopControl.set(widget?.id, {
                         data: JSON.parse(widget?.data),
@@ -128,6 +138,7 @@ class Workflow {
                 }
             }
         }
+        await screenRecorder.stop()
         console.log('END')
         // await this.close()
 

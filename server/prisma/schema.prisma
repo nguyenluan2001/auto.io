@@ -20,3 +20,10 @@ model Workflows {
   config Json @db.JsonB() @default("{}")	
   published Boolean  @default(false)
 }
+model Users {
+  id        Int      @id @default(autoincrement())
+  uuid        String?      @default(dbgenerated())
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  name     String   @db.VarChar(255) @default(dbgenerated())
+}

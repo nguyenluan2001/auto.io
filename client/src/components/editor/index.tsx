@@ -9,9 +9,13 @@ import ReactFlow, {
   Node,
   NodeChange,
   NodeTypes,
-  addEdge,
   applyEdgeChanges,
   applyNodeChanges,
+  getConnectedEdges,
+  getIncomers,
+  getOutgoers,
+  addEdge,
+  EdgeTypes,
 } from 'reactflow';
 
 import 'reactflow/dist/style.css';
@@ -19,48 +23,39 @@ import { Box } from '@mui/material';
 import { useFlow } from '../../store/flow';
 import CustomNode from '../nodes/CustomNode';
 import Toolbar from './Toolbar';
+import CustomEdge from '../edge/CustomEdge';
 
-function Editor({ onDragOver, onDrop, setReactFlowInstance }) {
-  // const [nodes, setNodes] = useState<Node[]>(initialNodes);
-  // const [edges, setEdges] = useState<Edge[]>([]);
+function Editor({ onDragOver, onDrop, setReactFlowInstance, refetch }) {
   const nodes: Node[] = useFlow((state: any) => state.nodes);
   const edges: Edge[] = useFlow((state: any) => state.edges);
-  const setNodes: (cb: (nds: Node[]) => void) => void = useFlow(
-    (state: any) => state.setNodes
+  const addNode: (cb: (nds: Node[]) => void) => void = useFlow(
+    (state: any) => state.addNode
   );
-  const setEdges: (cb: (params: any) => void) => void = useFlow(
-    (state: any) => state.setEdges
+  const addEdgeFlow: (cb: (params: any) => void) => void = useFlow(
+    (state: any) => state.addEdge
   );
-  // const {
-  //   nodes,
-  //   edges,
-  //   setNodes,
-  //   setEdges,
-  // }: {
-  //   nodes: Node[];
-  //   edges: Edge[];
-  //   setNodes: () => void;
-  //   setEdges: () => void;
-  // } = useFlow((state) => state);
+  const setEdges = useFlow((state) => state.setEdges);
   const nodeTypes = useMemo(() => ({ customNode: CustomNode }), []);
 
-  console.log('🚀 ===== Editor ===== edges:', edges);
-  console.log('🚀 ===== Editor ===== nodes:', nodes);
+  const edgeTypes: EdgeTypes = {
+    customEdge: CustomEdge,
+  };
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
-      setNodes((nds) => applyNodeChanges(changes, nds));
+      addNode((nds) => applyNodeChanges(changes, nds));
     },
-    [setNodes]
+    [addNode]
   );
   const onConnect = useCallback(
     (connection: Connection) => {
       console.log('🚀 ===== Editor ===== connection:', connection);
-      setEdges((eds) =>
+      addEdgeFlow((eds) =>
         addEdge(
           {
             ...(connection || {}),
-            type: 'smoothstep',
+            // type: 'smoothstep',
+            type: 'customEdge',
             markerEnd: {
               type: MarkerType.ArrowClosed,
             },
@@ -69,11 +64,37 @@ function Editor({ onDragOver, onDrop, setReactFlowInstance }) {
         )
       );
     },
-    [setEdges]
+    [addEdgeFlow]
+  );
+  const onNodesDelete = useCallback(
+    (deleted) => {
+      setEdges(
+        deleted.reduce((acc, node) => {
+          const incomers = getIncomers(node, nodes, edges);
+          const outgoers = getOutgoers(node, nodes, edges);
+          const connectedEdges = getConnectedEdges([node], edges);
+
+          const remainingEdges = acc.filter(
+            (edge) => !connectedEdges.includes(edge)
+          );
+
+          const createdEdges = incomers.flatMap(({ id: source }) =>
+            outgoers.map(({ id: target }) => ({
+              id: `${source}->${target}`,
+              source,
+              target,
+            }))
+          );
+
+          return [...remainingEdges, ...createdEdges];
+        }, edges)
+      );
+    },
+    [nodes, edges]
   );
   return (
     <Box sx={{ height: '100vh', width: '100%' }}>
-      <Toolbar />
+      <Toolbar refetch={refetch} />
       <ReactFlow
         onNodesChange={onNodesChange}
         style={{ background: '#F5F5F5' }}
@@ -83,9 +104,11 @@ function Editor({ onDragOver, onDrop, setReactFlowInstance }) {
         edges={edges}
         onConnect={onConnect}
         nodeTypes={nodeTypes}
+        edgeTypes={edgeTypes}
         onDragOver={onDragOver}
         onDrop={onDrop}
         onInit={setReactFlowInstance}
+        // onNodesDelete={onNodesDelete}
       >
         <Background gap={10} variant="dots" />
         <Controls />
