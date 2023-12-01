@@ -3,10 +3,16 @@ import { useParams } from 'react-router-dom';
 import WorkflowEdit from './WorkflowEdit';
 import { useWorkflowByUUID } from '@/hooks/useWorkflowByUUID';
 import { useFlow } from '@/store/flow';
+import LoadingScreen from './common/LoadingScreen';
 
 function EditPage() {
   const { uuid } = useParams();
-  const { data: workflow, isLoading, refetch } = useWorkflowByUUID({ uuid });
+  const {
+    data: workflow,
+    isLoading,
+    isFetching,
+    refetch,
+  } = useWorkflowByUUID({ uuid });
   const { setNodes, setEdges, setWorkflow, setUUID, setName, setDescription } =
     useFlow((state: any) => state);
   useEffect(() => {
@@ -20,6 +26,7 @@ function EditPage() {
     }
   }, [workflow]);
   console.log('🚀 ===== EditPage ===== workflow:', workflow);
+  if (isLoading || isFetching) return <LoadingScreen />;
   return (
     <div>
       <WorkflowEdit refetch={refetch} />

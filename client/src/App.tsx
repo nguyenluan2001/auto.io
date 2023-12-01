@@ -1,5 +1,6 @@
 import { RouterProvider, createBrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
+import { SnackbarProvider } from 'notistack';
 import Homepage from './components/Homepage';
 import WorkflowEdit from './components/WorkflowEdit';
 import EditPage from './components/EditPage';
@@ -23,7 +24,9 @@ function App() {
   ]);
   return (
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
+      <SnackbarProvider>
+        <RouterProvider router={router} />
+      </SnackbarProvider>
     </QueryClientProvider>
   );
 }
