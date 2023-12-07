@@ -2,6 +2,7 @@ const puppeteer = require('puppeteer')
 // const {PuppeteerScreenRecorder}=require('puppeteer-screen-recorder')
 const fs = require('fs')
 const path = require('path')
+const mustache = require('mustache')
 // const axios = require('axios')
 // const sharp = require('sharp')
 const url ="https://vnexpress.net/"
@@ -150,7 +151,7 @@ const runWorkflows = async () => {
             await page.waitForNavigation()
 
         }else{
-            await browser.close()
+            await this.browser.close()
         }
     }
 
@@ -158,4 +159,24 @@ const runWorkflows = async () => {
 // test()
 // crawler()
 // run();
-runWorkflows()
+// runWorkflows()
+const test1 = () => {
+const values={
+    name:"luannguyen",
+    age:22,
+    posts:[
+        {
+            title:'Post1'
+        },
+        {
+            title:'Post2'
+        }
+        
+    ]
+}
+const result= mustache.render("{{#posts}}-{{title}}{{/posts}}",values)
+console.log("🚀 ===== test1 ===== result:", result);
+console.log(result.split('-'))
+console.log(mustache.render("{{posts.0}}",values))
+}
+test1()

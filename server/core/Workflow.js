@@ -1,6 +1,9 @@
-const { get, isEmpty } = require('lodash')
+const { get, isEmpty, last, has } = require('lodash')
 const puppeteer = require('puppeteer')
 const {PuppeteerScreenRecorder}=require('puppeteer-screen-recorder')
+const fs=require('fs')
+const path = require('path')
+const mustache = require('mustache')
 
 class Workflow {
     constructor(workflows){
@@ -18,6 +21,7 @@ class Workflow {
         this.loopData={}
         this.loopControl=new Map()
         this.currentLoopId=null
+        this.tableData=[]
     }
 
     async launch() {
@@ -43,7 +47,7 @@ class Workflow {
     }
 
     async form({selector,value, sourceData}) {
-        let newValue=''
+        let newValue=""
         if(value.match(/{{.*}}/)){
             const path = value.replace('{{','').replace('}}','')
             const attributePath = path.split('.').splice(2).join('.')
@@ -69,12 +73,34 @@ class Workflow {
         await this.page.click(searchResultSelector);
     }
 
-    async getText({selector}) {
+    async getText({selector, destination}) {
         console.log('===== GET TEXT =====')
         // const el = await this.page.waitForSelector(selector);
         const el = await this.page.$(selector)
         const text = await (await el.getProperty('textContent')).jsonValue()
+        const isVariable=destination?.VARIABLE?.selected
+        const isTable=destination?.TABLE?.selected
+        if(isTable){
+            const column = destination?.TABLE?.column
+            if(isEmpty(this.tableData)){
+                this.tableData.push({
+                    [column]: text
+                })
+            }else{
+                const lastRow = last(this.tableData)
+                const len = this.tableData.length
+                if(!has(lastRow,column)){
+                    // lastRow[column]=text
+                    this.tableData[len-1][column]=text
+                }else{
+                    this.tableData.push({
+                        [column]:text
+                    })
+                }
+            }
+        }
         console.log("🚀 ===== Workflow ===== getText ===== text:", text);
+        return text
     }
 
     async loop({id,workflows}){
@@ -88,6 +114,19 @@ class Workflow {
             }
             await this.page.waitForTimeout(2000)
         }
+        // const data = this.loopData[id]
+        // for(let i=0; i<data.length;i++){
+        //     for(let j=0;j<workflows?.length;j++){
+        //         const widget = workflows[j] 
+        //         await this.handlers?.[widget?.key]({
+        //             ...widget,
+        //             sourceData:data,
+        //             template:'{{}}'
+
+        //         })
+        //     }
+        //     await this.page.waitForTimeout(2000)
+        // }
     }
 
     async breakLoop({loopID}){
@@ -139,6 +178,7 @@ class Workflow {
             }
         }
         await screenRecorder.stop()
+        await fs.writeFileSync(path.resolve('./','data',`data-${Date.now()}.json`),JSON.stringify(this.tableData))
         console.log('END')
         // await this.close()
 

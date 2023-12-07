@@ -10,8 +10,17 @@ function Toolbar({ refetch }) {
     (state) => state
   );
   const handleRun = async () => {
-    const response = await axiosInstance.post('/run', flows);
-    console.log('🚀 ===== handleClick ===== response:', response);
+    try {
+      const response = await axiosInstance.post('/run', flows);
+      console.log('🚀 ===== handleClick ===== response:', response);
+      enqueueSnackbar('Run workflow successfully', {
+        variant: 'success',
+      });
+    } catch (error) {
+      enqueueSnackbar('Run workflow fail', {
+        variant: 'error',
+      });
+    }
   };
   const handleSave = async () => {
     try {

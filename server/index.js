@@ -42,7 +42,7 @@ const prisma = new PrismaClient()
 //         name:"finish",
 //     }
 // ]
-const runWorkflows = async (workflows) => {
+const runWorkflows = async (workflows, res) => {
     try{
 
     console.log("🚀 ===== runWorkflows ===== workflows:", workflows);
@@ -88,7 +88,7 @@ app.post('/run', (req,res) => {
       ...item?.data,
       id: item?.id
     }))
-    runWorkflows(data)
+    runWorkflows(data,res)
     return res.json({message:'connect oke'})
 })
 app.get('/loop', async(req,res) => {

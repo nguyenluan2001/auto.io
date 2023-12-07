@@ -24,6 +24,8 @@ import { useFlow } from '../../store/flow';
 import CustomNode from '../nodes/CustomNode';
 import Toolbar from './Toolbar';
 import CustomEdge from '../edge/CustomEdge';
+import { nodeTypes } from '@/utils/nodeCustomType';
+import { edgeTypes } from '@/utils/edgeCustomType';
 
 function Editor({ onDragOver, onDrop, setReactFlowInstance, refetch }) {
   const nodes: Node[] = useFlow((state: any) => state.nodes);
@@ -35,11 +37,6 @@ function Editor({ onDragOver, onDrop, setReactFlowInstance, refetch }) {
     (state: any) => state.addEdge
   );
   const setEdges = useFlow((state) => state.setEdges);
-  const nodeTypes = useMemo(() => ({ customNode: CustomNode }), []);
-
-  const edgeTypes: EdgeTypes = {
-    customEdge: CustomEdge,
-  };
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {

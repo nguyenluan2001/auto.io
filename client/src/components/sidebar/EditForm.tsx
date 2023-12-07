@@ -53,7 +53,7 @@ export function EditForm() {
           id: `${source}->${target}`,
           source,
           target,
-          type: 'smoothstep',
+          type: 'customEdge',
         }))
       );
 
