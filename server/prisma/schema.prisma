@@ -7,6 +7,16 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model Table {
+  id        Int      @id @default(autoincrement())
+  uuid      String?
+  name      String   @db.VarChar(255)
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  columns   Column[]
+  rows      Row[]
+  workflows      Workflows[]
+}
 model Workflows {
   id          Int      @id @default(autoincrement())
   createdAt   DateTime @default(now())
@@ -16,6 +26,8 @@ model Workflows {
   config      Json     @default("{}")
   name        String   @db.VarChar(255)
   uuid        String?
+  tableId   Int?
+  table     Table?    @relation(fields: [tableId], references: [id])
 }
 
 model Users {
@@ -26,15 +38,6 @@ model Users {
   name      String   @db.VarChar(255)
 }
 
-model Table {
-  id        Int      @id @default(autoincrement())
-  uuid      String?
-  name      String   @db.VarChar(255)
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  columns   Column[]
-  rows      Row[]
-}
 
 model Column {
   id        Int      @id @default(autoincrement())

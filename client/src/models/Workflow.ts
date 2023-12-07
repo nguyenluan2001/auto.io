@@ -5,6 +5,7 @@ type Workflow = {
   uuid: string;
   name: string;
   description: string;
+  tableId: number;
   config: any;
   nodes?: Node[];
   edges?: Edge[];

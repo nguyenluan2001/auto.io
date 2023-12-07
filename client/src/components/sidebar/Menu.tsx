@@ -10,11 +10,12 @@ import repeatVariant from '@iconify/icons-mdi/repeat-variant';
 
 import { Icon } from '@iconify/react';
 
-import { Box, Stack, TextField, Typography } from '@mui/material';
+import { Autocomplete, Box, Stack, TextField, Typography } from '@mui/material';
 import SimpleBar from 'simplebar-react';
 import Group from './Group';
 import { CustomTextArea } from '../common/styled';
 import { useFlow } from '@/store/flow';
+import { useTables } from '@/hooks/useTables';
 
 // const widgets = [
 //   {
@@ -104,16 +105,17 @@ const groups = {
 function Menu() {
   // const setName = useFlow((state: any) => state.setName);
   // const setDescription = useFlow((state: any) => state.setDescription);
-  const { setName, setDescription, name, description } = useFlow(
-    (state) => state
-  ) as {
-    setName: (value: string) => void;
-    setDescription: (value: string) => void;
-    name: string;
-    description: string;
-  };
+  const { data: tables, isLoading, refetch } = useTables({ options: {} });
+  const { setName, setDescription, setConnectTable, name, description } =
+    useFlow((state) => state) as {
+      setName: (value: string) => void;
+      setDescription: (value: string) => void;
+      name: string;
+      description: string;
+    };
   const handleChangeName = (value: string) => setName(value);
   const handleChangeDescription = (value: string) => setDescription(value);
+  const handleChangeTable = (id: number) => setConnectTable(id);
   return (
     <Stack direction="column" spacing={2} sx={{ height: '100vh' }}>
       <Box>
@@ -130,6 +132,15 @@ function Menu() {
           minRows={5}
           value={description}
           onChange={(e) => handleChangeDescription(e.target.value)}
+        />
+      </Box>
+      <Box>
+        <Typography variant="body1">Connect table</Typography>
+        <Autocomplete
+          options={tables || []}
+          renderInput={(params) => <TextField {...params} />}
+          getOptionLabel={(option) => option?.name}
+          onChange={(e, value) => handleChangeTable(value?.id)}
         />
       </Box>
       <SimpleBar

@@ -10,7 +10,7 @@ type Props = {
 };
 function Toolbar({ refetch }: Props) {
   // const flows = useFlow((state: any) => state.flows);
-  const { uuid, name, description, nodes, edges, flows } = useFlow(
+  const { uuid, name, description, tableId, nodes, edges, flows } = useFlow(
     (state) => state
   ) as Workflow;
   const handleRun = async () => {
@@ -32,6 +32,7 @@ function Toolbar({ refetch }: Props) {
         const response = await axiosInstance.put(`/workflow/${uuid}`, {
           name,
           description,
+          tableId,
           config: { nodes, edges },
         });
         enqueueSnackbar('Save workflow successfully', {
@@ -43,6 +44,7 @@ function Toolbar({ refetch }: Props) {
       const response = await axiosInstance.post('/create', {
         name,
         description,
+        tableId,
         config: { nodes, edges },
       });
       enqueueSnackbar('Save workflow successfully', {

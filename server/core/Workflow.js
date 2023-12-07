@@ -90,6 +90,7 @@ class Workflow {
       console.log('selector', `${loop_through}:nth-child(${order}) ${select}`)
        el = await this.page.$(`${loop_through}:nth-child(${order}) ${select}`.replace('\'', "\""));
     }
+    console.log("🚀 ===== Workflow ===== getText ===== el:", el);
     if(!el) return
     const text = await (await el.getProperty('textContent')).jsonValue();
     console.log("🚀 ===== Workflow ===== getText ===== text:", text);

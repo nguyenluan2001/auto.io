@@ -7,6 +7,8 @@ import {
   DialogContent,
   DialogTitle,
   IconButton,
+  Menu,
+  MenuItem,
   Paper,
   Stack,
   Table,
@@ -21,6 +23,7 @@ import {
 import React, { useEffect, useState } from 'react';
 import plusBoxOutline from '@iconify/icons-mdi/plus-box-outline';
 import deleteOutline from '@iconify/icons-mdi/delete-outline';
+import dotsHorizontalCircleOutline from '@iconify/icons-mdi/dots-horizontal-circle-outline';
 
 import { Icon } from '@iconify/react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
@@ -62,8 +65,10 @@ function DialogAddTable({
   open,
   handleToggleDialog,
   refetch,
+  initialData,
 }: DialogAddTableProps) {
-  const { control, handleSubmit, watch } = useForm({
+  console.log('🚀 ===== initialData:', initialData);
+  const { control, handleSubmit, watch, setValue } = useForm({
     defaultValues: {
       name: '',
       columns: [],
@@ -76,6 +81,13 @@ function DialogAddTable({
   useEffect(() => {
     console.log('🚀 ===== DialogAddTable ===== watch:', watch());
   }, [watch()]);
+  useEffect(() => {
+    if (initialData) {
+      const { name, columns } = initialData;
+      setValue('name', name);
+      setValue('columns', columns);
+    }
+  }, [initialData]);
   const handleAddColumn = () => {
     const countColumn = fields.length;
     append({ name: `Column ${countColumn + 1}`, data_type: '' });
@@ -88,12 +100,20 @@ function DialogAddTable({
   };
   const onSubmit = async (values: any) => {
     try {
-      const response = await axiosInstance.post('/tables', values);
+      if (initialData) {
+        const { id } = initialData;
+        await axiosInstance.put(`/tables/${id}`, values);
+        enqueueSnackbar('Update table successfully', {
+          variant: 'success',
+        });
+      } else {
+        const response = await axiosInstance.post('/tables', values);
+        enqueueSnackbar('Create table successfully', {
+          variant: 'success',
+        });
+      }
       handleToggleDialog();
       refetch();
-      enqueueSnackbar('Create table successfully', {
-        variant: 'success',
-      });
     } catch (error) {
       console.log('🚀 ===== onSubmit ===== error:', error);
       enqueueSnackbar('Create table fail', {
@@ -147,12 +167,26 @@ function DialogAddTable({
     </Dialog>
   );
 }
-function TableItem({ table, refetch }: TableItemProps) {
+function TableItem({ table, refetch, setSelectedTable }: TableItemProps) {
   const [isOpenDialogDetail, setIsOpenDialogDetail] = useState(false);
+  const [anchorEl, setAnchorEl] = React.useState(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = (e) => {
+    e.stopPropagation();
+    setAnchorEl(null);
+  };
   const handleDeleteTable = async (e: any) => {
     e.stopPropagation();
     await axiosInstance.delete(`/tables/${table?.id}`);
     refetch();
+  };
+  const handleClickEdit = (e) => {
+    e.stopPropagation();
+    setSelectedTable(table);
   };
   const handleToggleDetail = () => {
     setIsOpenDialogDetail((pre) => !pre);
@@ -171,9 +205,21 @@ function TableItem({ table, refetch }: TableItemProps) {
         <TableCell align="left">{table.createdAt}</TableCell>
         <TableCell align="left">{table.updatedAt}</TableCell>
         <TableCell align="left">
-          <IconButton onClick={handleDeleteTable}>
-            <Icon icon={deleteOutline} />
+          <IconButton onClick={handleClick}>
+            <Icon icon={dotsHorizontalCircleOutline} />
           </IconButton>
+          <Menu
+            id="basic-menu"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            MenuListProps={{
+              'aria-labelledby': 'basic-button',
+            }}
+          >
+            <MenuItem onClick={handleClickEdit}>Edit</MenuItem>
+            <MenuItem onClick={handleClose}>Delete</MenuItem>
+          </Menu>
         </TableCell>
       </TableRow>
       <DialogTableDetail
@@ -184,7 +230,12 @@ function TableItem({ table, refetch }: TableItemProps) {
     </>
   );
 }
-function Listing({ tables, refetch, isLoading }: ListingProps) {
+function Listing({
+  tables,
+  refetch,
+  isLoading,
+  setSelectedTable,
+}: ListingProps) {
   let tableBody = null;
   if (isLoading) {
     tableBody = (
@@ -198,7 +249,12 @@ function Listing({ tables, refetch, isLoading }: ListingProps) {
     tableBody = (
       <TableBody>
         {tables?.map((row: any) => (
-          <TableItem refetch={refetch} table={row} key={row.name} />
+          <TableItem
+            setSelectedTable={setSelectedTable}
+            refetch={refetch}
+            table={row}
+            key={row.name}
+          />
         ))}
       </TableBody>
     );
@@ -332,8 +388,16 @@ function TableData({ columns, rows }: TableDataProps) {
 function TableList() {
   const [isOpenDialog, setIsOpenDialog] = useState<boolean>(false);
   const { data: tables, isLoading, refetch } = useTables({ options: {} });
-  console.log('🚀 ===== TableList ===== tables:', tables);
-  const handleToggleDialog = () => setIsOpenDialog((pre) => !pre);
+  const [selectedTable, setSelectedTable] = useState(null);
+  const handleToggleDialog = () => {
+    setSelectedTable(null);
+    setIsOpenDialog((pre) => !pre);
+  };
+  useEffect(() => {
+    if (selectedTable) {
+      setIsOpenDialog(true);
+    }
+  }, [selectedTable]);
   return (
     <Box sx={{ width: '100%' }}>
       <Stack sx={{ mb: 2 }} direction="row" justifyContent="space-between">
@@ -342,11 +406,17 @@ function TableList() {
           Add table
         </Button>
       </Stack>
-      <Listing isLoading={isLoading} tables={tables} refetch={refetch} />
+      <Listing
+        setSelectedTable={setSelectedTable}
+        isLoading={isLoading}
+        tables={tables}
+        refetch={refetch}
+      />
       <DialogAddTable
         open={isOpenDialog}
         handleToggleDialog={handleToggleDialog}
         refetch={refetch}
+        initialData={selectedTable}
       />
     </Box>
   );

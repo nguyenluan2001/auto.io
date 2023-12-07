@@ -5,7 +5,7 @@ const { v4: uuidv4 } = require('uuid');
 
 const app = express()
 const cors = require('cors')
-const { map } = require('lodash')
+const { map, omit } = require('lodash')
 require('dotenv').config()
 const { PrismaClient } =require('@prisma/client')
 const Workflow = require('../core/Workflow')
@@ -152,13 +152,39 @@ app.get('/workflow/:uuid', async(req,res) => {
 app.put('/workflow/:uuid', async(req,res) => {
   console.log('params', req.params)
   const {uuid}=req.params
+  console.log("🚀 ===== app.put ===== uuid:", uuid);
   const {body} = req
-  const workflow = await prisma.workflows.updateMany({
+  const workflow = await prisma.workflows.findFirst({
+    where:{
+      uuid
+    }
+  })
+   console.log("🚀 ===== app.put ===== workflow:", workflow);
+   await prisma.workflows.updateMany({
   where: {
     uuid,
   },
-  data:body
+  data:{
+    ...omit(body,['tableId']),
+  },
 })
+  await prisma.table.update({
+    where:{
+      id: body?.tableId,
+    },
+    data:{
+      workflows:{
+        connect: [
+          {
+            id:workflow?.id
+          }
+        ]
+      }
+    },
+    include:{
+      workflows:true
+    }
+  })
   return res.json(workflow)
 })
 app.post('/tables',async(req,res) => {
@@ -181,7 +207,11 @@ app.post('/tables',async(req,res) => {
 })
 app.get('/tables',async(req,res) => {
   try{
-    const tables = await prisma.table.findMany({})
+    const tables = await prisma.table.findMany({
+      include:{
+        columns:true
+      }
+    })
     res.status(200).json({tables})
   }catch(error){
     console.log("🚀 ===== app.get ===== error:", error);
@@ -198,6 +228,32 @@ app.get('/tables/:id',async(req,res) => {
       include:{
         columns:true,
         rows:true
+      }
+    })
+    res.status(200).json(table)
+  }catch(error){
+    console.log("🚀 ===== app.get ===== error:", error);
+    res.status(500).json({message:'Error'})
+  }
+})
+app.put('/tables/:id',async(req,res) => {
+  try{
+    const body=req?.body
+    const {id}=req.params
+    await prisma.column.deleteMany({
+      where:{
+        tableId: parseInt(id,10),
+      }
+    })
+    const table = await prisma.table.update({
+      where:{
+        id:parseInt(id,10)
+      },
+      data:{
+        name: body?.name,
+        columns:{
+          create: body?.columns?.map((item) => omit(item,['id','tableId'])),
+        }
       }
     })
     res.status(200).json(table)
