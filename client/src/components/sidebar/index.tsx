@@ -14,7 +14,6 @@ function Sidebar() {
   const handleBack = () => setSelectedNode(null);
   return (
     <Stack direction="row">
-      <MainSidebar />
       <Box sx={{ width: '300px', p: 2 }}>
         {selectedNode && (
           <Stack direction="row" alignItems="center" sx={{ mb: 2 }}>

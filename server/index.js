@@ -161,6 +161,79 @@ app.put('/workflow/:uuid', async(req,res) => {
 })
   return res.json(workflow)
 })
+app.post('/tables',async(req,res) => {
+  const body=req?.body
+  const response = await prisma.table.create({
+    data:{
+      name:body?.name,
+      columns:{
+        create: body?.columns
+      }
+    },
+    include:{
+      columns:true
+    }
+
+  })
+  console.log("🚀 ===== app.post ===== response:", response);
+  res.json({message:'connect oke'})
+  console.log("🚀 ===== app.post ===== body:", body);
+})
+app.get('/tables',async(req,res) => {
+  try{
+    const tables = await prisma.table.findMany({})
+    res.status(200).json({tables})
+  }catch(error){
+    console.log("🚀 ===== app.get ===== error:", error);
+    res.status(500).json({message:'Error'})
+  }
+})
+app.get('/tables/:id',async(req,res) => {
+  try{
+    const {id}=req.params
+    const table = await prisma.table.findUnique({
+      where:{
+        id:parseInt(id,10)
+      },
+      include:{
+        columns:true,
+        rows:true
+      }
+    })
+    res.status(200).json(table)
+  }catch(error){
+    console.log("🚀 ===== app.get ===== error:", error);
+    res.status(500).json({message:'Error'})
+  }
+})
+app.delete('/tables/:id',async(req,res) => {
+  try{
+    const {id}=req.params
+    //  await prisma.table.delete({
+    //   where:{
+    //     id: parseInt(id,10)
+    //   }
+    // })
+    const deleteColumns = prisma.column.deleteMany({
+      where: {
+        tableId: parseInt(id,10),
+      },
+    })
+
+    const deleteTable = prisma.table.delete({
+      where: {
+        id: parseInt(id,10),
+      },
+    })
+
+    const transaction = await prisma.$transaction([deleteColumns, deleteTable])
+    console.log("🚀 ===== app.delete ===== transaction:", transaction);
+    res.status(200).json({message:"Delete success"})
+  }catch(error){
+    console.log("🚀 ===== app.get ===== error:", error);
+    res.status(500).json({message:'Error'})
+  }
+})
 
 app.listen(3000, () => {
     console.log('url',process.env.DATABASE_URL)

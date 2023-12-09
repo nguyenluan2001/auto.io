@@ -1,8 +1,10 @@
 const puppeteer = require('puppeteer')
-// const {PuppeteerScreenRecorder}=require('puppeteer-screen-recorder')
+const {PuppeteerScreenRecorder}=require('puppeteer-screen-recorder')
 const fs = require('fs')
 const path = require('path')
 const mustache = require('mustache')
+const { URLSearchParams } = require('url');
+
 // const axios = require('axios')
 // const sharp = require('sharp')
 const url ="https://vnexpress.net/"
@@ -81,31 +83,32 @@ const crawler = async() => {
     // const metadata = await sharp('https://blog.logrocket.com/wp-content/uploads/2022/11/Screen-Shot-2022-09-22-at-12.59.51-PM.png').metadata()
 }
 const test = async () => {
-    const browser = await puppeteer.launch({
-        headless: false
+    try{
+      const params = new URLSearchParams({
+            // API key (Org Management => API Keys)
+            key: 'hloowlcdwmmpmddwjgkwmnoeqnkuhqpybgkxjc',
+            // Browser name: chrome, edge, firefox 
+            browserName: 'chrome'
+        }).toString();
+      console.log("🚀 ===== test ===== params:", params);
+    // const browser = await puppeteer.launch({
+    //     headless: false
+    // });
+    const browser = await puppeteer.connect({
+        // browserWSEndpoint: `wss://cdp.testable.io?${params}`
+        browserWSEndpoint: `wss://chrome.browserless.io/?token=8512f9ec-f4be-4f30-a5a8-7f2d6b2d3163&headless=false`
+        // browserWSEndpoint: `ws://localhost:3000`,
+
     });
     const page = await browser.newPage();
-    const screenRecorderOptions = {
-        followNewTab: true,
-        fps: 25,
-        aspectRatio: "16:9"
-    }
-    const savePath = "./test/demo3.mp4";
-    const screenRecorder = new PuppeteerScreenRecorder(page, screenRecorderOptions);
-    await page.setViewport({width: 1920, height: 1080});
-    await screenRecorder.start(savePath);
+    // await page.setViewport({width: 1920, height: 1080});
     // some puppeteer action or test
     await page.goto('https://www.google.com/');
-    await page.evaluate(() => {
-        const el = document.querySelectorAll('#APjFqb')
-        const searchBtn = document.querySelectorAll('body > div.L3eUgb > div.o3j99.ikrT4e.om7nvf > form > div:nth-child(1) > div.A8SBwf.emcav > div.UUbT9.EyBRub > div.aajZCb > div.lJ9FBc > center > input.gNO89b')
-        el[0].value="Puppeteer"
-        // searchBtn?.[0].click()
-    })
-    await page.click('body > div.L3eUgb > div.o3j99.ikrT4e.om7nvf > form > div:nth-child(1) > div.A8SBwf > div.FPdoLc.lJ9FBc > center > input.gNO89b')
-    await page.waitForNavigation()
-    await screenRecorder.stop()
     await browser.close()
+
+    }catch(error){
+        console.log("🚀 ===== test ===== error:", error);
+    }
 }
 const runWorkflows = async () => {
     // const browser = await puppeteer.launch({
@@ -156,7 +159,7 @@ const runWorkflows = async () => {
     }
 
 }
-// test()
+test()
 // crawler()
 // run();
 // runWorkflows()
@@ -179,4 +182,3 @@ console.log("🚀 ===== test1 ===== result:", result);
 console.log(result.split('-'))
 console.log(mustache.render("{{posts.0}}",values))
 }
-test1()
