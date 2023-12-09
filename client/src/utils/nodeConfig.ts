@@ -6,7 +6,7 @@ import LoopData from '@/components/nodeConfig/LoopData';
 import NewTab from '@/components/nodeConfig/NewTab';
 import Trigger from '@/components/nodeConfig/Trigger';
 
-const config = {
+const config: Record<string, any> = {
   trigger: Trigger,
   'new-tab': NewTab,
   'event-click': EventClick,

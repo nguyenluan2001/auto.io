@@ -1,7 +1,7 @@
 import { useQuery } from 'react-query';
 import { axiosInstance } from '@/utils/axios';
 
-const useTableById = ({ id, options = {} }) =>
+const useTableById = ({ id, options = {} }: { id: string; options: any }) =>
   useQuery(
     ['get-list-tables', id],
     async () => {

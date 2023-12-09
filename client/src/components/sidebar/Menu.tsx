@@ -117,7 +117,12 @@ function Menu() {
   // const setDescription = useFlow((state: any) => state.setDescription);
   const { setName, setDescription, name, description } = useFlow(
     (state) => state
-  );
+  ) as {
+    setName: (value: string) => void;
+    setDescription: (value: string) => void;
+    name: string;
+    description: string;
+  };
   const handleChangeName = (value: string) => setName(value);
   const handleChangeDescription = (value: string) => setDescription(value);
   return (
@@ -139,17 +144,19 @@ function Menu() {
         />
       </Box>
       <SimpleBar
-        style={{
-          flex: 1,
-          '& .simplebar-content': {
-            height: '100%',
-            // display: 'flex',
-            // flexDirection: 'column',
-          },
-        }}
+        style={
+          {
+            flex: 1,
+            '& .simplebar-content': {
+              height: '100%',
+              // display: 'flex',
+              // flexDirection: 'column',
+            },
+          } as React.CSSProperties
+        }
       >
-        {Object.entries(groups)?.map(([label, widgets]) => (
-          <Group label={label} widgets={widgets} />
+        {Object.entries(groups)?.map(([label, widgets], index) => (
+          <Group key={index} label={label} widgets={widgets} />
         ))}
       </SimpleBar>
     </Stack>

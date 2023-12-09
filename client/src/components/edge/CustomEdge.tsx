@@ -4,8 +4,24 @@ import { BaseEdge, EdgeLabelRenderer, getSmoothStepPath } from 'reactflow';
 import closeCircleOutline from '@iconify/icons-mdi/close-circle-outline';
 import { useFlow } from '@/store/flow';
 
-export default function CustomEdge({ id, sourceX, sourceY, targetX, targetY }) {
-  const { edges, setEdges } = useFlow((state) => state);
+type Props = {
+  id: string;
+  sourceX: number;
+  sourceY: number;
+  targetX: number;
+  targetY: number;
+};
+export default function CustomEdge({
+  id,
+  sourceX,
+  sourceY,
+  targetX,
+  targetY,
+}: Props) {
+  const { edges, setEdges } = useFlow((state) => state) as {
+    edges: any;
+    setEdges: (edges: any[]) => void;
+  };
   const [edgePath, labelX, labelY] = getSmoothStepPath({
     sourceX,
     sourceY,

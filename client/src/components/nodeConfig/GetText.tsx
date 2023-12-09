@@ -1,4 +1,4 @@
-import { EventHandler, useEffect } from 'react';
+import { EventHandler, SyntheticEvent, useEffect } from 'react';
 import { Controller, FieldValues, useForm } from 'react-hook-form';
 import {
   Autocomplete,
@@ -53,7 +53,11 @@ function GetText({ selector, destination, setValues }: Props) {
   useEffect(() => {
     setValues(watch());
   }, [setValues, watch()]);
-  const handleChangeDestination = (e, onChange, values) => {
+  const handleChangeDestination = (
+    e: any,
+    onChange: (value: any) => void,
+    values: any
+  ) => {
     const newValue = {
       ...values,
       [e.target.name]: {
@@ -62,14 +66,18 @@ function GetText({ selector, destination, setValues }: Props) {
     };
     onChange(newValue);
   };
-  const handleChangeVariableName = (e, onChange, values) => {
+  const handleChangeVariableName = (
+    e: any,
+    onChange: (value: any) => void,
+    values: any
+  ) => {
     const { value } = e.target;
     const newValues = set({ ...values }, 'VARIABLE.variable_name', value);
     onChange(newValues);
   };
   const handleChangeTableColumn = (
-    value: string,
-    onChange: () => void,
+    value: string | null,
+    onChange: (value: any) => void,
     formValues: any
   ) => {
     const newValues = set({ ...formValues }, 'TABLE.column', value);
@@ -88,12 +96,12 @@ function GetText({ selector, destination, setValues }: Props) {
       <Controller
         control={control}
         name="destination"
-        render={({ field: { onChange, value } }) => (
+        render={({ field: { onChange, value: destinationVal } }) => (
           <FormControl>
             <RadioGroup
               aria-labelledby="demo-radio-buttons-group-label"
               name="radio-buttons-group"
-              value={value}
+              value={destinationVal}
               onChange={onChange}
             >
               <FormControlLabel
@@ -101,19 +109,21 @@ function GetText({ selector, destination, setValues }: Props) {
                 control={
                   <Checkbox
                     onChange={(e) =>
-                      handleChangeDestination(e, onChange, value)
+                      handleChangeDestination(e, onChange, destinationVal)
                     }
                     name="VARIABLE"
-                    checked={value.VARIABLE.selected}
+                    checked={destinationVal.VARIABLE.selected}
                   />
                 }
                 label="Assign to variable"
               />
-              {value?.VARIABLE?.selected && (
+              {destinationVal?.VARIABLE?.selected && (
                 <TextField
                   placeholder="Variable name"
-                  value={value.VARIABLE.variable_name}
-                  onChange={(e) => handleChangeVariableName(e, onChange, value)}
+                  value={destinationVal.VARIABLE.variable_name}
+                  onChange={(e) =>
+                    handleChangeVariableName(e, onChange, destinationVal)
+                  }
                 />
               )}
               <FormControlLabel
@@ -121,24 +131,25 @@ function GetText({ selector, destination, setValues }: Props) {
                 control={
                   <Checkbox
                     onChange={(e) =>
-                      handleChangeDestination(e, onChange, value)
+                      handleChangeDestination(e, onChange, destinationVal)
                     }
                     name="TABLE"
-                    checked={value.TABLE.selected}
+                    checked={destinationVal.TABLE.selected}
                   />
                 }
                 label="Insert to table"
               />
-              {value?.TABLE?.selected && (
+              {destinationVal?.TABLE?.selected && (
                 <Autocomplete
                   options={['title', 'sub_title']}
                   renderInput={(params) => (
                     <TextField {...params} label="Column" />
                   )}
-                  onChange={(e, _value: string) =>
-                    handleChangeTableColumn(_value, onChange, value)
-                  }
-                  value={value.TABLE.column}
+                  onChange={(
+                    event: SyntheticEvent<Element, Event>,
+                    value: string | null
+                  ) => handleChangeTableColumn(value, onChange, destinationVal)}
+                  value={destinationVal.TABLE.column}
                 />
               )}
             </RadioGroup>

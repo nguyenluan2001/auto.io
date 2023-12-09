@@ -1,5 +1,5 @@
 import { Box, Button, Stack } from '@mui/material';
-import { ReactFlowInstance, ReactFlowProvider } from 'reactflow';
+import { Node, ReactFlowInstance, ReactFlowProvider } from 'reactflow';
 import { useCallback, useRef, useState } from 'react';
 import Editor from '@/components/editor';
 import Sidebar from '@/components/sidebar';
@@ -8,7 +8,7 @@ import { useFlow } from '@/store/flow';
 import { generateNode } from '@/utils/generateNode';
 
 type Props = {
-  refetch?: () => {};
+  refetch: () => void;
 };
 
 let id = 0;
@@ -18,15 +18,15 @@ function WorkflowEdit({ refetch }: Props) {
   const nodes = useFlow((state: any) => state.nodes);
   console.log('🚀 ===== App ===== nodes:', nodes);
   const [reactFlowInstance, setReactFlowInstance] =
-    useState<ReactFlowInstance>(null);
+    useState<ReactFlowInstance | null>(null);
   const reactFlowWrapper = useRef(null);
 
-  const onDragOver = useCallback((event) => {
+  const onDragOver = useCallback((event: any) => {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
   }, []);
   const onDrop = useCallback(
-    (event) => {
+    (event: any) => {
       event.preventDefault();
 
       const type = event.dataTransfer.getData('application/reactflow');
@@ -40,14 +40,16 @@ function WorkflowEdit({ refetch }: Props) {
       // reactFlowInstance.project was renamed to reactFlowInstance.screenToFlowPosition
       // and you don't need to subtract the reactFlowBounds.left/top anymore
       // details: https://reactflow.dev/whats-new/2023-11-10
-      const position = reactFlowInstance.screenToFlowPosition({
+      const position = (
+        reactFlowInstance as ReactFlowInstance
+      ).screenToFlowPosition({
         x: event.clientX,
         y: event.clientY,
       });
-      const newNode = generateNode({ type, position });
+      const newNode = generateNode({ type, position }) as Node;
       console.log('🚀 ===== App ===== newNode:', newNode);
 
-      addNode((nds) => nds.concat(newNode));
+      addNode((nds: Node[]) => nds.concat(newNode));
     },
     [reactFlowInstance]
   );

@@ -1,14 +1,18 @@
 import { Box, Button, Stack } from '@mui/material';
 import React from 'react';
 import { enqueueSnackbar } from 'notistack';
+import { Workflow } from 'models/Workflow';
 import { axiosInstance } from '@/utils/axios';
 import { useFlow } from '@/store/flow';
 
-function Toolbar({ refetch }) {
+type Props = {
+  refetch: () => void;
+};
+function Toolbar({ refetch }: Props) {
   // const flows = useFlow((state: any) => state.flows);
   const { uuid, name, description, nodes, edges, flows } = useFlow(
     (state) => state
-  );
+  ) as Workflow;
   const handleRun = async () => {
     try {
       const response = await axiosInstance.post('/run', flows);
@@ -45,10 +49,11 @@ function Toolbar({ refetch }) {
         variant: 'success',
       });
       console.log('🚀 ===== handleSave ===== response:', response);
-    } catch (error) {}
-    enqueueSnackbar('Save workflow failed', {
-      variant: 'error',
-    });
+    } catch (error) {
+      enqueueSnackbar('Save workflow failed', {
+        variant: 'error',
+      });
+    }
   };
   return (
     <Stack

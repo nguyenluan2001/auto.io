@@ -16,6 +16,7 @@ import ReactFlow, {
   getOutgoers,
   addEdge,
   EdgeTypes,
+  BackgroundVariant,
 } from 'reactflow';
 
 import 'reactflow/dist/style.css';
@@ -27,7 +28,14 @@ import CustomEdge from '../edge/CustomEdge';
 import { nodeTypes } from '@/utils/nodeCustomType';
 import { edgeTypes } from '@/utils/edgeCustomType';
 
-function Editor({ onDragOver, onDrop, setReactFlowInstance, refetch }) {
+type Props = {
+  onDragOver: (event: React.DragEvent<HTMLDivElement>) => void;
+  onDrop: (event: React.DragEvent<HTMLDivElement>) => void;
+  setReactFlowInstance: (reactFlowInstance: any) => void;
+  refetch: () => void;
+};
+
+function Editor({ onDragOver, onDrop, setReactFlowInstance, refetch }: Props) {
   const nodes: Node[] = useFlow((state: any) => state.nodes);
   const edges: Edge[] = useFlow((state: any) => state.edges);
   const addNode: (cb: (nds: Node[]) => void) => void = useFlow(
@@ -36,7 +44,7 @@ function Editor({ onDragOver, onDrop, setReactFlowInstance, refetch }) {
   const addEdgeFlow: (cb: (params: any) => void) => void = useFlow(
     (state: any) => state.addEdge
   );
-  const setEdges = useFlow((state) => state.setEdges);
+  const setEdges = useFlow((state: any) => state.setEdges);
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
@@ -64,7 +72,7 @@ function Editor({ onDragOver, onDrop, setReactFlowInstance, refetch }) {
     [addEdgeFlow]
   );
   const onNodesDelete = useCallback(
-    (deleted) => {
+    (deleted: Node[]) => {
       setEdges(
         deleted.reduce((acc, node) => {
           const incomers = getIncomers(node, nodes, edges);
@@ -100,14 +108,14 @@ function Editor({ onDragOver, onDrop, setReactFlowInstance, refetch }) {
         nodes={nodes}
         edges={edges}
         onConnect={onConnect}
-        nodeTypes={nodeTypes}
+        nodeTypes={nodeTypes as unknown as NodeTypes}
         edgeTypes={edgeTypes}
         onDragOver={onDragOver}
         onDrop={onDrop}
         onInit={setReactFlowInstance}
         // onNodesDelete={onNodesDelete}
       >
-        <Background gap={10} variant="dots" />
+        <Background gap={10} variant={'dots' as BackgroundVariant} />
         <Controls />
       </ReactFlow>
     </Box>

@@ -1,20 +1,21 @@
-import React, { FunctionComponent, useEffect, useRef, useState } from 'react';
+import { Box, Button, Stack, Typography } from '@mui/material';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import {
-  Box,
-  Button,
-  Stack,
-  TextareaAutosize,
-  Typography,
-} from '@mui/material';
-import styled from '@emotion/styled';
-import { FieldValues } from 'react-hook-form';
-import { getConnectedEdges, getIncomers, getOutgoers } from 'reactflow';
-import { useFlow } from '@/store/flow';
+  Edge,
+  Node,
+  getConnectedEdges,
+  getIncomers,
+  getOutgoers,
+} from 'reactflow';
 import { config } from '@/utils/nodeConfig';
+import { useFlow } from '@/store/flow';
 import { CustomTextArea } from '../common/styled';
 
 export function EditForm() {
-  const selectedNode = useFlow((state: any) => state.selectedNode);
+  const selectedNode = useFlow((state: any) => state.selectedNode) as {
+    id: string;
+    data: Record<string, string>;
+  };
   const setSelectedNode = useFlow((state: any) => state.setSelectedNode);
   const edges = useFlow((state: any) => state.edges);
   const nodes = useFlow((state: any) => state.nodes);
@@ -26,9 +27,9 @@ export function EditForm() {
   const [values, setValues] = useState(null);
   const [description, setDescription] = useState<string>('');
   useEffect(() => {
-    setDescription(selectedNode?.data?.description);
+    setDescription(selectedNode?.data?.description as string);
   }, [selectedNode?.id, setDescription]);
-  const handleChangeDescription = (e: React.EventHandler) => {
+  const handleChangeDescription = (e: any) => {
     const { value } = e.target;
     setDescription(value);
   };
@@ -40,12 +41,12 @@ export function EditForm() {
   };
   const handleDeleteNode = () => {
     const newEdges = [selectedNode].reduce((acc, node) => {
-      const incomers = getIncomers(node, nodes, edges);
-      const outgoers = getOutgoers(node, nodes, edges);
-      const connectedEdges = getConnectedEdges([node], edges);
+      const incomers = getIncomers(node as Node, nodes, edges);
+      const outgoers = getOutgoers(node as Node, nodes, edges);
+      const connectedEdges = getConnectedEdges([node as Node], edges);
 
       const remainingEdges = acc.filter(
-        (edge) => !connectedEdges.includes(edge)
+        (edge: Edge) => !connectedEdges.includes(edge)
       );
 
       const createdEdges = incomers.flatMap(({ id: source }) =>
@@ -76,7 +77,7 @@ export function EditForm() {
         />
       </Box>
       {React.createElement(
-        config?.[selectedNode?.data?.key] as FunctionComponent,
+        config[selectedNode.data.key] as FunctionComponent<any>,
         {
           ...selectedNode?.data,
           setValues,

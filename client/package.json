@@ -17,6 +17,7 @@
     "@iconify/react": "^4.1.1",
     "@mui/base": "^5.0.0-beta.24",
     "@mui/material": "^5.14.17",
+    "@types/uuid": "^9.0.7",
     "@uiw/codemirror-theme-copilot": "^4.21.20",
     "@uiw/react-codemirror": "^4.21.20",
     "axios": "^1.6.1",

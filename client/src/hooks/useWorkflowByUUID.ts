@@ -1,12 +1,13 @@
 import { QueryOptions, UseQueryOptions, useQuery } from 'react-query';
+import { Workflow } from 'models/Workflow';
 import { axiosInstance } from '@/utils/axios';
 
 type Params = {
-  uuid: string;
-  options: QueryOptions;
+  uuid: string | undefined;
+  options: QueryOptions | undefined;
 };
 const useWorkflowByUUID = ({ uuid, options }: Params) =>
-  useQuery(
+  useQuery<unknown, unknown, Workflow>(
     ['get-workflow-by-uuid', uuid],
     async () => {
       const response = await axiosInstance.get(`/workflow/${uuid}`);

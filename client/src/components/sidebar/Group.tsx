@@ -9,7 +9,12 @@ import chevronDown from '@iconify/icons-mdi/chevron-down';
 import { Icon } from '@iconify/react';
 import Widget from './Widget';
 
-function Group({ label, widgets }) {
+type Props = {
+  label: string;
+  widgets: any;
+};
+
+function Group({ label, widgets }: Props) {
   return (
     <Accordion disableGutters>
       <AccordionSummary
@@ -21,7 +26,9 @@ function Group({ label, widgets }) {
       </AccordionSummary>
       <AccordionDetails>
         <Grid container rowSpacing={2} columnSpacing={{ sm: 2, md: 2 }}>
-          {widgets?.map((widget) => <Widget widget={widget} />)}
+          {widgets?.map((widget: any) => (
+            <Widget key={widget?.uid} widget={widget} />
+          ))}
         </Grid>
       </AccordionDetails>
     </Accordion>

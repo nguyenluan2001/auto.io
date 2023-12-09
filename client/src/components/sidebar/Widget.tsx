@@ -1,8 +1,13 @@
 import { Box, Grid, Stack, Typography } from '@mui/material';
 import React from 'react';
+import { NodeTypes } from 'reactflow';
 
-function Widget({ widget }) {
-  const onDragStart = (event, nodeType) => {
+type Props = {
+  widget: any;
+};
+
+function Widget({ widget }: Props) {
+  const onDragStart = (event: any, nodeType: NodeTypes) => {
     event.dataTransfer.setData('application/reactflow', nodeType);
     event.dataTransfer.effectAllowed = 'move';
   };

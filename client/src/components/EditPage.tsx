@@ -5,6 +5,7 @@ import { useWorkflowByUUID } from '@/hooks/useWorkflowByUUID';
 import { useFlow } from '@/store/flow';
 import LoadingScreen from './common/LoadingScreen';
 
+type Params = Record<string, string | undefined>;
 function EditPage() {
   const { uuid } = useParams();
   const {
@@ -12,7 +13,7 @@ function EditPage() {
     isLoading,
     isFetching,
     refetch,
-  } = useWorkflowByUUID({ uuid });
+  } = useWorkflowByUUID({ uuid, options: {} });
   const { setNodes, setEdges, setWorkflow, setUUID, setName, setDescription } =
     useFlow((state: any) => state);
   useEffect(() => {

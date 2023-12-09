@@ -31,7 +31,7 @@ function App() {
         },
         {
           path: 'create',
-          element: <WorkflowEdit />,
+          element: <WorkflowEdit refetch={() => {}} />,
         },
         {
           path: 'workflow/:uuid',

@@ -10,7 +10,14 @@ import autorenewIcon from '@iconify/icons-mdi/autorenew';
 import stopCircleOutline from '@iconify/icons-mdi/stop-circle-outline';
 import React from 'react';
 
-const generateNode = ({ type, position }) => {
+type Params = {
+  type: string;
+  position: {
+    x: number;
+    y: number;
+  };
+};
+const generateNode = ({ type, position }: Params) => {
   switch (type) {
     case 'trigger': {
       return {
