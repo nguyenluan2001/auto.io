@@ -32,9 +32,9 @@ class Workflow {
     const config =
       NODE_ENV === 'development'
         ? {
-            headless: NODE_ENV === 'production',
+            headless: false,
           }
-        : {};
+        : {headless:'new'};
     this.browser = await puppeteer.launch(config);
   }
 
