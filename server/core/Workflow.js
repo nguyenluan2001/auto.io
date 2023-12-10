@@ -7,6 +7,7 @@ const mustache = require('mustache');
 const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
+const {NODE_ENV} = process.env;
 
 class Workflow {
   constructor(workflows) {
@@ -29,7 +30,7 @@ class Workflow {
 
   async launch() {
     this.browser = await puppeteer.launch({
-      headless: false,
+      headless: NODE_ENV==='production',
     });
   }
 
