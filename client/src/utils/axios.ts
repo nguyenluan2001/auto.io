@@ -1,6 +1,7 @@
-import axios from "axios"
+import axios from 'axios';
+import { VITE_APP_SERVER_URL } from './constant';
 
 const axiosInstance = axios.create({
-    baseURL:"http://localhost:3000"
-})
-export {axiosInstance}
+  baseURL: VITE_APP_SERVER_URL,
+});
+export { axiosInstance };
