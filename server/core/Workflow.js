@@ -7,7 +7,7 @@ const mustache = require('mustache');
 const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
-const {NODE_ENV} = process.env;
+const { NODE_ENV } = process.env;
 
 class Workflow {
   constructor(workflows) {
@@ -29,9 +29,13 @@ class Workflow {
   }
 
   async launch() {
-    this.browser = await puppeteer.launch({
-      headless: NODE_ENV==='production',
-    });
+    const config =
+      NODE_ENV === 'development'
+        ? {
+            headless: NODE_ENV === 'production',
+          }
+        : {};
+    this.browser = await puppeteer.launch(config);
   }
 
   async close() {
@@ -90,10 +94,10 @@ class Workflow {
           [column]: text,
         };
         const newRow = await prisma.row.create({
-            data:{
-                data: newData,
-                tableId: parseInt(3, 10),
-            }
+          data: {
+            data: newData,
+            tableId: parseInt(3, 10),
+          },
         });
         console.log('🚀 ===== Workflow ===== getText ===== newRow:', newRow);
         this.tableData.push(newRow);
@@ -119,10 +123,10 @@ class Workflow {
             [column]: text,
           };
           const newRow = await prisma.row.create({
-            data:{
-                data:newData,
-                tableId: parseInt(3, 10),
-            }
+            data: {
+              data: newData,
+              tableId: parseInt(3, 10),
+            },
           });
           console.log('🚀 ===== Workflow ===== getText ===== newRow:', newRow);
           this.tableData.push(newRow);
