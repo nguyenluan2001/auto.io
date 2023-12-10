@@ -8,7 +8,7 @@ const cors = require('cors')
 const { map } = require('lodash')
 require('dotenv').config()
 const { PrismaClient } =require('@prisma/client')
-const Workflow = require('./core/Workflow')
+const Workflow = require('../core/Workflow')
 
 
 app.use(cors())
