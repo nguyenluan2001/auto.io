@@ -234,6 +234,28 @@ app.delete('/tables/:id',async(req,res) => {
     res.status(500).json({message:'Error'})
   }
 })
+app.get('/tables/:id/clear',async(req,res) => {
+  try{
+    const {id}=req.params
+    //  await prisma.table.delete({
+    //   where:{
+    //     id: parseInt(id,10)
+    //   }
+    // })
+    const deleteColumns = prisma.row.deleteMany({
+      where: {
+        tableId: parseInt(id,10),
+      },
+    })
+
+    const transaction = await prisma.$transaction([deleteColumns])
+    console.log("🚀 ===== app.delete ===== transaction:", transaction);
+    res.status(200).json({message:"Clear success"})
+  }catch(error){
+    console.log("🚀 ===== app.get ===== error:", error);
+    res.status(500).json({message:'Error'})
+  }
+})
 
 app.listen(3000, () => {
     console.log('url',process.env.DATABASE_URL)

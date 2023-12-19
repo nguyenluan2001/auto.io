@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "dev": "nodemon index",
+    "dev": "nodemon api/index",
     "dev2": "nodemon api/index",
     "lint": "eslint . --ext js --report-unused-disable-directives --max-warnings 0",
     "start":"prisma generate && nodemon api/index"

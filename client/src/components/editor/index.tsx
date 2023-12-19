@@ -38,6 +38,7 @@ type Props = {
 function Editor({ onDragOver, onDrop, setReactFlowInstance, refetch }: Props) {
   const nodes: Node[] = useFlow((state: any) => state.nodes);
   const edges: Edge[] = useFlow((state: any) => state.edges);
+  console.log("🚀 ===== Editor ===== edges:", edges);
   const addNode: (cb: (nds: Node[]) => void) => void = useFlow(
     (state: any) => state.addNode
   );

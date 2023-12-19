@@ -1,6 +1,6 @@
 import { Icon } from '@iconify/react';
 import { IconButton } from '@mui/material';
-import { BaseEdge, EdgeLabelRenderer, getSmoothStepPath } from 'reactflow';
+import { BaseEdge, EdgeLabelRenderer, getBezierPath, getSimpleBezierPath, getSmoothStepPath, getStraightPath } from 'reactflow';
 import closeCircleOutline from '@iconify/icons-mdi/close-circle-outline';
 import { useFlow } from '@/store/flow';
 

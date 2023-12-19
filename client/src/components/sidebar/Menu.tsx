@@ -6,6 +6,7 @@ import formTextbox from '@iconify/icons-mdi/form-textbox';
 import formatText from '@iconify/icons-mdi/format-text';
 import autorenewIcon from '@iconify/icons-mdi/autorenew';
 import stopCircleOutline from '@iconify/icons-mdi/stop-circle-outline';
+import repeatVariant from '@iconify/icons-mdi/repeat-variant';
 
 import { Icon } from '@iconify/react';
 
@@ -93,21 +94,9 @@ const groups = {
     },
     {
       id: 2,
-      title: 'Break loop',
-      key: 'break-loop',
-      icon: <Icon icon={stopCircleOutline} />,
-    },
-    {
-      id: 2,
-      title: 'Break loop',
-      key: 'break-loop',
-      icon: <Icon icon={stopCircleOutline} />,
-    },
-    {
-      id: 2,
-      title: 'Break loop',
-      key: 'break-loop',
-      icon: <Icon icon={stopCircleOutline} />,
+      title: 'Repeat',
+      key: 'repeat',
+      icon: <Icon icon={repeatVariant} />,
     },
   ],
 };

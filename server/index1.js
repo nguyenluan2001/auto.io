@@ -93,17 +93,19 @@ const test = async () => {
       console.log("🚀 ===== test ===== params:", params);
     // const browser = await puppeteer.launch({
     //     headless: false
-    // });
+    // }); 
     const browser = await puppeteer.connect({
         // browserWSEndpoint: `wss://cdp.testable.io?${params}`
-        browserWSEndpoint: `wss://chrome.browserless.io/?token=8512f9ec-f4be-4f30-a5a8-7f2d6b2d3163&headless=false`
+        // browserWSEndpoint: `wss://chrome.browserless.io/?token=8512f9ec-f4be-4f30-a5a8-7f2d6b2d3163&headless=false`
         // browserWSEndpoint: `ws://localhost:3000`,
+        browserWSEndpoint: `ws://localhost:9222/devtools/browser/f2d2963f-ebe3-45ee-9edc-aa456bf866a1`,
 
     });
     const page = await browser.newPage();
-    // await page.setViewport({width: 1920, height: 1080});
+    await page.setViewport({width: 1920, height: 1080});
     // some puppeteer action or test
     await page.goto('https://www.google.com/');
+    await page.pdf({path: 'google.pdf', format: 'a4'});
     await browser.close()
 
     }catch(error){
@@ -159,7 +161,7 @@ const runWorkflows = async () => {
     }
 
 }
-test()
+// test()
 // crawler()
 // run();
 // runWorkflows()
@@ -182,3 +184,25 @@ console.log("🚀 ===== test1 ===== result:", result);
 console.log(result.split('-'))
 console.log(mustache.render("{{posts.0}}",values))
 }
+
+async function testDantri () {
+    const browser = await puppeteer.launch({
+        headless: false
+    });
+    const page = await browser.newPage();
+    await page.setViewport({width: 1080, height: 1024});
+    await page.goto('https://dantri.com.vn');
+    const parentSelector="body > main > div.grid.normal > article > article:nth-child"
+    const titleSelector = ".article-title"
+    const subTitleSelector = ".article-excerpt"
+    for(let i=1; i<=5;i++){
+        const titleEl = await page.$(`${parentSelector}(${i}) ${titleSelector}`);
+        const subTitleEl = await page.$(`${parentSelector}(${i}) ${subTitleSelector}`);
+        const title = await (await titleEl.getProperty('textContent')).jsonValue();
+        const subTitle = await (await subTitleEl.getProperty('textContent')).jsonValue();
+        console.log("🚀 ===== testDantri ===== text:", title);
+        console.log("🚀 ===== testDantri ===== subTitle:", subTitle);
+    }
+    browser.close();
+}
+testDantri()

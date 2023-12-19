@@ -1,5 +1,5 @@
 import { Box, Button, Stack, Typography } from '@mui/material';
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, { FunctionComponent, memo, useEffect, useState } from 'react';
 import {
   Edge,
   Node,
@@ -12,6 +12,7 @@ import { useFlow } from '@/store/flow';
 import { CustomTextArea } from '../common/styled';
 
 export function EditForm() {
+  console.log('🚀 ===== EditForm ===== EditForm:');
   const selectedNode = useFlow((state: any) => state.selectedNode) as {
     id: string;
     data: Record<string, string>;
@@ -76,13 +77,7 @@ export function EditForm() {
           onChange={handleChangeDescription}
         />
       </Box>
-      {React.createElement(
-        config[selectedNode.data.key] as FunctionComponent<any>,
-        {
-          ...selectedNode?.data,
-          setValues,
-        }
-      )}
+      <RenderForm selectedNode={selectedNode} setValues={setValues} />
       <Stack direction="row" spacing={2}>
         <Button
           sx={{ flex: 1 }}
@@ -99,3 +94,13 @@ export function EditForm() {
     </Stack>
   );
 }
+
+const RenderForm = memo(function ({ selectedNode, setValues }) {
+  return React.createElement(
+    config[selectedNode.data.key] as FunctionComponent<any>,
+    {
+      ...selectedNode?.data,
+      setValues,
+    }
+  );
+});

@@ -263,16 +263,30 @@ function DialogTableDetail({
   open,
   handleToggleDetail,
 }: DialogTableDetailProps) {
-  const { data: tableDetail, isLoading } = useTableById({
+  const {
+    data: tableDetail,
+    isLoading,
+    refetch,
+  } = useTableById({
     id: table?.id as string,
     options: {},
   });
+  const handleClearTable = async () => {
+    try {
+      axiosInstance.get(`/tables/${table?.id}/clear`).then(() => refetch());
+    } catch (error) {
+      console.log('🚀 ===== handleClearTable ===== error:', error);
+    }
+  };
   return (
     <Dialog open={open} fullWidth maxWidth="xl">
       <DialogContent>
         <TableData columns={tableDetail?.columns} rows={tableDetail?.rows} />
       </DialogContent>
       <DialogActions>
+        <Button variant="contained" color="error" onClick={handleClearTable}>
+          Clear
+        </Button>
         <Button variant="contained" onClick={handleToggleDetail}>
           Close
         </Button>

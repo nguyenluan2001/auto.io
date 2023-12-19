@@ -4,6 +4,7 @@ import Form from '@/components/nodeConfig/Form';
 import GetText from '@/components/nodeConfig/GetText';
 import LoopData from '@/components/nodeConfig/LoopData';
 import NewTab from '@/components/nodeConfig/NewTab';
+import Repeat from '@/components/nodeConfig/Repeat';
 import Trigger from '@/components/nodeConfig/Trigger';
 
 const config: Record<string, any> = {
@@ -14,5 +15,6 @@ const config: Record<string, any> = {
   'get-text': GetText,
   'loop-data': LoopData,
   'break-loop': BreakLoop,
+  repeat: Repeat,
 };
 export { config };

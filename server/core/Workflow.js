@@ -80,11 +80,19 @@ class Workflow {
     await this.page.click(searchResultSelector);
   }
 
-  async getText({ selector, destination }) {
+  async getText({ selector, destination, selector_type='SINGLE',loop_through, select, order=1 }) {
+    console.log("🚀 ===== Workflow ===== getText ===== order:", order);
     console.log('===== GET TEXT =====');
-    // const el = await this.page.waitForSelector(selector);
-    const el = await this.page.$(selector);
+    let el=''
+    if(selector_type==='SINGLE'){
+       el = await this.page.waitForSelector(selector);
+    }else{
+      console.log('selector', `${loop_through}:nth-child(${order}) ${select}`)
+       el = await this.page.$(`${loop_through}:nth-child(${order}) ${select}`.replace('\'', "\""));
+    }
+    if(!el) return
     const text = await (await el.getProperty('textContent')).jsonValue();
+    console.log("🚀 ===== Workflow ===== getText ===== text:", text);
     const isVariable = destination?.VARIABLE?.selected;
     const isTable = destination?.TABLE?.selected;
     if (isTable) {
@@ -133,34 +141,37 @@ class Workflow {
         }
       }
     }
-    console.log('🚀 ===== Workflow ===== getText ===== text:', text);
-    return text;
+    // return text;
   }
 
-  async loop({ id, workflows }) {
-    for (const data of this.loopData[id]) {
-      for (let i = 0; i < workflows?.length; i++) {
-        const widget = workflows[i];
-        await this.handlers?.[widget?.key]({
-          ...widget,
-          sourceData: data,
-        });
+  async loop({ id, workflows, loop_through='CUSTOM_DATA' }) {
+    console.log("🚀 ===== Workflow ===== loop ===== workflows:", JSON.stringify(workflows, null, 2));
+    if(loop_through==='CUSTOM_DATA'){
+      for (const data of this.loopData[id]) {
+        for (let i = 0; i < workflows?.length; i++) {
+          const widget = workflows[i];
+          await this.handlers?.[widget?.key]({
+            ...widget,
+            sourceData: data,
+          });
+        }
+        await this.page.waitForTimeout(2000);
       }
-      await this.page.waitForTimeout(2000);
+    }else{
+      const {from, to}=this.loopData[id]
+      for(let i=parseInt(from,10);i<=parseInt(to,10);i++){
+        console.log("🚀 ===== Workflow ===== loop ===== i:", i);
+        for (let j = 0; j < workflows?.length; j++) {
+          const widget = workflows[j];
+          await this.handlers?.[widget?.key]({
+            ...widget,
+            order: i,
+          });
+        }
+        this.tableData=[]
+        // await this.page.waitForTimeout(2000);
+      }
     }
-    // const data = this.loopData[id]
-    // for(let i=0; i<data.length;i++){
-    //     for(let j=0;j<workflows?.length;j++){
-    //         const widget = workflows[j]
-    //         await this.handlers?.[widget?.key]({
-    //             ...widget,
-    //             sourceData:data,
-    //             template:'{{}}'
-
-    //         })
-    //     }
-    //     await this.page.waitForTimeout(2000)
-    // }
   }
 
   async breakLoop({ loopID }) {
@@ -171,7 +182,7 @@ class Workflow {
       [loopID]: brokenLoop?.data,
     };
     console.log('loopData', this.loopData);
-    this.loop({ id: loopID, workflows: brokenLoop.workflows });
+    this.loop({ id: loopID, workflows: brokenLoop.workflows, loop_through: brokenLoop.loop_through  });
     this.currentLoopId = null;
     this.loopControl.delete(loopID);
   }
@@ -196,8 +207,9 @@ class Workflow {
         await screenRecorder.start(savePath);
       } else if (widget?.key === 'loop-data') {
         this.loopControl.set(widget?.id, {
-          data: JSON.parse(widget?.data),
+          data: widget?.loop_through==='CUSTOM_DATA'? JSON.parse(widget?.data):widget?.numbers,
           workflows: [],
+          loop_through: widget?.loop_through,
         });
         this.currentLoopId = widget?.id;
       } else if (widget?.key === 'break-loop') {
