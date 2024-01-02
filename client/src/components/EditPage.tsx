@@ -14,8 +14,15 @@ function EditPage() {
     isFetching,
     refetch,
   } = useWorkflowByUUID({ uuid, options: {} });
-  const { setNodes, setEdges, setWorkflow, setUUID, setName, setDescription } =
-    useFlow((state: any) => state);
+  const {
+    setNodes,
+    setEdges,
+    setWorkflow,
+    setUUID,
+    setName,
+    setDescription,
+    setConnectTable,
+  } = useFlow((state: any) => state);
   useEffect(() => {
     if (workflow?.id) {
       setName(workflow?.name);
@@ -24,6 +31,7 @@ function EditPage() {
       setNodes(workflow?.config?.nodes);
       setEdges(workflow?.config?.edges);
       setWorkflow(workflow?.config?.nodes, workflow?.config?.edges);
+      setConnectTable(workflow?.table);
     }
   }, [workflow]);
   console.log('🚀 ===== EditPage ===== workflow:', workflow);

@@ -42,53 +42,28 @@ const prisma = new PrismaClient()
 //         name:"finish",
 //     }
 // ]
-const runWorkflows = async (workflows, res) => {
+const runWorkflows = async ({workflows, uuid}, res) => {
     try{
 
     console.log("🚀 ===== runWorkflows ===== workflows:", workflows);
-    // const browser = await puppeteer.launch({
-    //     headless: false
-    // });
-    // let page=null
-    // for(const item of workflows){
-    //     if(item?.key==='trigger'){
-    //         console.log('==== TRIGGER ====')
-    //         // const browser = await puppeteer.launch({
-    //         //     headless: false
-    //         // });
-    //         page = await browser.newPage();
-    //         await page.setViewport({width: 1920, height: 1080});
-    //     }else if(item?.key==='new-tab'){
-    //         console.log('==== NEW TAB ====')
-    //         await page.goto(item?.url)
-    //     }else if(item?.key==='form'){
-    //         console.log('=== form ===')
-    //         console.log("🚀 ===== runWorkflows ===== item:", item);
-    //           await page.type(item?.selector,item?.value);
-    //     } else if(item?.key==='event-click'){
-    //         console.log('=== CLICK ===')
-    //         console.log("🚀 ===== runWorkflows ===== item:", item);
-    //         const searchResultSelector =item?.selector;
-    //         await page.waitForSelector(searchResultSelector);
-    //         await page.click(searchResultSelector);
-    //     }else{
-    //         await browser.close()
-    //     }
-    // }
-    const workflow = new Workflow(workflows)
+    const workflow = new Workflow(uuid, workflows)
     workflow.run()
     }catch(error){
         console.log('error',error)
     }
 
 }
-app.post('/run', (req,res) => {
+app.post('/run/:uuid', (req,res) => {
     const body=req?.body
-    const data = body.map((item) => ({
+    const {uuid} = req?.params
+    const workflows = body.map((item) => ({
       ...item?.data,
       id: item?.id
     }))
-    runWorkflows(data,res)
+    runWorkflows({
+      uuid,
+      workflows
+    },res)
     return res.json({message:'connect oke'})
 })
 app.get('/loop', async(req,res) => {
@@ -127,13 +102,33 @@ app.post('/create', async(req,res) => {
 
   const body=req?.body
   console.log("🚀 ===== app.get ===== body:", body);
-  const workflows = await prisma.workflows.create({
+  const workflow = await prisma.workflows.create({
     data:{
-      ...body,
-      uuid: uuidv4()
-    }
+        ...body,
+        uuid: uuidv4(),
+      ...omit(body,['tableId']),
+    },
   })
-  return res.json(workflows)
+  if(body?.tableId){
+    await prisma.table.update({
+      where:{
+        id: body?.tableId,
+      },
+      data:{
+        workflows:{
+          connect: [
+            {
+              id:workflow?.id
+            }
+          ]
+        }
+      },
+      include:{
+        workflows:true
+      }
+    })
+  }
+  return res.json(workflow)
 })
 app.get('/workflows', async(req,res) => {
   const workflows = await prisma.workflows.findMany()
@@ -146,6 +141,13 @@ app.get('/workflow/:uuid', async(req,res) => {
   where: {
     uuid,
   },
+  include:{
+    table:{
+      include:{
+        columns:true
+      }
+    },
+  }
 })
   return res.json(workflow)
 })
@@ -313,6 +315,16 @@ app.get('/tables/:id/clear',async(req,res) => {
   }
 })
 
+app.get('/attribute', async(req,res) => {
+    const browser = await puppeteer.launch({
+        headless: false
+    });
+    const page = await browser.newPage();
+    await page.goto('https://app.smartr.vn')
+    const v = await page.$eval("#et-boc > div > div > div:nth-child(2) > div > div:nth-child(3) > div > div.et_pb_column.et_pb_column_1_2.et_pb_column_7.et_pb_css_mix_blend_mode_passthrough.et-last-child > div > span > img", element=> element.getAttribute("src"))
+    console.log("🚀 ===== app.get ===== t:", v);
+    return res.json({message:'connect oke'})
+})
 app.listen(3000, () => {
     console.log('url',process.env.DATABASE_URL)
    console.log('Server start at 3000') 

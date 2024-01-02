@@ -74,7 +74,7 @@ const convertFlow = ({ nodes, edges }: { nodes: any[]; edges: any[] }) => {
 const useFlow = create((set, get) => ({
   name: '',
   description: '',
-  tableId: null,
+  table: null,
   uuid: '',
   nodes: initialNodes,
   edges: [],
@@ -116,7 +116,7 @@ const useFlow = create((set, get) => ({
   },
   setName: (name: string) => set(() => ({ name })),
   setDescription: (description: string) => set(() => ({ description })),
-  setConnectTable: (tableId: number) => set(() => ({ tableId })),
+  setConnectTable: (table: any) => set(() => ({ table })),
   setUUID: (uuid: string) => set(() => ({ uuid })),
   updateNodeInformation: (data: any) => {
     console.log('🚀 ===== useFlow ===== data:', data);

@@ -8,11 +8,13 @@ const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 const { NODE_ENV } = process.env;
+const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
 
 class Workflow {
-  constructor(workflows) {
+  constructor(uuid, workflows) {
     this.browser = null;
     this.page = null;
+    this.uuid = uuid;
     this.workflows = workflows;
     this.handlers = {
       trigger: async (data) => await this.trigger(data),
@@ -26,6 +28,7 @@ class Workflow {
     this.loopControl = new Map();
     this.currentLoopId = null;
     this.tableData = [];
+    this.tableId = null;
   }
 
   async launch() {
@@ -36,6 +39,15 @@ class Workflow {
           }
         : {headless:'new'};
     this.browser = await puppeteer.launch(config);
+    const workflow = await prisma.workflows.findMany({
+      where:{
+        uuid:this.uuid
+      },
+      include:{
+        table:true
+      }
+    })
+    this.tableId = workflow[0].table.id
   }
 
   async close() {
@@ -105,7 +117,7 @@ class Workflow {
         const newRow = await prisma.row.create({
           data: {
             data: newData,
-            tableId: parseInt(3, 10),
+            tableId: parseInt(this.tableId, 10),
           },
         });
         console.log('🚀 ===== Workflow ===== getText ===== newRow:', newRow);
@@ -134,7 +146,7 @@ class Workflow {
           const newRow = await prisma.row.create({
             data: {
               data: newData,
-              tableId: parseInt(3, 10),
+              tableId: parseInt(this.tableId, 10),
             },
           });
           console.log('🚀 ===== Workflow ===== getText ===== newRow:', newRow);
@@ -146,32 +158,39 @@ class Workflow {
   }
 
   async loop({ id, workflows, loop_through='CUSTOM_DATA' }) {
-    console.log("🚀 ===== Workflow ===== loop ===== workflows:", JSON.stringify(workflows, null, 2));
-    if(loop_through==='CUSTOM_DATA'){
-      for (const data of this.loopData[id]) {
-        for (let i = 0; i < workflows?.length; i++) {
-          const widget = workflows[i];
-          await this.handlers?.[widget?.key]({
-            ...widget,
-            sourceData: data,
-          });
+    try{
+      console.log("🚀 ===== Workflow ===== loop ===== workflows:", JSON.stringify(workflows, null, 2));
+      if(loop_through==='CUSTOM_DATA'){
+        for (const data of this.loopData[id]) {
+          for (let i = 0; i < workflows?.length; i++) {
+            const widget = workflows[i];
+            await this.handlers?.[widget?.key]({
+              ...widget,
+              sourceData: data,
+            });
+          }
+          await this.page.waitForTimeout(2000);
         }
-        await this.page.waitForTimeout(2000);
-      }
-    }else{
-      const {from, to}=this.loopData[id]
-      for(let i=parseInt(from,10);i<=parseInt(to,10);i++){
-        console.log("🚀 ===== Workflow ===== loop ===== i:", i);
-        for (let j = 0; j < workflows?.length; j++) {
-          const widget = workflows[j];
-          await this.handlers?.[widget?.key]({
-            ...widget,
-            order: i,
-          });
+      }else{
+        const {from, to}=this.loopData[id]
+        console.log("🚀 ===== Workflow ===== loop ===== from:", from);
+        console.log("🚀 ===== Workflow ===== loop ===== to:", to);
+        for(let i=parseInt(from,10);i<=parseInt(to,10);i++){
+          console.log("🚀 ===== Workflow ===== loop ===== i:", i);
+          for (let j = 0; j < workflows?.length; j++) {
+            const widget = workflows[j];
+            await this.handlers?.[widget?.key]({
+              ...widget,
+              order: i,
+            });
+          }
+          this.tableData=[]
+          await sleep(2000)
+          // await this.page.waitForTimeout(2000);
         }
-        this.tableData=[]
-        // await this.page.waitForTimeout(2000);
       }
+    }catch(error){
+      console.log("🚀 ===== Workflow ===== loop ===== error:", error);
     }
   }
 
@@ -183,9 +202,9 @@ class Workflow {
       [loopID]: brokenLoop?.data,
     };
     console.log('loopData', this.loopData);
-    this.loop({ id: loopID, workflows: brokenLoop.workflows, loop_through: brokenLoop.loop_through  });
+    await this.loop({ id: loopID, workflows: brokenLoop.workflows, loop_through: brokenLoop.loop_through  });
     this.currentLoopId = null;
-    this.loopControl.delete(loopID);
+    await this.loopControl.delete(loopID);
   }
 
   async run() {
@@ -214,7 +233,7 @@ class Workflow {
         });
         this.currentLoopId = widget?.id;
       } else if (widget?.key === 'break-loop') {
-        this.breakLoop(widget);
+        await this.breakLoop(widget);
       } else {
         if (this.loopControl.size === 0) {
           await this.handlers?.[widget?.key](widget);

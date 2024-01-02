@@ -106,7 +106,7 @@ function Menu() {
   // const setName = useFlow((state: any) => state.setName);
   // const setDescription = useFlow((state: any) => state.setDescription);
   const { data: tables, isLoading, refetch } = useTables({ options: {} });
-  const { setName, setDescription, setConnectTable, name, description } =
+  const { setName, setDescription, setConnectTable, name, description, table } =
     useFlow((state) => state) as {
       setName: (value: string) => void;
       setDescription: (value: string) => void;
@@ -115,7 +115,7 @@ function Menu() {
     };
   const handleChangeName = (value: string) => setName(value);
   const handleChangeDescription = (value: string) => setDescription(value);
-  const handleChangeTable = (id: number) => setConnectTable(id);
+  const handleChangeTable = (table: any) => setConnectTable(table);
   return (
     <Stack direction="column" spacing={2} sx={{ height: '100vh' }}>
       <Box>
@@ -140,7 +140,11 @@ function Menu() {
           options={tables || []}
           renderInput={(params) => <TextField {...params} />}
           getOptionLabel={(option) => option?.name}
-          onChange={(e, value) => handleChangeTable(value?.id)}
+          onChange={(e, value) => handleChangeTable(value)}
+          value={tables?.find((t) => t.id === table?.id) || null}
+          isOptionEqualToValue={(option, value) =>
+            option?.id?.toString() === value?.id?.toString()
+          }
         />
       </Box>
       <SimpleBar

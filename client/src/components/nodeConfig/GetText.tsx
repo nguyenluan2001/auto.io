@@ -60,6 +60,8 @@ function GetText({
       select: '',
     },
   });
+  const columns = useFlow((state: any) => state?.table?.columns);
+  console.log('🚀 ===== columns:', columns);
   useEffect(() => {
     setValue('selector', selector);
     setValue('destination', destination);
@@ -70,6 +72,7 @@ function GetText({
   useEffect(() => {
     setValues(watch());
   }, [setValues, watch()]);
+  console.log('watch', watch());
   const handleChangeDestination = (
     e: any,
     onChange: (value: any) => void,
@@ -181,15 +184,26 @@ function GetText({
               />
               {destinationVal?.TABLE?.selected && (
                 <Autocomplete
-                  options={['title', 'sub_title']}
+                  getOptionLabel={(option) => option?.name}
+                  options={columns || []}
                   renderInput={(params) => (
                     <TextField {...params} label="Column" />
                   )}
                   onChange={(
                     event: SyntheticEvent<Element, Event>,
                     value: string | null
-                  ) => handleChangeTableColumn(value, onChange, destinationVal)}
-                  value={destinationVal.TABLE.column}
+                  ) =>
+                    handleChangeTableColumn(
+                      value?.name,
+                      onChange,
+                      destinationVal
+                    )
+                  }
+                  value={
+                    columns?.find(
+                      (column) => column?.name === destinationVal?.TABLE?.column
+                    ) || null
+                  }
                 />
               )}
             </RadioGroup>
