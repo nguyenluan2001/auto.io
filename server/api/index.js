@@ -15,33 +15,6 @@ app.use(cors())
 app.use(express.json())
 const prisma = new PrismaClient()
 
-
-// const workflows = [
-//     {
-//         id:1,
-//         name:"trigger"
-//     },
-//     {
-//         id:2,
-//         name:"new-tab",
-//         url:"https://google.com"
-//     },
-//     {
-//         id:2,
-//         name:"form",
-//         selector:"#APjFqb",
-//         value:"Puppeteer"
-//     },
-//     {
-//         id:3,
-//         name:"event-click",
-//         selector:"body > div.L3eUgb > div.o3j99.ikrT4e.om7nvf > form > div:nth-child(1) > div.A8SBwf > div.FPdoLc.lJ9FBc > center > input.gNO89b"
-//     },
-//     {
-//         id:4,
-//         name:"finish",
-//     }
-// ]
 const runWorkflows = async ({workflows, uuid}, res) => {
     try{
 
@@ -321,7 +294,7 @@ app.get('/attribute', async(req,res) => {
     });
     const page = await browser.newPage();
     await page.goto('https://app.smartr.vn')
-    const v = await page.$eval("#et-boc > div > div > div:nth-child(2) > div > div:nth-child(3) > div > div.et_pb_column.et_pb_column_1_2.et_pb_column_7.et_pb_css_mix_blend_mode_passthrough.et-last-child > div > span > img", element=> element.getAttribute("src"))
+    const v = await page.$eval("#radix-\:Reckt36\:-content-personalized > div > article:nth-child(1) > section.flex.flex-col.gap-2.sm\:gap-4 > div.flex.flex-col.gap-4.md\:gap-5.w-full > div > div.w-full.rounded-xl.md\:rounded-lg.bg-gray-100.dark\:bg-gray-900.relative.cursor-pointer.md\:basis-\[180px\].md\:h-\[108px\].md\:shrink-0 > div.hidden.md\:block.w-full.h-full > a > span > img", element=> element.getAttribute("src"))
     console.log("🚀 ===== app.get ===== t:", v);
     return res.json({message:'connect oke'})
 })

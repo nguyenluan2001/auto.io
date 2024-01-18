@@ -7,6 +7,7 @@ import formatText from '@iconify/icons-mdi/format-text';
 import autorenewIcon from '@iconify/icons-mdi/autorenew';
 import stopCircleOutline from '@iconify/icons-mdi/stop-circle-outline';
 import repeatVariant from '@iconify/icons-mdi/repeat-variant';
+import codeBrackets from '@iconify/icons-mdi/code-brackets';
 
 import { Icon } from '@iconify/react';
 
@@ -78,6 +79,12 @@ const groups = {
       title: 'Get Text',
       key: 'get-text',
       icon: <Icon icon={formatText} />,
+    },
+    {
+      id: 4,
+      title: 'Get Attribute',
+      key: 'get-attribute',
+      icon: <Icon icon={codeBrackets} />,
     },
   ],
   Control_flow: [

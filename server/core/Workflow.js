@@ -22,6 +22,7 @@ class Workflow {
       form: async (data) => await this.form(data),
       'event-click': async (data) => await this.eventClick(data),
       'get-text': async (data) => await this.getText(data),
+      'get-attribute': async (data) => await this.getAttribute(data),
       'loop-data': async (data) => await this.loop(data),
     };
     this.loopData = {};
@@ -106,6 +107,71 @@ class Workflow {
     if(!el) return
     const text = await (await el.getProperty('textContent')).jsonValue();
     console.log("🚀 ===== Workflow ===== getText ===== text:", text);
+    const isVariable = destination?.VARIABLE?.selected;
+    const isTable = destination?.TABLE?.selected;
+    if (isTable) {
+      const column = destination?.TABLE?.column;
+      if (isEmpty(this.tableData)) {
+        const newData = {
+          [column]: text,
+        };
+        const newRow = await prisma.row.create({
+          data: {
+            data: newData,
+            tableId: parseInt(this.tableId, 10),
+          },
+        });
+        console.log('🚀 ===== Workflow ===== getText ===== newRow:', newRow);
+        this.tableData.push(newRow);
+      } else {
+        const lastRow = last(this.tableData);
+        const len = this.tableData.length;
+        if (!has(lastRow, column)) {
+          const newData = {
+            ...lastRow.data,
+            [column]: text,
+          };
+          const newRow = await prisma.row.update({
+            where: {
+              id: lastRow?.id,
+            },
+            data: {
+              data: newData,
+            },
+          });
+          this.tableData[len - 1] = newRow;
+        } else {
+          const newData = {
+            [column]: text,
+          };
+          const newRow = await prisma.row.create({
+            data: {
+              data: newData,
+              tableId: parseInt(this.tableId, 10),
+            },
+          });
+          console.log('🚀 ===== Workflow ===== getText ===== newRow:', newRow);
+          this.tableData.push(newRow);
+        }
+      }
+    }
+    // return text;
+  }
+
+  async getAttribute({ selector, destination, selector_type='SINGLE',loop_through, select, order=1, attribute }) {
+    console.log("🚀 ===== Workflow ===== getAttribute ===== selector:", selector);
+    console.log('===== GET ATTRIBUTE =====');
+    let text=''
+    if(selector_type==='SINGLE'){
+      text = await this.page.$eval(selector, (element, attribute)=>  
+         element.getAttribute(attribute)
+      , attribute)
+    }else{
+      text = await this.page.$eval( `${loop_through}:nth-child(${order}) ${select}`, (element, attribute)=>  
+         element.getAttribute(attribute)
+      , attribute)
+    }
+    if(!text) return
     const isVariable = destination?.VARIABLE?.selected;
     const isTable = destination?.TABLE?.selected;
     if (isTable) {

@@ -9,6 +9,7 @@ import formatText from '@iconify/icons-mdi/format-text';
 import autorenewIcon from '@iconify/icons-mdi/autorenew';
 import stopCircleOutline from '@iconify/icons-mdi/stop-circle-outline';
 import repeatVariant from '@iconify/icons-mdi/repeat-variant';
+import codeBrackets from '@iconify/icons-mdi/code-brackets';
 import React from 'react';
 
 type Params = {
@@ -156,6 +157,21 @@ const generateNode = ({ type, position }: Params) => {
           description: '',
           url: '',
           icon: React.createElement(Icon, { icon: repeatVariant }),
+          // numOfHandler: 2,
+        },
+        position,
+        type: 'customNode',
+      };
+    }
+    case 'get-attribute': {
+      return {
+        id: uuidv4(),
+        data: {
+          title: 'Get Attribute',
+          key: 'get-attribute',
+          description: '',
+          url: '',
+          icon: React.createElement(Icon, { icon: codeBrackets }),
           // numOfHandler: 2,
         },
         position,
