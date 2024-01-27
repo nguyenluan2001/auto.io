@@ -48,7 +48,9 @@ class Workflow {
         table:true
       }
     })
-    this.tableId = workflow[0].table.id
+    if(workflow?.[0]?.table?.id){
+      this.tableId = workflow[0]?.table?.id
+    }
   }
 
   async close() {
