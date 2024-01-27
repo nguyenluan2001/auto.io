@@ -10,6 +10,9 @@ import deleteOutline from '@iconify/icons-mdi/delete-outline';
 import React from 'react';
 import {
   Box,
+  Card,
+  CardContent,
+  CardHeader,
   Grid,
   IconButton,
   ListItemIcon,
@@ -21,7 +24,7 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
-import { Link } from 'react-router-dom';
+import { Link, NavLink, useNavigate } from 'react-router-dom';
 import { Workflow } from 'models/Workflow';
 
 type Props = {
@@ -29,36 +32,38 @@ type Props = {
 };
 function WorkflowItem({ workflow }: Props) {
   return (
-    <Grid item md={3} sx={{ minHeight: '100px' }}>
+    <Grid
+      item
+      md={3}
+      sx={{ height: 'auto', '& a': { textDecoration: 'none' } }}
+    >
       <Link to={`/workflow/${workflow?.uuid}`}>
-        <Box
-          sx={{
-            width: '100%',
-            border: '1px solid black',
-            p: 1,
-            boxSizing: 'border-box',
-          }}
-        >
-          <Stack
-            direction="row"
-            justifyContent="space-between"
-            alignItems="center"
-          >
-            <Icon icon={earthIcon} />
-            <Stack
-              direction="row"
-              justifyContent="space-between"
-              alignItems="center"
+        <Card sx={{ height: '100%', cursor: 'pointer' }}>
+          <CardHeader
+            title={
+              <Stack direction="row" spacing={1} alignItems="center">
+                <Icon icon={earthIcon} />
+                <Typography
+                  variant="h6"
+                  sx={{ fontWeight: 600, textDecoration: 'none' }}
+                >
+                  {workflow?.name}
+                </Typography>
+              </Stack>
+            }
+            action={<MoreMenu />}
+          />
+          <CardContent>
+            <Box
+              sx={{
+                width: '100%',
+                p: 1,
+              }}
             >
-              <IconButton>
-                <Icon icon={playIcon} />
-              </IconButton>
-              <MoreMenu />
-            </Stack>
-          </Stack>
-          <Typography variant="h5">{workflow?.name}</Typography>
-          <Typography variant="body1">{workflow?.description}</Typography>
-        </Box>
+              <Typography variant="body1">{workflow?.description}</Typography>
+            </Box>
+          </CardContent>
+        </Card>
       </Link>
     </Grid>
   );
@@ -67,17 +72,24 @@ function MoreMenu() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+    event.preventDefault();
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
     setAnchorEl(null);
   };
   return (
-    <>
+    <Box onClick={(e) => e.preventDefault()}>
       <IconButton onClick={handleClick}>
         <Icon icon={dotsHorizontal} />
       </IconButton>
       <Menu anchorEl={anchorEl} open={open} onClose={handleClose}>
+        <MenuItem>
+          <ListItemIcon>
+            <Icon icon={playIcon} />
+          </ListItemIcon>
+          <ListItemText>Run</ListItemText>
+        </MenuItem>
         <MenuItem>
           <ListItemIcon>
             <Icon icon={pencilOutline} />
@@ -103,7 +115,7 @@ function MoreMenu() {
           <ListItemText>Delete</ListItemText>
         </MenuItem>
       </Menu>
-    </>
+    </Box>
   );
 }
 

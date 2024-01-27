@@ -1,5 +1,5 @@
 import { EventHandler, useEffect } from 'react';
-import { Controller, FieldValues, useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { Button, TextField } from '@mui/material';
 import { useFlow } from '@/store/flow';
 import { CustomTextArea } from '../common/styled';
@@ -9,9 +9,12 @@ type Props = {
   loopID: string;
   setValues: (values: FieldValues) => void;
 };
+type FieldValues = {
+  loopID: string;
+};
 
 function BreakLoop({ loopID, setValues }: Props) {
-  const { control, setValue, watch } = useForm({
+  const { control, setValue, watch } = useForm<FieldValues>({
     defaultValues: {
       loopID: '',
     },

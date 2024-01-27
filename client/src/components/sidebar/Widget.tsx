@@ -1,3 +1,4 @@
+import { Icon } from '@iconify/react';
 import { Box, Grid, Stack, Typography } from '@mui/material';
 import React from 'react';
 import { NodeTypes } from 'reactflow';
@@ -20,7 +21,9 @@ function Widget({ widget }: Props) {
         onDragStart={(event) => onDragStart(event, widget?.key)}
         draggable
       >
-        <Box>{widget?.icon}</Box>
+        <Box>
+          <Icon icon={widget?.icon} />
+        </Box>
         <Typography>{widget?.title}</Typography>
       </Stack>
     </Grid>

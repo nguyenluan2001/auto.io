@@ -6,5 +6,6 @@ const CustomTextArea = styled(TextareaAutosize)(() => ({
   width: '100%',
   padding: '8px',
   boxSizing: 'border-box',
+  resize: 'vertical',
 }));
 export { CustomTextArea };

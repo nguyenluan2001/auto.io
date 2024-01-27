@@ -36,7 +36,7 @@ function CustomNode(node: Node) {
     </Box>
   );
 }
-function RenderHandler({ num }) {
+function RenderHandler({ num }: { num: number }) {
   if (num === 1) {
     return <Handle type="source" position={Position.Right} id="a" />;
   }

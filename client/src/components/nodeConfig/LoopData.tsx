@@ -1,5 +1,5 @@
 import { EventHandler, useEffect } from 'react';
-import { Controller, FieldValues, useForm } from 'react-hook-form';
+import { Control, Controller, useForm } from 'react-hook-form';
 import { Autocomplete, Button, Stack, TextField } from '@mui/material';
 import { useFlow } from '@/store/flow';
 import { CustomTextArea } from '../common/styled';
@@ -9,6 +9,18 @@ type Props = {
   loop_through: string;
   data: string;
   setValues: (values: FieldValues) => void;
+  numbers: {
+    from: number;
+    to: number;
+  };
+};
+type FieldValues = {
+  loop_through: string;
+  data: string;
+  numbers: {
+    from: number;
+    to: number;
+  };
 };
 const LOOP_THROUGH = [
   {
@@ -22,10 +34,14 @@ const LOOP_THROUGH = [
 ];
 
 function LoopData({ loop_through, data, numbers, setValues }: Props) {
-  const { control, setValue, watch } = useForm({
+  const { control, setValue, watch } = useForm<FieldValues>({
     defaultValues: {
       loop_through: '',
       data: '',
+      numbers: {
+        from: 0,
+        to: 0,
+      },
     },
   });
 
@@ -64,7 +80,7 @@ function LoopData({ loop_through, data, numbers, setValues }: Props) {
     </Stack>
   );
 }
-function NumberSection({ control }) {
+function NumberSection({ control }: { control: Control<FieldValues> }) {
   return (
     <Stack direction="row" spacing={2}>
       <Controller
@@ -78,19 +94,13 @@ function NumberSection({ control }) {
         control={control}
         name="numbers.to"
         render={({ field }) => (
-          <TextField
-            label="To number"
-            min={1}
-            fullWidth
-            {...field}
-            type="number"
-          />
+          <TextField label="To number" fullWidth {...field} type="number" />
         )}
       />
     </Stack>
   );
 }
-function CustomDataSection({ control }) {
+function CustomDataSection({ control }: { control: Control<FieldValues> }) {
   return (
     <Controller
       control={control}

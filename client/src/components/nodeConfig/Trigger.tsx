@@ -1,7 +1,3 @@
-import React from 'react';
-
-function Trigger() {
-  return <div>Trigger</div>;
-}
+function Trigger() {}
 
 export default Trigger;

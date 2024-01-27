@@ -1,12 +1,9 @@
-import React, { Component, FunctionComponent, ReactElement } from 'react';
-import { Box, IconButton, Stack, Typography } from '@mui/material';
 import chevronLeft from '@iconify/icons-mdi/chevron-left';
 import { Icon } from '@iconify/react';
+import { Box, IconButton, Stack, Typography } from '@mui/material';
 import { useFlow } from '@/store/flow';
-import { config } from '@/utils/nodeConfig';
-import Menu from './Menu';
-import { EditForm } from './EditForm';
-import MainSidebar from './MainSidebar';
+import EditWidgetForm from './EditWidgetForm';
+import EditWorkflowForm from './EditWorkflowForm';
 
 function Sidebar() {
   const selectedNode = useFlow((state: any) => state.selectedNode);
@@ -23,8 +20,8 @@ function Sidebar() {
             <Typography variant="h6">{selectedNode?.data?.title}</Typography>
           </Stack>
         )}
-        {!selectedNode && <Menu />}
-        {selectedNode && <EditForm />}
+        {!selectedNode && <EditWorkflowForm />}
+        {selectedNode && <EditWidgetForm />}
       </Box>
     </Stack>
   );

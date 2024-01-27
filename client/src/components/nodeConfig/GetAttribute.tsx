@@ -1,5 +1,5 @@
 import { EventHandler, SyntheticEvent, useEffect } from 'react';
-import { Controller, FieldValues, useForm } from 'react-hook-form';
+import { Control, Controller, useForm } from 'react-hook-form';
 import {
   Autocomplete,
   Box,
@@ -15,6 +15,7 @@ import {
   Typography,
 } from '@mui/material';
 import { set } from 'lodash';
+import { Column } from 'models/Table';
 import { useFlow } from '@/store/flow';
 import { CustomTextArea } from '../common/styled';
 
@@ -32,6 +33,26 @@ type Props = {
   };
   selector_type: string;
   setValues: (values: FieldValues) => void;
+  loop_through: string;
+  select: string;
+  attribute: string;
+};
+type FieldValues = {
+  selector: string;
+  destination: {
+    VARIABLE: {
+      selected: boolean;
+      variable_name: string;
+    };
+    TABLE: {
+      selected: boolean;
+      column: string;
+    };
+  };
+  selector_type: string;
+  loop_through: string;
+  select: string;
+  attribute: string;
 };
 
 function GetAttribute({
@@ -43,7 +64,7 @@ function GetAttribute({
   attribute,
   setValues,
 }: Props) {
-  const { control, setValue, watch } = useForm({
+  const { control, setValue, watch } = useForm<FieldValues>({
     defaultValues: {
       selector: '',
       destination: {
@@ -62,7 +83,7 @@ function GetAttribute({
       attribute: '',
     },
   });
-  const columns = useFlow((state: any) => state?.table?.columns);
+  const columns = useFlow((state: any) => state?.table?.columns) as Column[];
   console.log('🚀 ===== columns:', columns);
   useEffect(() => {
     setValue('selector', selector);
@@ -128,7 +149,7 @@ function GetAttribute({
             renderInput={(params) => (
               <TextField label="Selector type" {...params} />
             )}
-            onChange={(e, _value) => onChange(_value.value)}
+            onChange={(e, _value) => onChange(_value?.value)}
             value={SELECTOR_TYPE.find((item) => item.value === value)}
           />
         )}
@@ -204,10 +225,10 @@ function GetAttribute({
                   )}
                   onChange={(
                     event: SyntheticEvent<Element, Event>,
-                    value: string | null
+                    value: Column | null
                   ) =>
                     handleChangeTableColumn(
-                      value?.name,
+                      value?.name as string,
                       onChange,
                       destinationVal
                     )
@@ -226,7 +247,7 @@ function GetAttribute({
     </div>
   );
 }
-function SingleSelector({ control }) {
+function SingleSelector({ control }: { control: Control<FieldValues> }) {
   return (
     <Box>
       <Typography>CSS Selector</Typography>
@@ -240,7 +261,7 @@ function SingleSelector({ control }) {
     </Box>
   );
 }
-function LoopingSelector({ control }) {
+function LoopingSelector({ control }: { control: Control<FieldValues> }) {
   return (
     <Stack>
       <Box>

@@ -5,7 +5,10 @@ import MainSidebar from './sidebar/MainSidebar';
 
 function Layout() {
   return (
-    <Stack direction="row" sx={{ width: '100vw', height: '100vh' }}>
+    <Stack
+      direction="row"
+      sx={{ width: '100vw', height: '100vh', background: '#f1f2f3' }}
+    >
       <MainSidebar />
       <Outlet />
     </Stack>

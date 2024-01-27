@@ -10,11 +10,11 @@ import { Icon } from '@iconify/react';
 import Widget from './Widget';
 
 type Props = {
-  label: string;
+  title: string;
   widgets: any;
 };
 
-function Group({ label, widgets }: Props) {
+function Group({ title, widgets }: Props) {
   return (
     <Accordion disableGutters>
       <AccordionSummary
@@ -22,7 +22,7 @@ function Group({ label, widgets }: Props) {
         aria-controls="panel1a-content"
         id="panel1a-header"
       >
-        <Typography sx={{ fontWeight: '900' }}>{label}</Typography>
+        <Typography sx={{ fontWeight: '900' }}>{title}</Typography>
       </AccordionSummary>
       <AccordionDetails>
         <Grid container rowSpacing={2} columnSpacing={{ sm: 2, md: 2 }}>

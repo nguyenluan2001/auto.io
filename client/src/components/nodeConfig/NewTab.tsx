@@ -1,4 +1,4 @@
-import { Controller, FieldValues, useForm } from 'react-hook-form';
+import { Controller, useForm } from 'react-hook-form';
 import { Box, Button, TextField, Typography } from '@mui/material';
 import { useEffect } from 'react';
 import { useFlow } from '@/store/flow';
@@ -8,9 +8,11 @@ type Props = {
   url: string;
   setValues: (params: FieldValues) => void;
 };
-
+type FieldValues = {
+  url: string;
+};
 function NewTab({ url, setValues }: Props) {
-  const { control, handleSubmit, setValue, watch } = useForm({
+  const { control, handleSubmit, setValue, watch } = useForm<FieldValues>({
     defaultValues: {
       url: '',
     },

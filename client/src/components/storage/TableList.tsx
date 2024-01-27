@@ -28,6 +28,8 @@ import dotsHorizontalCircleOutline from '@iconify/icons-mdi/dots-horizontal-circ
 import { Icon } from '@iconify/react';
 import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { enqueueSnackbar } from 'notistack';
+import { Table as TableType } from 'models/Table';
+import { ClickEvent } from 'models/Event';
 import { axiosInstance } from '@/utils/axios';
 import { useTables } from '@/hooks/useTables';
 import { useTableById } from '@/hooks/useTable';
@@ -36,15 +38,18 @@ type ListingProps = {
   tables: any;
   refetch: () => void;
   isLoading: boolean;
+  setSelectedTable: (tableData: TableType) => void;
 };
 type TableItemProps = {
   table: any;
   refetch: () => void;
+  setSelectedTable: (tableData: TableType) => void;
 };
 type DialogAddTableProps = {
   open: boolean;
   handleToggleDialog: () => void;
   refetch: () => void;
+  initialData: TableType | null;
 };
 type ColumnItemProps = {
   column: Record<string, string>;
@@ -68,7 +73,7 @@ function DialogAddTable({
   initialData,
 }: DialogAddTableProps) {
   console.log('🚀 ===== initialData:', initialData);
-  const { control, handleSubmit, watch, setValue } = useForm({
+  const { control, handleSubmit, watch, setValue } = useForm<TableType>({
     defaultValues: {
       name: '',
       columns: [],
@@ -169,13 +174,13 @@ function DialogAddTable({
 }
 function TableItem({ table, refetch, setSelectedTable }: TableItemProps) {
   const [isOpenDialogDetail, setIsOpenDialogDetail] = useState(false);
-  const [anchorEl, setAnchorEl] = React.useState(null);
+  const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const open = Boolean(anchorEl);
-  const handleClick = (event) => {
+  const handleClick = (event: ClickEvent) => {
     event.stopPropagation();
     setAnchorEl(event.currentTarget);
   };
-  const handleClose = (e) => {
+  const handleClose = (e: ClickEvent) => {
     e.stopPropagation();
     setAnchorEl(null);
   };
@@ -184,7 +189,7 @@ function TableItem({ table, refetch, setSelectedTable }: TableItemProps) {
     await axiosInstance.delete(`/tables/${table?.id}`);
     refetch();
   };
-  const handleClickEdit = (e) => {
+  const handleClickEdit = (e: ClickEvent) => {
     e.stopPropagation();
     setSelectedTable(table);
   };
@@ -388,7 +393,7 @@ function TableData({ columns, rows }: TableDataProps) {
 function TableList() {
   const [isOpenDialog, setIsOpenDialog] = useState<boolean>(false);
   const { data: tables, isLoading, refetch } = useTables({ options: {} });
-  const [selectedTable, setSelectedTable] = useState(null);
+  const [selectedTable, setSelectedTable] = useState<TableType | null>(null);
   const handleToggleDialog = () => {
     setSelectedTable(null);
     setIsOpenDialog((pre) => !pre);

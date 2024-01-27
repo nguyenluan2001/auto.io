@@ -1,4 +1,5 @@
 import { Edge, Node } from 'reactflow';
+import { Table } from './Table';
 
 type Workflow = {
   id: string;
@@ -10,6 +11,7 @@ type Workflow = {
   nodes?: Node[];
   edges?: Edge[];
   flows: any;
+  table: Table;
 };
 
 export type { Workflow };

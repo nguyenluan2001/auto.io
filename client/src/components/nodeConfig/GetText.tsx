@@ -1,21 +1,21 @@
-import { EventHandler, SyntheticEvent, useEffect } from 'react';
-import { Controller, FieldValues, useForm } from 'react-hook-form';
 import {
   Autocomplete,
   Box,
-  Button,
   Checkbox,
+  Divider,
   FormControl,
   FormControlLabel,
-  FormLabel,
-  Radio,
   RadioGroup,
   Stack,
-  TextField,
-  Typography,
 } from '@mui/material';
 import { set } from 'lodash';
+import { SyntheticEvent, useEffect } from 'react';
+import { Control, Controller, UseFormProps, useForm } from 'react-hook-form';
+import { InputEvent } from 'models/Event';
+import { Column, Table } from 'models/Table';
 import { useFlow } from '@/store/flow';
+import CustomTextField from '../common/CustomTextField';
+import FieldTitle from '../common/FieldTitle';
 import { CustomTextArea } from '../common/styled';
 
 type Props = {
@@ -32,6 +32,24 @@ type Props = {
   };
   selector_type: string;
   setValues: (values: FieldValues) => void;
+  loop_through: string;
+  select: string;
+};
+type FieldValues = {
+  selector: string;
+  destination: {
+    VARIABLE: {
+      selected: boolean;
+      variable_name: string;
+    };
+    TABLE: {
+      selected: boolean;
+      column: string;
+    };
+  };
+  selector_type: string;
+  loop_through: string;
+  select: string;
 };
 
 function GetText({
@@ -42,7 +60,7 @@ function GetText({
   select,
   setValues,
 }: Props) {
-  const { control, setValue, watch } = useForm({
+  const { control, setValue, watch } = useForm<FieldValues>({
     defaultValues: {
       selector: '',
       destination: {
@@ -61,37 +79,35 @@ function GetText({
     },
   });
   const columns = useFlow((state: any) => state?.table?.columns);
-  console.log('🚀 ===== columns:', columns);
   useEffect(() => {
     setValue('selector', selector);
     setValue('destination', destination);
-    setValue('selector_type', selector_type);
+    setValue('selector_type', selector_type || 'SINGLE');
     setValue('loop_through', loop_through);
     setValue('select', select);
   }, [selector, destination, selector_type, loop_through, select, setValue]);
   useEffect(() => {
     setValues(watch());
   }, [setValues, watch()]);
-  console.log('watch', watch());
   const handleChangeDestination = (
-    e: any,
+    e: InputEvent,
     onChange: (value: any) => void,
     values: any
   ) => {
     const newValue = {
       ...values,
       [e.target.name]: {
-        selected: e.target.checked,
+        selected: (e.target as HTMLInputElement).checked,
       },
     };
     onChange(newValue);
   };
   const handleChangeVariableName = (
-    e: any,
-    onChange: (value: any) => void,
+    e: InputEvent,
+    onChange: (value: string) => void,
     values: any
   ) => {
-    const { value } = e.target;
+    const { value } = e.target as HTMLInputElement;
     const newValues = set({ ...values }, 'VARIABLE.variable_name', value);
     onChange(newValues);
   };
@@ -114,20 +130,21 @@ function GetText({
     },
   ];
   return (
-    <div>
+    <Stack direction="column" spacing={2}>
       <Controller
         control={control}
         name="selector_type"
         render={({ field: { onChange, value } }) => (
-          <Autocomplete
-            options={SELECTOR_TYPE}
-            getOptionLabel={(option) => option.label}
-            renderInput={(params) => (
-              <TextField label="Selector type" {...params} />
-            )}
-            onChange={(e, _value) => onChange(_value.value)}
-            value={SELECTOR_TYPE.find((item) => item.value === value)}
-          />
+          <Box>
+            <FieldTitle title="Selector type" />
+            <Autocomplete
+              options={SELECTOR_TYPE}
+              getOptionLabel={(option) => option?.label}
+              renderInput={(params) => <CustomTextField {...params} />}
+              onChange={(e, _value) => onChange(_value?.value)}
+              value={SELECTOR_TYPE.find((item) => item.value === value)}
+            />
+          </Box>
         )}
       />
       {watch('selector_type') === 'SINGLE' && (
@@ -136,6 +153,7 @@ function GetText({
       {watch('selector_type') === 'LOOPING' && (
         <LoopingSelector control={control} />
       )}
+      <Divider orientation="horizontal" />
       <Controller
         control={control}
         name="destination"
@@ -161,10 +179,10 @@ function GetText({
                 label="Assign to variable"
               />
               {destinationVal?.VARIABLE?.selected && (
-                <TextField
+                <CustomTextField
                   placeholder="Variable name"
                   value={destinationVal.VARIABLE.variable_name}
-                  onChange={(e) =>
+                  onChange={(e: InputEvent) =>
                     handleChangeVariableName(e, onChange, destinationVal)
                   }
                 />
@@ -187,11 +205,11 @@ function GetText({
                   getOptionLabel={(option) => option?.name}
                   options={columns || []}
                   renderInput={(params) => (
-                    <TextField {...params} label="Column" />
+                    <CustomTextField {...params} label="Column" />
                   )}
                   onChange={(
                     event: SyntheticEvent<Element, Event>,
-                    value: string | null
+                    value: Table
                   ) =>
                     handleChangeTableColumn(
                       value?.name,
@@ -201,7 +219,8 @@ function GetText({
                   }
                   value={
                     columns?.find(
-                      (column) => column?.name === destinationVal?.TABLE?.column
+                      (column: Column) =>
+                        column?.name === destinationVal?.TABLE?.column
                     ) || null
                   }
                 />
@@ -210,41 +229,44 @@ function GetText({
           </FormControl>
         )}
       />
-    </div>
+    </Stack>
   );
 }
-function SingleSelector({ control }) {
+function SingleSelector({ control }: { control: Control<FieldValues> }) {
   return (
     <Controller
       control={control}
       name="selector"
       render={({ field }) => (
-        <CustomTextArea minRows={5} {...field} placeholder="CSS Selector" />
+        <Box>
+          <FieldTitle title="Element Selector" />
+          <CustomTextArea minRows={5} {...field} />
+        </Box>
       )}
     />
   );
 }
-function LoopingSelector({ control }) {
+function LoopingSelector({ control }: { control: Control<FieldValues> }) {
   return (
     <Stack>
       <Box>
-        <Typography>Loop through</Typography>
+        <FieldTitle title="Loop through" />
         <Controller
           control={control}
           name="loop_through"
           render={({ field }) => (
-            <CustomTextArea minRows={5} {...field} placeholder="CSS Selector" />
+            <Box>
+              <CustomTextArea minRows={5} {...field} />
+            </Box>
           )}
         />
       </Box>
       <Box>
-        <Typography>Select</Typography>
+        <FieldTitle title="Select" />
         <Controller
           control={control}
           name="select"
-          render={({ field }) => (
-            <CustomTextArea minRows={5} {...field} placeholder="CSS Selector" />
-          )}
+          render={({ field }) => <CustomTextArea minRows={5} {...field} />}
         />
       </Box>
     </Stack>

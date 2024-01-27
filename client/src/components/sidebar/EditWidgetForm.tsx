@@ -10,8 +10,10 @@ import {
 import { config } from '@/utils/nodeConfig';
 import { useFlow } from '@/store/flow';
 import { CustomTextArea } from '../common/styled';
+import CustomTextField from '../common/CustomTextField';
+import FieldTitle from '../common/FieldTitle';
 
-export function EditForm() {
+function EditWidgetForm() {
   console.log('🚀 ===== EditForm ===== EditForm:');
   const selectedNode = useFlow((state: any) => state.selectedNode) as {
     id: string;
@@ -67,9 +69,9 @@ export function EditForm() {
   };
   return (
     <Stack direction="column" spacing={2}>
-      {selectedNode?.id}
+      {/* {selectedNode?.id} */}
       <Box>
-        <Typography variant="body2">Description</Typography>
+        <FieldTitle title="Description" />
         <CustomTextArea
           minRows={5}
           // value={selectedNode?.data?.description}
@@ -95,7 +97,13 @@ export function EditForm() {
   );
 }
 
-const RenderForm = memo(function ({ selectedNode, setValues }) {
+const RenderForm = memo(function ({
+  selectedNode,
+  setValues,
+}: {
+  selectedNode: any;
+  setValues: any;
+}) {
   return React.createElement(
     config[selectedNode.data.key] as FunctionComponent<any>,
     {
@@ -104,3 +112,5 @@ const RenderForm = memo(function ({ selectedNode, setValues }) {
     }
   );
 });
+
+export default EditWidgetForm;

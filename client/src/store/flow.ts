@@ -71,7 +71,7 @@ const convertFlow = ({ nodes, edges }: { nodes: any[]; edges: any[] }) => {
   }
   return [...map.values()];
 };
-const useFlow = create((set, get) => ({
+const initialState = {
   name: '',
   description: '',
   table: null,
@@ -80,6 +80,12 @@ const useFlow = create((set, get) => ({
   edges: [],
   flows: [],
   selectedNode: null,
+};
+const useFlow = create((set, get) => ({
+  ...initialState,
+  reset: () => {
+    set(initialState);
+  },
   setNodes: (nodes: Node[]) =>
     set((state: any) => {
       console.log('🚀 ===== initNodes: ===== nodes:', nodes);

@@ -7,7 +7,7 @@ type Props = {
 };
 export function WorkflowList({ workflows }: Props) {
   return (
-    <Grid container spacing={2} sx={{ width: '100%' }}>
+    <Grid container spacing={2} sx={{ width: '100%', gridAutoRows: '1fr' }}>
       {workflows?.map((workflow: any) => <WorkflowItem workflow={workflow} />)}
     </Grid>
   );
