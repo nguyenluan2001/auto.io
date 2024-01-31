@@ -11,7 +11,7 @@ function Storage() {
     setValue(newValue);
   };
   return (
-    <Container>
+    <Container maxWidth="xl">
       <Typography variant="h5" sx={{ fontWeight: 'bold', mb: 2 }}>
         Storage
       </Typography>

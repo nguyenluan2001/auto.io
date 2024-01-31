@@ -30,6 +30,7 @@ import { Controller, useFieldArray, useForm } from 'react-hook-form';
 import { enqueueSnackbar } from 'notistack';
 import { Table as TableType } from 'models/Table';
 import { ClickEvent } from 'models/Event';
+import { Link, useNavigate } from 'react-router-dom';
 import { axiosInstance } from '@/utils/axios';
 import { useTables } from '@/hooks/useTables';
 import { useTableById } from '@/hooks/useTable';
@@ -173,6 +174,7 @@ function DialogAddTable({
   );
 }
 function TableItem({ table, refetch, setSelectedTable }: TableItemProps) {
+  const navigate = useNavigate();
   const [isOpenDialogDetail, setIsOpenDialogDetail] = useState(false);
   const [anchorEl, setAnchorEl] = React.useState<any>(null);
   const open = Boolean(anchorEl);
@@ -193,8 +195,9 @@ function TableItem({ table, refetch, setSelectedTable }: TableItemProps) {
     e.stopPropagation();
     setSelectedTable(table);
   };
-  const handleToggleDetail = () => {
+  const handleSelectTable = () => {
     setIsOpenDialogDetail((pre) => !pre);
+    navigate(`/storage/tables/${table?.id}`);
   };
   return (
     <>
@@ -204,7 +207,7 @@ function TableItem({ table, refetch, setSelectedTable }: TableItemProps) {
           '&:last-child td, &:last-child th': { border: 0 },
           cursor: 'pointer',
         }}
-        onClick={handleToggleDetail}
+        onClick={handleSelectTable}
       >
         <TableCell align="left">{table.name}</TableCell>
         <TableCell align="left">{table.createdAt}</TableCell>
@@ -227,11 +230,11 @@ function TableItem({ table, refetch, setSelectedTable }: TableItemProps) {
           </Menu>
         </TableCell>
       </TableRow>
-      <DialogTableDetail
+      {/* <DialogTableDetail
         table={table}
         open={isOpenDialogDetail}
         handleToggleDetail={handleToggleDetail}
-      />
+      /> */}
     </>
   );
 }
@@ -257,8 +260,8 @@ function Listing({
           <TableItem
             setSelectedTable={setSelectedTable}
             refetch={refetch}
+            key={row?.id}
             table={row}
-            key={row.name}
           />
         ))}
       </TableBody>

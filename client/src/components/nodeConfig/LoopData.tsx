@@ -4,6 +4,7 @@ import { Autocomplete, Button, Stack, TextField } from '@mui/material';
 import { useFlow } from '@/store/flow';
 import { CustomTextArea } from '../common/styled';
 import CodeEditor from '../common/CodeEditor';
+import CustomTextField from '../common/CustomTextField';
 
 type Props = {
   loop_through: string;
@@ -64,7 +65,7 @@ function LoopData({ loop_through, data, numbers, setValues }: Props) {
             options={LOOP_THROUGH}
             getOptionLabel={(option) => option?.label}
             renderInput={(params) => (
-              <TextField label="Loop through" {...params} />
+              <CustomTextField label="Loop through" {...params} />
             )}
             onChange={(e, _value) => onChange(_value?.value)}
             value={LOOP_THROUGH.find((o) => o.value === loop_through)}
@@ -87,14 +88,24 @@ function NumberSection({ control }: { control: Control<FieldValues> }) {
         control={control}
         name="numbers.from"
         render={({ field }) => (
-          <TextField fullWidth {...field} type="number" label="From number" />
+          <CustomTextField
+            fullWidth
+            {...field}
+            type="number"
+            label="From number"
+          />
         )}
       />
       <Controller
         control={control}
         name="numbers.to"
         render={({ field }) => (
-          <TextField label="To number" fullWidth {...field} type="number" />
+          <CustomTextField
+            label="To number"
+            fullWidth
+            {...field}
+            type="number"
+          />
         )}
       />
     </Stack>

@@ -7,6 +7,7 @@ import EditPage from './pages/EditPage';
 import Storage from './pages/Storage';
 import Layout from './components/Layout';
 import CreatePage from './pages/CreatePage';
+import TableDetail from './pages/TableDetail';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -23,12 +24,16 @@ function App() {
       element: <Layout />,
       children: [
         {
-          path: '',
+          path: 'workflows',
           element: <Homepage />,
         },
         {
           path: 'storage',
           element: <Storage />,
+        },
+        {
+          path: 'storage/tables/:id',
+          element: <TableDetail />,
         },
         {
           path: 'create',

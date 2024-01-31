@@ -15,7 +15,10 @@ function Toolbar({ refetch }: Props) {
   ) as Workflow;
   const handleRun = async () => {
     try {
-      const response = await axiosInstance.post(`/run/${uuid}`, flows);
+      const response = await axiosInstance.post(
+        `/workflows/${uuid}/run`,
+        flows
+      );
       console.log('🚀 ===== handleClick ===== response:', response);
       enqueueSnackbar('Run workflow successfully', {
         variant: 'success',
@@ -30,7 +33,7 @@ function Toolbar({ refetch }: Props) {
   const handleSave = async () => {
     try {
       if (uuid) {
-        const response = await axiosInstance.put(`/workflow/${uuid}`, {
+        const response = await axiosInstance.put(`/workflows/${uuid}`, {
           name,
           description,
           tableId: table?.id,

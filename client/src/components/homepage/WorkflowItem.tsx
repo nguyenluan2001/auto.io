@@ -34,7 +34,10 @@ function WorkflowItem({ workflow }: Props) {
   return (
     <Grid
       item
-      md={3}
+      lg={3}
+      md={4}
+      sm={6}
+      xs={12}
       sx={{ height: 'auto', '& a': { textDecoration: 'none' } }}
     >
       <Link to={`/workflow/${workflow?.uuid}`}>
