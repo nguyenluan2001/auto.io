@@ -55,12 +55,17 @@ function WorkflowEdit({ refetch }: Props) {
   );
   return (
     <ReactFlowProvider>
-      <div className="reactflow-wrapper" ref={reactFlowWrapper}>
+      <Box
+        sx={{ width: '100%', overflowX: 'hidden' }}
+        className="reactflow-wrapper"
+        ref={reactFlowWrapper}
+      >
         <Stack
           direction="row"
           style={{
-            width: '100vw',
+            // width: '100vw',
             overflow: 'hidden',
+            flex: 1,
           }}
         >
           <Sidebar />
@@ -73,7 +78,7 @@ function WorkflowEdit({ refetch }: Props) {
             />
           </Box>
         </Stack>
-      </div>
+      </Box>
     </ReactFlowProvider>
   );
 }

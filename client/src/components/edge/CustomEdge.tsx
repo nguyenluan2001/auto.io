@@ -1,6 +1,14 @@
 import { Icon } from '@iconify/react';
 import { IconButton } from '@mui/material';
-import { BaseEdge, EdgeLabelRenderer, getBezierPath, getSimpleBezierPath, getSmoothStepPath, getStraightPath } from 'reactflow';
+import {
+  BaseEdge,
+  EdgeLabelRenderer,
+  Position,
+  getBezierPath,
+  getSimpleBezierPath,
+  getSmoothStepPath,
+  getStraightPath,
+} from 'reactflow';
 import closeCircleOutline from '@iconify/icons-mdi/close-circle-outline';
 import { useFlow } from '@/store/flow';
 
@@ -10,6 +18,9 @@ type Props = {
   sourceY: number;
   targetX: number;
   targetY: number;
+  sourcePosition: Position;
+  targetPosition: Position;
+  markerEnd: string;
 };
 export default function CustomEdge({
   id,
@@ -17,6 +28,9 @@ export default function CustomEdge({
   sourceY,
   targetX,
   targetY,
+  sourcePosition,
+  targetPosition,
+  markerEnd,
 }: Props) {
   const { edges, setEdges } = useFlow((state) => state) as {
     edges: any;
@@ -27,6 +41,8 @@ export default function CustomEdge({
     sourceY,
     targetX,
     targetY,
+    sourcePosition,
+    targetPosition,
   });
   const handleRemoveEdge = () => {
     const newEdges = edges.filter((edge: any) => edge.id !== id);
@@ -36,7 +52,13 @@ export default function CustomEdge({
 
   return (
     <>
-      <BaseEdge style={{ background: 'red' }} id={id} path={edgePath} />;
+      <BaseEdge
+        style={{ background: 'red' }}
+        markerEnd={markerEnd}
+        id={id}
+        path={edgePath}
+      />
+      ;
       <EdgeLabelRenderer>
         <IconButton
           onClick={handleRemoveEdge}

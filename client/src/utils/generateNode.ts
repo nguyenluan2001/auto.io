@@ -1,23 +1,12 @@
 import { v4 as uuidv4 } from 'uuid';
-import { Icon } from '@iconify/react';
-import earthIcon from '@iconify/icons-mdi/earth';
-import playCircle from '@iconify/icons-mdi/play-circle';
-import alarmIcon from '@iconify/icons-mdi/alarm';
-import cursorDefaultOutline from '@iconify/icons-mdi/cursor-default-outline';
-import formTextbox from '@iconify/icons-mdi/form-textbox';
-import formatText from '@iconify/icons-mdi/format-text';
-import autorenewIcon from '@iconify/icons-mdi/autorenew';
-import stopCircleOutline from '@iconify/icons-mdi/stop-circle-outline';
-import repeatVariant from '@iconify/icons-mdi/repeat-variant';
-import codeBrackets from '@iconify/icons-mdi/code-brackets';
-import React from 'react';
+import { WIDGET_ICON } from './constant';
 
 type Params = {
   type: string;
-  position: {
+  position?: {
     x: number;
     y: number;
-  };
+  } | null;
 };
 const generateNode = ({ type, position }: Params) => {
   switch (type) {
@@ -29,7 +18,7 @@ const generateNode = ({ type, position }: Params) => {
           key: 'trigger',
           description: '',
           selector: '',
-          icon: React.createElement(Icon, { icon: playCircle }),
+          icon: WIDGET_ICON.trigger,
         },
         position,
         type: 'customNode',
@@ -43,7 +32,7 @@ const generateNode = ({ type, position }: Params) => {
           key: 'delay',
           description: '',
           selector: '',
-          icon: React.createElement(Icon, { icon: alarmIcon }),
+          icon: WIDGET_ICON.delay,
         },
         position,
         type: 'customNode',
@@ -57,7 +46,7 @@ const generateNode = ({ type, position }: Params) => {
           key: 'http-request',
           description: '',
           selector: '',
-          icon: React.createElement(Icon, { icon: earthIcon }),
+          icon: WIDGET_ICON['http-request'],
         },
         position,
         type: 'customNode',
@@ -71,7 +60,7 @@ const generateNode = ({ type, position }: Params) => {
           key: 'event-click',
           description: '',
           selector: '',
-          icon: React.createElement(Icon, { icon: cursorDefaultOutline }),
+          icon: WIDGET_ICON['event-click'],
         },
         position,
         type: 'customNode',
@@ -86,7 +75,7 @@ const generateNode = ({ type, position }: Params) => {
           description: '',
           selector: '',
           value: '',
-          icon: React.createElement(Icon, { icon: formTextbox }),
+          icon: WIDGET_ICON.form,
         },
         position,
         type: 'customNode',
@@ -100,7 +89,7 @@ const generateNode = ({ type, position }: Params) => {
           key: 'new-tab',
           description: '',
           url: '',
-          icon: React.createElement(Icon, { icon: earthIcon }),
+          icon: WIDGET_ICON['new-tab'],
         },
         position,
         type: 'customNode',
@@ -114,7 +103,7 @@ const generateNode = ({ type, position }: Params) => {
           key: 'get-text',
           description: '',
           url: '',
-          icon: React.createElement(Icon, { icon: formatText }),
+          icon: WIDGET_ICON['get-text'],
         },
         position,
         type: 'customNode',
@@ -128,7 +117,7 @@ const generateNode = ({ type, position }: Params) => {
           key: 'loop-data',
           description: '',
           url: '',
-          icon: React.createElement(Icon, { icon: autorenewIcon }),
+          icon: WIDGET_ICON['loop-data'],
         },
         position,
         type: 'customNode',
@@ -142,7 +131,7 @@ const generateNode = ({ type, position }: Params) => {
           key: 'break-loop',
           description: '',
           url: '',
-          icon: React.createElement(Icon, { icon: stopCircleOutline }),
+          icon: WIDGET_ICON['break-loop'],
         },
         position,
         type: 'customNode',
@@ -156,7 +145,7 @@ const generateNode = ({ type, position }: Params) => {
           key: 'repeat',
           description: '',
           url: '',
-          icon: React.createElement(Icon, { icon: repeatVariant }),
+          icon: WIDGET_ICON.repeat,
           // numOfHandler: 2,
         },
         position,
@@ -171,7 +160,7 @@ const generateNode = ({ type, position }: Params) => {
           key: 'get-attribute',
           description: '',
           url: '',
-          icon: React.createElement(Icon, { icon: codeBrackets }),
+          icon: WIDGET_ICON['get-attribute'],
           // numOfHandler: 2,
         },
         position,

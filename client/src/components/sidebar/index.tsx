@@ -10,7 +10,7 @@ function Sidebar() {
   const setSelectedNode = useFlow((state: any) => state.setSelectedNode);
   const handleBack = () => setSelectedNode(null);
   return (
-    <Stack direction="row">
+    <Stack direction="row" sx={{ height: '100vh' }}>
       <Box sx={{ width: '300px', p: 2 }}>
         {selectedNode && (
           <Stack direction="row" alignItems="center" sx={{ mb: 2 }}>

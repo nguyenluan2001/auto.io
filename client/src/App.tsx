@@ -40,7 +40,7 @@ function App() {
           element: <CreatePage />,
         },
         {
-          path: 'workflow/:uuid',
+          path: 'workflows/:uuid',
           element: <EditPage />,
         },
       ],

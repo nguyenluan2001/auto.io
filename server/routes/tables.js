@@ -1,8 +1,12 @@
 const express = require('express');
 const { omit } = require('lodash');
+const qs = require('qs')
 const { prisma } = require('../config/prisma');
+const {parseQuery} = require('../helper/request')
 
 const router = express.Router();
+
+const ROWS_PER_PAGE=10
 
 router.post('/',async(req,res) => {
   const body=req?.body
@@ -37,17 +41,44 @@ router.get('/',async(req,res) => {
 })
 router.get('/:id',async(req,res) => {
   try{
-    const {id}=req.params
+    const {id } = req.params
+    const {query} = req
     const table = await prisma.table.findUnique({
+      // select:{
+      //   id:true,
+      //   name:true
+      // },
       where:{
         id:parseInt(id,10)
       },
       include:{
         columns:true,
-        rows:true
+        _count:{
+          select:{
+            rows:true
+          }
+        }
+        // rows:true
       }
     })
-    res.status(200).json(table)
+    const rows = await prisma.row.findMany({
+      where:{
+        table:{
+          id: parseInt(id, 10)
+        }
+      },
+      ...parseQuery(query)
+    })
+    res.status(200).json({
+      id: table?.id,
+      name:table?.name,
+      columns:table?.columns,
+      createdAt: table?.createdAt,
+      rows,
+      meta:{
+        totalPages: Math.ceil((table?._count?.rows || 0)/ROWS_PER_PAGE)
+      }
+    })
   }catch(error){
     console.log("🚀 ===== router.get ===== error:", error);
     res.status(500).json({message:'Error'})

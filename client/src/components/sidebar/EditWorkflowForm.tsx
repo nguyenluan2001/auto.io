@@ -9,6 +9,7 @@ import { CustomTextArea } from '../common/styled';
 import Group from './Group';
 import FieldTitle from '../common/FieldTitle';
 import CustomTextField from '../common/CustomTextField';
+import 'simplebar-react/dist/simplebar.min.css';
 
 function EditWorkflowForm() {
   // const setName = useFlow((state: any) => state.setName);
@@ -33,7 +34,11 @@ function EditWorkflowForm() {
   };
   const handleChangeTable = (tableData: Table) => setConnectTable(tableData);
   return (
-    <Stack direction="column" spacing={2} sx={{ height: '100vh' }}>
+    <Stack
+      direction="column"
+      spacing={2}
+      sx={{ height: '100vh', boxSizing: 'border-box', pb: 2 }}
+    >
       <Box>
         <FieldTitle title="Workflow name" />
         <CustomTextField fullWidth value={name} onChange={handleChangeName} />
@@ -59,22 +64,28 @@ function EditWorkflowForm() {
           }
         />
       </Box>
-      <SimpleBar
-        style={
-          {
-            flex: 1,
-            '& .simplebar-content': {
-              height: '100%',
-              // display: 'flex',
-              // flexDirection: 'column',
-            },
-          } as React.CSSProperties
-        }
-      >
-        {GROUPS?.map((group, index) => (
-          <Group key={index} title={group?.title} widgets={group?.widgets} />
-        ))}
-      </SimpleBar>
+      <Box sx={{ flex: 0.95 }}>
+        <SimpleBar
+          style={
+            {
+              minHeight: 100,
+              maxHeight: '90%',
+              '& .simplebar-placeholder': {
+                maxHeight: '500px',
+              },
+              // '& .simplebar-content': {
+              //   maxHeight: '100%',
+              //   // display: 'flex',
+              //   // flexDirection: 'column',
+              // },
+            } as React.CSSProperties
+          }
+        >
+          {GROUPS?.map((group, index) => (
+            <Group key={index} title={group?.title} widgets={group?.widgets} />
+          ))}
+        </SimpleBar>
+      </Box>
     </Stack>
   );
 }

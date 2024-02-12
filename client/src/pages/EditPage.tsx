@@ -24,23 +24,22 @@ function EditPage() {
     setConnectTable,
   } = useFlow((state: any) => state);
   useEffect(() => {
-    if (workflow?.id) {
+    if (!isLoading && !isFetching && workflow?.id) {
       setName(workflow?.name);
       setDescription(workflow?.description);
       setUUID(workflow?.uuid);
-      setNodes(workflow?.config?.nodes);
-      setEdges(workflow?.config?.edges);
-      setWorkflow(workflow?.config?.nodes, workflow?.config?.edges);
+      setNodes(workflow?.config?.nodes || workflow?.nodes);
+      setEdges(workflow?.config?.edges || workflow?.edges);
+      setWorkflow(
+        workflow?.config?.nodes || workflow?.nodes,
+        workflow?.config?.edges || workflow?.edges
+      );
       setConnectTable(workflow?.table);
     }
-  }, [workflow]);
+  }, [workflow, isFetching, isLoading]);
   console.log('🚀 ===== EditPage ===== workflow:', workflow);
   if (isLoading || isFetching) return <LoadingScreen />;
-  return (
-    <div>
-      <WorkflowEdit refetch={refetch} />
-    </div>
-  );
+  return <WorkflowEdit refetch={refetch} />;
 }
 
 export default EditPage;

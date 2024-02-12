@@ -1,10 +1,11 @@
 import { EventHandler, useEffect } from 'react';
 import { Control, Controller, useForm } from 'react-hook-form';
-import { Autocomplete, Button, Stack, TextField } from '@mui/material';
+import { Autocomplete, Box, Button, Stack, TextField } from '@mui/material';
 import { useFlow } from '@/store/flow';
 import { CustomTextArea } from '../common/styled';
 import CodeEditor from '../common/CodeEditor';
 import CustomTextField from '../common/CustomTextField';
+import FieldTitle from '../common/FieldTitle';
 
 type Props = {
   loop_through: string;
@@ -57,21 +58,22 @@ function LoopData({ loop_through, data, numbers, setValues }: Props) {
   }, [setValues, watch()]);
   return (
     <Stack direction="column" spacing={2}>
-      <Controller
-        control={control}
-        name="loop_through"
-        render={({ field: { value, onChange } }) => (
-          <Autocomplete
-            options={LOOP_THROUGH}
-            getOptionLabel={(option) => option?.label}
-            renderInput={(params) => (
-              <CustomTextField label="Loop through" {...params} />
-            )}
-            onChange={(e, _value) => onChange(_value?.value)}
-            value={LOOP_THROUGH.find((o) => o.value === loop_through)}
-          />
-        )}
-      />
+      <Box>
+        <FieldTitle title="Loop through" />
+        <Controller
+          control={control}
+          name="loop_through"
+          render={({ field: { value, onChange } }) => (
+            <Autocomplete
+              options={LOOP_THROUGH}
+              getOptionLabel={(option) => option?.label}
+              renderInput={(params) => <CustomTextField {...params} />}
+              onChange={(e, _value) => onChange(_value?.value)}
+              value={LOOP_THROUGH.find((o) => o.value === loop_through)}
+            />
+          )}
+        />
+      </Box>
       {watch('loop_through') === 'NUMBERS' && (
         <NumberSection control={control} />
       )}

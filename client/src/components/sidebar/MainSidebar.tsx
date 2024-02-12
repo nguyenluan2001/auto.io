@@ -57,11 +57,12 @@ function MainSidebar() {
     <Stack
       direction="column"
       alignItems="center"
-      sx={{ p: 1, borderRight: '1px solid black' }}
+      sx={{ p: 1, borderRight: '1px solid black', width: '100px' }}
     >
-      <Typography variant="h5" sx={{ mb: 5 }}>
+      {/* <Typography variant="h5" sx={{ mb: 5 }}>
         AutoFlow
-      </Typography>
+      </Typography> */}
+      <img src="/public/autoflow.png" alt="auto-flow" />
       <List component="nav" aria-label="main mailbox folders">
         {sidebarConfig?.map((tab) => (
           <NavItem

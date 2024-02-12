@@ -40,7 +40,7 @@ function WorkflowItem({ workflow }: Props) {
       xs={12}
       sx={{ height: 'auto', '& a': { textDecoration: 'none' } }}
     >
-      <Link to={`/workflow/${workflow?.uuid}`}>
+      <Link to={`/workflows/${workflow?.uuid}`}>
         <Card sx={{ height: '100%', cursor: 'pointer' }}>
           <CardHeader
             title={

@@ -1,15 +1,4 @@
-import earthIcon from '@iconify/icons-mdi/earth';
-import playCircle from '@iconify/icons-mdi/play-circle';
-import alarmIcon from '@iconify/icons-mdi/alarm';
-import cursorDefaultOutline from '@iconify/icons-mdi/cursor-default-outline';
-import formTextbox from '@iconify/icons-mdi/form-textbox';
-import formatText from '@iconify/icons-mdi/format-text';
-import autorenewIcon from '@iconify/icons-mdi/autorenew';
-import stopCircleOutline from '@iconify/icons-mdi/stop-circle-outline';
-import repeatVariant from '@iconify/icons-mdi/repeat-variant';
-import codeBrackets from '@iconify/icons-mdi/code-brackets';
-
-import { Icon } from '@iconify/react';
+import { WIDGET_ICON } from './constant';
 
 const GROUPS = [
   {
@@ -19,19 +8,19 @@ const GROUPS = [
         id: 1,
         title: 'Trigger',
         key: 'trigger',
-        icon: playCircle,
+        icon: WIDGET_ICON.trigger,
       },
       {
         id: 2,
         title: 'Delay',
         key: 'delay',
-        icon: alarmIcon,
+        icon: WIDGET_ICON.delay,
       },
       {
         id: 3,
         title: 'HTTP Request',
         key: 'http-request',
-        icon: earthIcon,
+        icon: WIDGET_ICON['http-request'],
       },
     ],
   },
@@ -42,7 +31,7 @@ const GROUPS = [
         id: 1,
         title: 'New tab',
         key: 'new-tab',
-        icon: earthIcon,
+        icon: WIDGET_ICON['new-tab'],
       },
     ],
   },
@@ -53,25 +42,25 @@ const GROUPS = [
         id: 1,
         title: 'Click Element',
         key: 'event-click',
-        icon: cursorDefaultOutline,
+        icon: WIDGET_ICON['event-click'],
       },
       {
         id: 2,
         title: 'Form',
         key: 'form',
-        icon: formTextbox,
+        icon: WIDGET_ICON.form,
       },
       {
         id: 3,
         title: 'Get Text',
         key: 'get-text',
-        icon: formatText,
+        icon: WIDGET_ICON['get-text'],
       },
       {
         id: 4,
         title: 'Get Attribute',
         key: 'get-attribute',
-        icon: codeBrackets,
+        icon: WIDGET_ICON['get-attribute'],
       },
     ],
   },
@@ -82,19 +71,19 @@ const GROUPS = [
         id: 1,
         title: 'Loop data',
         key: 'loop-data',
-        icon: autorenewIcon,
+        icon: WIDGET_ICON['loop-data'],
       },
       {
         id: 2,
         title: 'Break loop',
         key: 'break-loop',
-        icon: stopCircleOutline,
+        icon: WIDGET_ICON['break-loop'],
       },
       {
         id: 2,
         title: 'Repeat',
         key: 'repeat',
-        icon: repeatVariant,
+        icon: WIDGET_ICON.repeat,
       },
     ],
   },

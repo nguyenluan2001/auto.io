@@ -8,7 +8,8 @@ const { PrismaClient } = require('@prisma/client');
 
 const prisma = new PrismaClient();
 const { NODE_ENV } = process.env;
-const sleep = (waitTimeInMs) => new Promise(resolve => setTimeout(resolve, waitTimeInMs));
+const sleep = (waitTimeInMs) =>
+  new Promise((resolve) => setTimeout(resolve, waitTimeInMs));
 
 class Workflow {
   constructor(uuid, workflows) {
@@ -38,23 +39,70 @@ class Workflow {
         ? {
             headless: false,
           }
-        : {headless:'new'};
+        : { headless: 'new' };
     this.browser = await puppeteer.launch(config);
     const workflow = await prisma.workflows.findMany({
-      where:{
-        uuid:this.uuid
+      where: {
+        uuid: this.uuid,
       },
-      include:{
-        table:true
-      }
-    })
-    if(workflow?.[0]?.table?.id){
-      this.tableId = workflow[0]?.table?.id
+      include: {
+        table: true,
+      },
+    });
+    if (workflow?.[0]?.table?.id) {
+      this.tableId = workflow[0]?.table?.id;
     }
   }
 
   async close() {
     await this.browser?.close();
+  }
+
+  async insertTable({destination, text}){
+      const column = destination?.TABLE?.column;
+      if (isEmpty(this.tableData)) {
+        const newData = {
+          [column]: text,
+        };
+        const newRow = await prisma.row.create({
+          data: {
+            data: newData,
+            tableId: parseInt(this.tableId, 10),
+          },
+        });
+        console.log('🚀 ===== Workflow ===== getText ===== newRow:', newRow);
+        this.tableData.push(newRow);
+      } else {
+        const lastRow = last(this.tableData);
+        const len = this.tableData.length;
+        if (!has(lastRow, column)) {
+          const newData = {
+            ...lastRow.data,
+            [column]: text,
+          };
+          const newRow = await prisma.row.update({
+            where: {
+              id: lastRow?.id,
+            },
+            data: {
+              data: newData,
+            },
+          });
+          this.tableData[len - 1] = newRow;
+        } else {
+          const newData = {
+            [column]: text,
+          };
+          const newRow = await prisma.row.create({
+            data: {
+              data: newData,
+              tableId: parseInt(this.tableId, 10),
+            },
+          });
+          console.log('🚀 ===== Workflow ===== getText ===== newRow:', newRow);
+          this.tableData.push(newRow);
+        }
+      }
   }
 
   async trigger() {
@@ -95,140 +143,81 @@ class Workflow {
     await this.page.click(searchResultSelector);
   }
 
-  async getText({ selector, destination, selector_type='SINGLE',loop_through, select, order=1 }) {
-    console.log("🚀 ===== Workflow ===== getText ===== order:", order);
+  async getText({
+    selector,
+    destination,
+    selector_type = 'SINGLE',
+    loop_through,
+    select,
+    order = 1,
+  }) {
+    console.log('🚀 ===== Workflow ===== getText ===== order:', order);
     console.log('===== GET TEXT =====');
-    let el=''
-    if(selector_type==='SINGLE'){
-       el = await this.page.waitForSelector(selector);
-    }else{
-      console.log('selector', `${loop_through}:nth-child(${order}) ${select}`)
-       el = await this.page.$(`${loop_through}:nth-child(${order}) ${select}`.replace('\'', "\""));
+    let el = '';
+    if (selector_type === 'SINGLE') {
+      el = await this.page.waitForSelector(selector);
+    } else {
+      console.log('selector', `${loop_through}:nth-child(${order}) ${select}`);
+      el = await this.page.$(
+        `${loop_through}:nth-child(${order}) ${select}`.replace("'", '"')
+      );
     }
-    console.log("🚀 ===== Workflow ===== getText ===== el:", el);
-    if(!el) return
+    console.log('🚀 ===== Workflow ===== getText ===== el:', el);
+    if (!el) return;
     const text = await (await el.getProperty('textContent')).jsonValue();
-    console.log("🚀 ===== Workflow ===== getText ===== text:", text);
+    console.log('🚀 ===== Workflow ===== getText ===== text:', text);
     const isVariable = destination?.VARIABLE?.selected;
     const isTable = destination?.TABLE?.selected;
     if (isTable) {
-      const column = destination?.TABLE?.column;
-      if (isEmpty(this.tableData)) {
-        const newData = {
-          [column]: text,
-        };
-        const newRow = await prisma.row.create({
-          data: {
-            data: newData,
-            tableId: parseInt(this.tableId, 10),
-          },
-        });
-        console.log('🚀 ===== Workflow ===== getText ===== newRow:', newRow);
-        this.tableData.push(newRow);
-      } else {
-        const lastRow = last(this.tableData);
-        const len = this.tableData.length;
-        if (!has(lastRow, column)) {
-          const newData = {
-            ...lastRow.data,
-            [column]: text,
-          };
-          const newRow = await prisma.row.update({
-            where: {
-              id: lastRow?.id,
-            },
-            data: {
-              data: newData,
-            },
-          });
-          this.tableData[len - 1] = newRow;
-        } else {
-          const newData = {
-            [column]: text,
-          };
-          const newRow = await prisma.row.create({
-            data: {
-              data: newData,
-              tableId: parseInt(this.tableId, 10),
-            },
-          });
-          console.log('🚀 ===== Workflow ===== getText ===== newRow:', newRow);
-          this.tableData.push(newRow);
-        }
-      }
+      await this.insertTable({destination, text})
     }
     // return text;
   }
 
-  async getAttribute({ selector, destination, selector_type='SINGLE',loop_through, select, order=1, attribute }) {
-    console.log("🚀 ===== Workflow ===== getAttribute ===== selector:", selector);
+  async getAttribute({
+    selector,
+    destination,
+    selector_type = 'SINGLE',
+    loop_through,
+    select,
+    order = 1,
+    attribute,
+  }) {
+    console.log(
+      '🚀 ===== Workflow ===== getAttribute ===== selector:',
+      selector
+    );
     console.log('===== GET ATTRIBUTE =====');
-    let text=''
-    if(selector_type==='SINGLE'){
-      text = await this.page.$eval(selector, (element, attribute)=>  
-         element.getAttribute(attribute)
-      , attribute)
-    }else{
-      text = await this.page.$eval( `${loop_through}:nth-child(${order}) ${select}`, (element, attribute)=>  
-         element.getAttribute(attribute)
-      , attribute)
+    let text = '';
+    if (selector_type === 'SINGLE') {
+      text = await this.page.$eval(
+        selector,
+        (element, attribute) => element.getAttribute(attribute),
+        attribute
+      );
+    } else {
+      text = await this.page.$eval(
+        `${loop_through}:nth-child(${order}) ${select}`,
+        (element, attribute) => element.getAttribute(attribute),
+        attribute
+      );
     }
-    if(!text) return
+    if (!text) return;
     const isVariable = destination?.VARIABLE?.selected;
     const isTable = destination?.TABLE?.selected;
     if (isTable) {
-      const column = destination?.TABLE?.column;
-      if (isEmpty(this.tableData)) {
-        const newData = {
-          [column]: text,
-        };
-        const newRow = await prisma.row.create({
-          data: {
-            data: newData,
-            tableId: parseInt(this.tableId, 10),
-          },
-        });
-        console.log('🚀 ===== Workflow ===== getText ===== newRow:', newRow);
-        this.tableData.push(newRow);
-      } else {
-        const lastRow = last(this.tableData);
-        const len = this.tableData.length;
-        if (!has(lastRow, column)) {
-          const newData = {
-            ...lastRow.data,
-            [column]: text,
-          };
-          const newRow = await prisma.row.update({
-            where: {
-              id: lastRow?.id,
-            },
-            data: {
-              data: newData,
-            },
-          });
-          this.tableData[len - 1] = newRow;
-        } else {
-          const newData = {
-            [column]: text,
-          };
-          const newRow = await prisma.row.create({
-            data: {
-              data: newData,
-              tableId: parseInt(this.tableId, 10),
-            },
-          });
-          console.log('🚀 ===== Workflow ===== getText ===== newRow:', newRow);
-          this.tableData.push(newRow);
-        }
-      }
+      await this.insertTable({destination, text})
     }
     // return text;
   }
 
-  async loop({ id, workflows, loop_through='CUSTOM_DATA' }) {
-    try{
-      console.log("🚀 ===== Workflow ===== loop ===== workflows:", JSON.stringify(workflows, null, 2));
-      if(loop_through==='CUSTOM_DATA'){
+  async loop({ id, workflows, loop_through = 'CUSTOM_DATA' }) {
+    try {
+      console.log(
+        '🚀 ===== Workflow ===== loop ===== workflows:',
+        JSON.stringify(workflows, null, 2)
+      );
+      if (loop_through === 'CUSTOM_DATA') {
         for (const data of this.loopData[id]) {
           for (let i = 0; i < workflows?.length; i++) {
             const widget = workflows[i];
@@ -239,12 +228,12 @@ class Workflow {
           }
           await this.page.waitForTimeout(2000);
         }
-      }else{
-        const {from, to}=this.loopData[id]
-        console.log("🚀 ===== Workflow ===== loop ===== from:", from);
-        console.log("🚀 ===== Workflow ===== loop ===== to:", to);
-        for(let i=parseInt(from,10);i<=parseInt(to,10);i++){
-          console.log("🚀 ===== Workflow ===== loop ===== i:", i);
+      } else {
+        const { from, to } = this.loopData[id];
+        console.log('🚀 ===== Workflow ===== loop ===== from:', from);
+        console.log('🚀 ===== Workflow ===== loop ===== to:', to);
+        for (let i = parseInt(from, 10); i <= parseInt(to, 10); i++) {
+          console.log('🚀 ===== Workflow ===== loop ===== i:', i);
           for (let j = 0; j < workflows?.length; j++) {
             const widget = workflows[j];
             await this.handlers?.[widget?.key]({
@@ -252,13 +241,13 @@ class Workflow {
               order: i,
             });
           }
-          this.tableData=[]
-          await sleep(2000)
+          this.tableData = [];
+          await sleep(2000);
           // await this.page.waitForTimeout(2000);
         }
       }
-    }catch(error){
-      console.log("🚀 ===== Workflow ===== loop ===== error:", error);
+    } catch (error) {
+      console.log('🚀 ===== Workflow ===== loop ===== error:', error);
     }
   }
 
@@ -270,56 +259,54 @@ class Workflow {
       [loopID]: brokenLoop?.data,
     };
     console.log('loopData', this.loopData);
-    await this.loop({ id: loopID, workflows: brokenLoop.workflows, loop_through: brokenLoop.loop_through  });
+    await this.loop({
+      id: loopID,
+      workflows: brokenLoop.workflows,
+      loop_through: brokenLoop.loop_through,
+    });
     this.currentLoopId = null;
     await this.loopControl.delete(loopID);
   }
 
   async run() {
     await this.launch();
-    const savePath = './video/demo.mp4';
-    const screenRecorderOptions = {
-      followNewTab: true,
-      fps: 25,
-      aspectRatio: '16:9',
-    };
-    let screenRecorder = null;
     for (let i = 0; i < this.workflows?.length; i++) {
       const widget = this.workflows[i];
-      if (widget?.key === 'trigger') {
-        await this.trigger();
-        screenRecorder = new PuppeteerScreenRecorder(
-          this.page,
-          screenRecorderOptions
-        );
-        await screenRecorder.start(savePath);
-      } else if (widget?.key === 'loop-data') {
-        this.loopControl.set(widget?.id, {
-          data: widget?.loop_through==='CUSTOM_DATA'? JSON.parse(widget?.data):widget?.numbers,
-          workflows: [],
-          loop_through: widget?.loop_through,
-        });
-        this.currentLoopId = widget?.id;
-      } else if (widget?.key === 'break-loop') {
-        await this.breakLoop(widget);
-      } else {
-        if (this.loopControl.size === 0) {
-          await this.handlers?.[widget?.key](widget);
-        } else {
-          const currentLoop = this.loopControl.get(this.currentLoopId);
-          this.loopControl.set(this.currentLoopId, {
-            ...currentLoop,
-            workflows: [...(currentLoop?.workflows || []), widget],
+      switch (widget?.key) {
+        case 'trigger': {
+          await this.trigger();
+          break;
+        }
+        case 'loop-data': {
+          this.loopControl.set(widget?.id, {
+            data:
+              widget?.loop_through === 'CUSTOM_DATA'
+                ? JSON.parse(widget?.data)
+                : widget?.numbers,
+            workflows: [],
+            loop_through: widget?.loop_through,
           });
+          this.currentLoopId = widget?.id;
+          break;
+        }
+        case 'break-loop': {
+          await this.breakLoop(widget);
+          break;
+        }
+        default: {
+          if (this.loopControl.size === 0) {
+            await this.handlers?.[widget?.key](widget);
+          } else {
+            const currentLoop = this.loopControl.get(this.currentLoopId);
+            this.loopControl.set(this.currentLoopId, {
+              ...currentLoop,
+              workflows: [...(currentLoop?.workflows || []), widget],
+            });
+          }
+          break;
         }
       }
     }
-    await screenRecorder.stop();
-    await fs.writeFileSync(
-      path.resolve('./', 'data', `data-${Date.now()}.json`),
-      JSON.stringify(this.tableData)
-    );
-    console.log('END');
     // await this.close()
   }
 }

@@ -6,6 +6,7 @@ const { v4: uuidv4 } = require('uuid');
 const app = express()
 const cors = require('cors')
 const { map, omit } = require('lodash')
+const queryType = require('query-types');
 require('dotenv').config()
 const Workflow = require('../core/Workflow');
 const { prisma } = require('../config/prisma');
@@ -15,38 +16,40 @@ const tableRouter = require('../routes/tables')
 
 app.use(cors())
 app.use(express.json())
+app.use(queryType.middleware())
 
-app.post('/create', async(req,res) => {
-  const body=req?.body
-  console.log("🚀 ===== app.get ===== body:", body);
-  const workflow = await prisma.workflows.create({
-    data:{
-        ...body,
-        uuid: uuidv4(),
-      ...omit(body,['tableId']),
-    },
-  })
-  if(body?.tableId){
-    await prisma.table.update({
-      where:{
-        id: body?.tableId,
-      },
-      data:{
-        workflows:{
-          connect: [
-            {
-              id:workflow?.id
-            }
-          ]
-        }
-      },
-      include:{
-        workflows:true
-      }
-    })
-  }
-  return res.json(workflow)
-})
+
+// app.post('/create', async(req,res) => {
+//   const body=req?.body
+//   console.log("🚀 ===== app.get ===== body:", body);
+//   const workflow = await prisma.workflows.create({
+//     data:{
+//         ...body,
+//         uuid: uuidv4(),
+//       ...omit(body,['tableId']),
+//     },
+//   })
+//   if(body?.tableId){
+//     await prisma.table.update({
+//       where:{
+//         id: body?.tableId,
+//       },
+//       data:{
+//         workflows:{
+//           connect: [
+//             {
+//               id:workflow?.id
+//             }
+//           ]
+//         }
+//       },
+//       include:{
+//         workflows:true
+//       }
+//     })
+//   }
+//   return res.json(workflow)
+// })
 app.use('/workflows', workflowRouter)
 app.use('/tables', tableRouter)
 

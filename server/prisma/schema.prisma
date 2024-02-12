@@ -24,6 +24,9 @@ model Workflows {
   description String?
   published   Boolean  @default(false)
   config      Json     @default("{}")
+  edges      Json     @default("[]")
+  nodes      Json     @default("[]")
+  flows      Json     @default("[]")
   name        String   @db.VarChar(255)
   uuid        String?
   tableId   Int?

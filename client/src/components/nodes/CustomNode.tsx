@@ -1,6 +1,9 @@
 import { Box, Stack, Typography } from '@mui/material';
 import { Handle, Node, Position } from 'reactflow';
+import React, { useMemo } from 'react';
+import { Icon } from '@iconify/react';
 import { useFlow } from '@/store/flow';
+import { generateNode } from '@/utils/generateNode';
 
 const handleStyle = { left: 10 };
 
@@ -9,6 +12,12 @@ function CustomNode(node: Node) {
   const handleClickNode = () => {
     setSelectedNode(node);
   };
+  const icon = useMemo(() => {
+    const nodeConfig = generateNode({
+      type: node?.data?.key,
+    }) as Node;
+    return nodeConfig?.data?.icon;
+  }, [node]);
 
   return (
     <Box
@@ -23,13 +32,13 @@ function CustomNode(node: Node) {
       {node?.data?.key !== 'trigger' && (
         <Handle type="target" position={Position.Left} />
       )}
-      <Stack direction="column" alignItems="center">
-        {/* {Boolean(node?.data?.icon) && node?.data?.icon} */}
+      <Stack direction="row" spacing={1} alignItems="center">
+        <Icon style={{ fontSize: '14px' }} icon={icon} />
         <Typography sx={{ fontWeight: '600' }}>{node?.data?.title}</Typography>
-        {node?.data?.description && (
-          <Typography variant="caption">{node?.data?.description}</Typography>
-        )}
       </Stack>
+      {node?.data?.description && (
+        <Typography variant="caption">{node?.data?.description}</Typography>
+      )}
       {/* <Handle type="source" position={Position.Bottom} id="a" />
       <Handle type="source" position={Position.Bottom} id="b" /> */}
       <RenderHandler num={node?.data?.numOfHandler || 1} />
