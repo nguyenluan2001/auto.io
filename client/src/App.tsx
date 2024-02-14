@@ -1,6 +1,7 @@
 import { RouterProvider, Routes, createBrowserRouter } from 'react-router-dom';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { SnackbarProvider } from 'notistack';
+import { CookiesProvider } from 'react-cookie';
 import Homepage from './pages/Homepage';
 import WorkflowEdit from './components/WorkflowEdit';
 import EditPage from './pages/EditPage';
@@ -8,6 +9,9 @@ import Storage from './pages/Storage';
 import Layout from './components/Layout';
 import CreatePage from './pages/CreatePage';
 import TableDetail from './pages/TableDetail';
+import AuthLayout from './components/AuthLayout';
+import SignUp from './pages/SignUp';
+import SignIn from './pages/SignIn';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -45,15 +49,37 @@ function App() {
         },
       ],
     },
+    {
+      path: '/sign-up',
+      element: <AuthLayout />,
+      children: [
+        {
+          path: '',
+          element: <SignUp />,
+        },
+      ],
+    },
+    {
+      path: '/sign-in',
+      element: <AuthLayout />,
+      children: [
+        {
+          path: '',
+          element: <SignIn />,
+        },
+      ],
+    },
   ]);
   return (
-    <QueryClientProvider client={queryClient}>
-      <SnackbarProvider>
-        {/* <Layout> */}
-        <RouterProvider router={router} />
-        {/* </Layout> */}
-      </SnackbarProvider>
-    </QueryClientProvider>
+    <CookiesProvider defaultSetOptions={{ path: '/' }}>
+      <QueryClientProvider client={queryClient}>
+        <SnackbarProvider>
+          {/* <Layout> */}
+          <RouterProvider router={router} />
+          {/* </Layout> */}
+        </SnackbarProvider>
+      </QueryClientProvider>
+    </CookiesProvider>
   );
 }
 

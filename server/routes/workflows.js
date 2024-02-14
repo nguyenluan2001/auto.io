@@ -19,13 +19,19 @@ const runWorkflows = async ({workflows, uuid}, res) => {
 
 }
 router.get('/', async (req, res) => {
-    const workflows = await prisma.workflows.findMany();
+    const workflows = await prisma.workflows.findMany({
+        where:{
+            user:{
+                id: req?.user?.id
+            }
+        }
+    });
     return res.json(workflows);
 });
 router.post('/create', async(req,res) => {
   const body=req?.body
-  console.log("🚀 ===== app.get ===== body:", body);
   const {name, description, nodes, edges, tableId}=body
+  console.log('user', req.user)
   const workflow = await prisma.workflows.create({
     data:{
         name,
@@ -37,6 +43,9 @@ router.post('/create', async(req,res) => {
                 edges: body?.edges
             }),
         uuid: uuidv4(),
+        user:{
+            connect: { id: req?.user?.id }
+        },
     //   ...omit(body,['tableId']),
     },
   })

@@ -16,6 +16,21 @@ model Table {
   columns   Column[]
   rows      Row[]
   workflows      Workflows[]
+  userId   Int?
+  user     Users?    @relation(fields: [userId], references: [id])
+}
+
+model Users {
+  id        Int      @id @default(autoincrement())
+  uuid      String?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  username      String?   @db.VarChar(255)
+  email      String   @db.VarChar(255)
+  password      String   @db.VarChar(255)
+  provider      String   @db.VarChar(255)
+  workflows      Workflows[]
+  tables      Table[]
 }
 model Workflows {
   id          Int      @id @default(autoincrement())
@@ -31,14 +46,8 @@ model Workflows {
   uuid        String?
   tableId   Int?
   table     Table?    @relation(fields: [tableId], references: [id])
-}
-
-model Users {
-  id        Int      @id @default(autoincrement())
-  uuid      String?
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
-  name      String   @db.VarChar(255)
+  userId   Int?
+  user     Users?    @relation(fields: [userId], references: [id])
 }
 
 
