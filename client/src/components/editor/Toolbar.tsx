@@ -8,10 +8,14 @@ import {
   MenuItem,
   Stack,
 } from '@mui/material';
-import React from 'react';
+import React, { useState } from 'react';
 import { enqueueSnackbar } from 'notistack';
 import { Workflow } from 'models/Workflow';
 import { Icon } from '@iconify/react';
+import { useNavigate } from 'react-router-dom';
+import { LoadingButton } from '@material-ui/lab';
+import { set } from 'lodash';
+import { v4 as uuidv4 } from 'uuid';
 import { axiosInstance } from '@/utils/axios';
 import { useFlow } from '@/store/flow';
 import Theme from '@/theme/Theme';
@@ -24,16 +28,24 @@ function Toolbar({ refetch }: Props) {
   const { uuid, name, description, table, nodes, edges, flows } = useFlow(
     (state) => state
   ) as Workflow;
+  const navigate = useNavigate();
+  const [isRunning, setIsRunning] = useState(false);
+  const [processUUID, setProcessUUID] = useState('');
   const handleRun = async () => {
     try {
-      const response = await axiosInstance.post(
-        `/workflows/${uuid}/run`,
-        flows
-      );
-      console.log('🚀 ===== handleClick ===== response:', response);
-      enqueueSnackbar('Run workflow successfully', {
-        variant: 'success',
+      setIsRunning(true);
+      const process_uuid = uuidv4();
+      setProcessUUID(process_uuid);
+      const response = await axiosInstance.post(`/workflows/${uuid}/run`, {
+        process_uuid,
       });
+      console.log('🚀 ===== handleClick ===== response:', response);
+      if (response.status === 200) {
+        enqueueSnackbar('Run workflow successfully', {
+          variant: 'success',
+        });
+        setIsRunning(false);
+      }
     } catch (error) {
       console.log('🚀 ===== handleRun ===== error:', error);
       enqueueSnackbar('Run workflow fail', {
@@ -69,9 +81,26 @@ function Toolbar({ refetch }: Props) {
       enqueueSnackbar('Save workflow successfully', {
         variant: 'success',
       });
-      console.log('🚀 ===== handleSave ===== response:', response);
+      navigate(`/workflows/${response?.data?.uuid}`);
     } catch (error) {
       enqueueSnackbar('Save workflow failed', {
+        variant: 'error',
+      });
+    }
+  };
+
+  const handleCancel = async () => {
+    try {
+      const response = await axiosInstance.get(
+        `/api/processes/${processUUID}/cancel`
+      );
+      setIsRunning(false);
+      enqueueSnackbar('Cancel running workflow successfully', {
+        variant: 'success',
+      });
+    } catch (error) {
+      console.log('🚀 ===== handleCancel ===== error:', error);
+      enqueueSnackbar('Cancel running workflow failed', {
         variant: 'error',
       });
     }
@@ -88,14 +117,25 @@ function Toolbar({ refetch }: Props) {
           zIndex: 1000,
         }}
       >
-        <Button
+        {isRunning && (
+          <Button
+            startIcon={<Icon icon="codicon:stop-circle" />}
+            variant="contained"
+            color="error"
+            onClick={handleCancel}
+          >
+            Cancel
+          </Button>
+        )}
+        <LoadingButton
+          loading={isRunning}
           startIcon={<Icon icon="mdi:play" />}
           onClick={handleRun}
           variant="outlined"
           sx={{ bgcolor: 'neutral.pureWhite' }}
         >
           Run
-        </Button>
+        </LoadingButton>
         <Button
           startIcon={<Icon icon="mdi:content-save-outline" />}
           onClick={handleSave}

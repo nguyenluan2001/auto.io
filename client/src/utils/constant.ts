@@ -9,7 +9,11 @@ import stopCircleOutline from '@iconify/icons-mdi/stop-circle-outline';
 import repeatVariant from '@iconify/icons-mdi/repeat-variant';
 import codeBrackets from '@iconify/icons-mdi/code-brackets';
 
-export const { VITE_APP_SERVER_URL } = import.meta.env;
+export const {
+  VITE_APP_SERVER_URL,
+  VITE_APP_GOOGLE_CLIENT_ID,
+  VITE_APP_GOOGLE_CLIENT_SECRET,
+} = import.meta.env;
 export const ROWS_PER_PAGE = 10;
 export const WIDGET_ICON = {
   trigger: playCircle,
@@ -23,4 +27,5 @@ export const WIDGET_ICON = {
   'break-loop': stopCircleOutline,
   repeat: repeatVariant,
   'get-attribute': codeBrackets,
+  scroll: 'fluent:phone-vertical-scroll-20-regular',
 };

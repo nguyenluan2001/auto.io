@@ -1,0 +1,156 @@
+{
+    "name":"Google search",
+    "description":"This workflow is use for search on google automatically",
+    "nodes": [
+        {
+            "id": "bd889351-6931-4fc0-b1bd-145aace7db9b",
+            "data": {
+                "key": "trigger",
+                "icon": {
+                    "body": "<path fill=\"currentColor\" d=\"M10 16.5v-9l6 4.5M12 2A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2Z\"/>",
+                    "width": 24,
+                    "height": 24
+                },
+                "title": "Trigger",
+                "selector": "",
+                "description": ""
+            },
+            "type": "customNode",
+            "width": 95,
+            "height": 42,
+            "dragging": false,
+            "position": {
+                "x": -288.5,
+                "y": -67.5
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": -288.5,
+                "y": -67.5
+            }
+        },
+        {
+            "id": "da0dd570-4de8-418e-83c0-c88635ba1518",
+            "data": {
+                "key": "new-tab",
+                "url": "https://google.com",
+                "icon": {
+                    "body": "<path fill=\"currentColor\" d=\"M17.9 17.39c-.26-.8-1.01-1.39-1.9-1.39h-1v-3a1 1 0 0 0-1-1H8v-2h2a1 1 0 0 0 1-1V7h2a2 2 0 0 0 2-2v-.41a7.984 7.984 0 0 1 2.9 12.8M11 19.93c-3.95-.49-7-3.85-7-7.93c0-.62.08-1.22.21-1.79L9 15v1a2 2 0 0 0 2 2m1-16A10 10 0 0 0 2 12a10 10 0 0 0 10 10a10 10 0 0 0 10-10A10 10 0 0 0 12 2Z\"/>",
+                    "width": 24,
+                    "height": 24
+                },
+                "title": "New tab",
+                "description": "Go to https://google.com"
+            },
+            "type": "customNode",
+            "width": 158,
+            "height": 66,
+            "dragging": false,
+            "position": {
+                "x": -140.921875,
+                "y": -77.75
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": -140.921875,
+                "y": -77.75
+            }
+        },
+        {
+            "id": "cbc75445-d2b4-4752-b757-dfa935570cf1",
+            "data": {
+                "key": "form",
+                "icon": {
+                    "body": "<path fill=\"currentColor\" d=\"M17 7h5v10h-5v2a1 1 0 0 0 1 1h2v2h-2.5c-.55 0-1.5-.45-1.5-1c0 .55-.95 1-1.5 1H12v-2h2a1 1 0 0 0 1-1V5a1 1 0 0 0-1-1h-2V2h2.5c.55 0 1.5.45 1.5 1c0-.55.95-1 1.5-1H20v2h-2a1 1 0 0 0-1 1v2M2 7h11v2H4v6h9v2H2V7m18 8V9h-3v6h3Z\"/>",
+                    "width": 24,
+                    "height": 24
+                },
+                "title": "Form",
+                "value": "wikipedia",
+                "selector": "#APjFqb",
+                "description": "Input search bar"
+            },
+            "type": "customNode",
+            "width": 111,
+            "height": 66,
+            "dragging": false,
+            "position": {
+                "x": 101.578125,
+                "y": -78.25
+            },
+            "selected": false,
+            "positionAbsolute": {
+                "x": 101.578125,
+                "y": -78.25
+            }
+        },
+        {
+            "id": "e4d4c9d3-a5bf-4925-9a10-f04c37466336",
+            "data": {
+                "key": "event-click",
+                "icon": {
+                    "body": "<path fill=\"currentColor\" d=\"M10.07 14.27a.997.997 0 0 1 1.33.48l2.3 4.99l1.8-.85l-2.31-4.98c-.24-.5-.02-1.1.48-1.33l.28-.08l2.3-.45L8 5.12V15.9l1.82-1.47l.25-.16m3.57 7.7a.99.99 0 0 1-1.33-.47l-2.18-4.74l-2.51 2.02c-.17.14-.38.22-.62.22a1 1 0 0 1-1-1V3a1 1 0 0 1 1-1c.24 0 .47.09.64.23l.01-.01l11.49 9.64a1.001 1.001 0 0 1-.44 1.75l-3.16.62l2.2 4.73c.26.5.02 1.09-.48 1.32l-3.62 1.69Z\"/>",
+                    "width": 24,
+                    "height": 24
+                },
+                "title": "Click element",
+                "selector": "body > div.L3eUgb > div.o3j99.ikrT4e.om7nvf > form > div:nth-child(1) > div.A8SBwf > div.FPdoLc.lJ9FBc > center > input.gNO89b",
+                "description": "Click search"
+            },
+            "type": "customNode",
+            "width": 145,
+            "height": 66,
+            "dragging": false,
+            "position": {
+                "x": 268.420525,
+                "y": -76.36519999999996
+            },
+            "selected": true,
+            "positionAbsolute": {
+                "x": 268.420525,
+                "y": -76.36519999999996
+            }
+        }
+    ],
+    "edges": [
+        {
+            "id": "reactflow__edge-bd889351-6931-4fc0-b1bd-145aace7db9ba-da0dd570-4de8-418e-83c0-c88635ba1518",
+            "type": "customEdge",
+            "source": "bd889351-6931-4fc0-b1bd-145aace7db9b",
+            "target": "da0dd570-4de8-418e-83c0-c88635ba1518",
+            "markerEnd": {
+                "type": "arrowclosed",
+                "width": 20,
+                "height": 20
+            },
+            "sourceHandle": "a",
+            "targetHandle": null
+        },
+        {
+            "id": "reactflow__edge-da0dd570-4de8-418e-83c0-c88635ba1518a-cbc75445-d2b4-4752-b757-dfa935570cf1",
+            "type": "customEdge",
+            "source": "da0dd570-4de8-418e-83c0-c88635ba1518",
+            "target": "cbc75445-d2b4-4752-b757-dfa935570cf1",
+            "markerEnd": {
+                "type": "arrowclosed",
+                "width": 20,
+                "height": 20
+            },
+            "sourceHandle": "a",
+            "targetHandle": null
+        },
+        {
+            "id": "reactflow__edge-cbc75445-d2b4-4752-b757-dfa935570cf1a-e4d4c9d3-a5bf-4925-9a10-f04c37466336",
+            "type": "customEdge",
+            "source": "cbc75445-d2b4-4752-b757-dfa935570cf1",
+            "target": "e4d4c9d3-a5bf-4925-9a10-f04c37466336",
+            "markerEnd": {
+                "type": "arrowclosed",
+                "width": 20,
+                "height": 20
+            },
+            "sourceHandle": "a",
+            "targetHandle": null
+        }
+    ]
+}

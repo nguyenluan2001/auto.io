@@ -34,6 +34,7 @@
           "@/store/*": ["store/*"],
           "@/theme": ["theme"],
           "@/theme/*": ["theme/*"],
+          "@/HOCs/*": ["HOCs/*"],
     }
   },
   "include": ["src/**/*", ".eslintrc.json"],

@@ -13,6 +13,7 @@ import { Link, useLocation, useNavigate } from 'react-router-dom';
 import sitemapOutline from '@iconify/icons-mdi/sitemap-outline';
 import databaseIcon from '@iconify/icons-mdi/database';
 import { Icon, IconifyIcon } from '@iconify/react';
+import UserPopover from './UserPopover';
 
 function CustomIcon({ icon }: { icon: IconifyIcon }) {
   return <Icon style={{ fontSize: '24px' }} icon={icon} />;
@@ -74,6 +75,8 @@ function MainSidebar() {
           />
         ))}
       </List>
+      <Box sx={{ flex: 1 }} />
+      <UserPopover />
     </Stack>
   );
 }

@@ -21,6 +21,7 @@ import plusIcon from '@iconify/icons-mdi/plus';
 import { useNavigate } from 'react-router-dom';
 import { Controller, useForm } from 'react-hook-form';
 import { enqueueSnackbar } from 'notistack';
+import Auth from '@/HOCs/Auth';
 import { useWorkflows } from '@/hooks/useWorkflows';
 import { WorkflowList } from '../components/homepage/WorkflowList';
 import LoadingScreen from '@/components/common/LoadingScreen';

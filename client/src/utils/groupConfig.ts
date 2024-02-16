@@ -62,6 +62,12 @@ const GROUPS = [
         key: 'get-attribute',
         icon: WIDGET_ICON['get-attribute'],
       },
+      {
+        id: 5,
+        title: 'Scroll',
+        key: 'scroll',
+        icon: WIDGET_ICON.scroll,
+      },
     ],
   },
   {

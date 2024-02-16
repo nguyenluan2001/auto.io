@@ -6,6 +6,7 @@ import GetText from '@/components/nodeConfig/GetText';
 import LoopData from '@/components/nodeConfig/LoopData';
 import NewTab from '@/components/nodeConfig/NewTab';
 import Repeat from '@/components/nodeConfig/Repeat';
+import Scroll from '@/components/nodeConfig/Scroll';
 import Trigger from '@/components/nodeConfig/Trigger';
 
 const config: Record<string, any> = {
@@ -18,5 +19,6 @@ const config: Record<string, any> = {
   'break-loop': BreakLoop,
   repeat: Repeat,
   'get-attribute': GetAttribute,
+  scroll: Scroll,
 };
 export { config };

@@ -1,4 +1,5 @@
 import { RouterProvider, Routes, createBrowserRouter } from 'react-router-dom';
+import { GoogleOAuthProvider } from '@react-oauth/google';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { SnackbarProvider } from 'notistack';
 import { CookiesProvider } from 'react-cookie';
@@ -12,6 +13,7 @@ import TableDetail from './pages/TableDetail';
 import AuthLayout from './components/AuthLayout';
 import SignUp from './pages/SignUp';
 import SignIn from './pages/SignIn';
+import { VITE_APP_GOOGLE_CLIENT_ID } from './utils/constant';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -29,6 +31,7 @@ function App() {
       children: [
         {
           path: 'workflows',
+          // element: Homepage,
           element: <Homepage />,
         },
         {
@@ -73,10 +76,10 @@ function App() {
   return (
     <CookiesProvider defaultSetOptions={{ path: '/' }}>
       <QueryClientProvider client={queryClient}>
-        <SnackbarProvider>
-          {/* <Layout> */}
-          <RouterProvider router={router} />
-          {/* </Layout> */}
+        <SnackbarProvider autoHideDuration={2000}>
+          <GoogleOAuthProvider clientId={VITE_APP_GOOGLE_CLIENT_ID}>
+            <RouterProvider router={router} />
+          </GoogleOAuthProvider>
         </SnackbarProvider>
       </QueryClientProvider>
     </CookiesProvider>

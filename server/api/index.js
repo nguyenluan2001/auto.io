@@ -7,22 +7,37 @@ const app = express()
 const cors = require('cors')
 const queryType = require('query-types');
 const cookieParser = require('cookie-parser')
-require('dotenv').config()
+const passport = require('passport');
+const session = require('express-session')
+
 const workflowRouter = require('../routes/workflows')
 const tableRouter = require('../routes/tables')
 const authRouter = require('../routes/auth');
+const userRouter = require('../routes/users');
+const processRouter = require('../routes/process');
 const { auth } = require('../middlewares/auth');
-
+require('dotenv').config()
+require('../config/passport')
 
 app.use(cookieParser())
 app.use(cors())
 app.use(express.json())
 app.use(queryType.middleware())
+app.use(session({
+  secret: 'keyboard cat',
+  resave: false,
+  saveUninitialized: false,
+  cookie: { secure: true }
+}))
+app.use(passport.initialize())
+app.use(passport.session())
 
 
 app.use('/workflows', auth, workflowRouter)
 app.use('/tables', tableRouter)
 app.use('/api/auth', authRouter)
+app.use('/api/users', auth, userRouter)
+app.use('/api/processes', auth, processRouter)
 
 // app.get('/loop', async(req,res) => {
 //     const data = [

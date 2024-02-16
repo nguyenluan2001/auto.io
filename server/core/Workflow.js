@@ -25,10 +25,14 @@ class Workflow {
       'get-text': async (data) => await this.getText(data),
       'get-attribute': async (data) => await this.getAttribute(data),
       'loop-data': async (data) => await this.loop(data),
+      'scroll': async (data) => await this.scroll(data),
     };
     this.loopData = {};
     this.loopControl = new Map();
     this.currentLoopId = null;
+    this.breakLoopStack = []
+
+
     this.tableData = [];
     this.tableId = null;
   }
@@ -70,7 +74,6 @@ class Workflow {
             tableId: parseInt(this.tableId, 10),
           },
         });
-        console.log('🚀 ===== Workflow ===== getText ===== newRow:', newRow);
         this.tableData.push(newRow);
       } else {
         const lastRow = last(this.tableData);
@@ -99,7 +102,6 @@ class Workflow {
               tableId: parseInt(this.tableId, 10),
             },
           });
-          console.log('🚀 ===== Workflow ===== getText ===== newRow:', newRow);
           this.tableData.push(newRow);
         }
       }
@@ -111,10 +113,18 @@ class Workflow {
     await this.page.setViewport({ width: 1920, height: 1080 });
   }
 
-  async newTab({ url }) {
+  async newTab({ url, sourceData }) {
     console.log('===== NEW TAB =====');
-    console.log('🚀 ===== Workflow ===== newTab ===== url:', url);
-    await this.page?.goto(url);
+    let newUrl=''
+    if (url.match(/{{.*}}/)) {
+      const path = url.replace('{{', '').replace('}}', '');
+      const attributePath = path.split('.').splice(2).join('.');
+      newUrl = get(sourceData, attributePath);
+    }else {
+      newUrl=url
+    }
+
+    await this.page?.goto(newUrl);
   }
 
   async form({ selector, value, sourceData }) {
@@ -126,7 +136,6 @@ class Workflow {
     } else {
       newValue = value;
     }
-    console.log('🚀 ===== Workflow ===== form ===== newValue:', newValue);
     // await this.page.click(selector, {clickCount: 3})
     await this.page.focus(selector);
     await this.page.keyboard.down('Control');
@@ -151,21 +160,17 @@ class Workflow {
     select,
     order = 1,
   }) {
-    console.log('🚀 ===== Workflow ===== getText ===== order:', order);
     console.log('===== GET TEXT =====');
     let el = '';
     if (selector_type === 'SINGLE') {
       el = await this.page.waitForSelector(selector);
     } else {
-      console.log('selector', `${loop_through}:nth-child(${order}) ${select}`);
       el = await this.page.$(
         `${loop_through}:nth-child(${order}) ${select}`.replace("'", '"')
       );
     }
-    console.log('🚀 ===== Workflow ===== getText ===== el:', el);
     if (!el) return;
     const text = await (await el.getProperty('textContent')).jsonValue();
-    console.log('🚀 ===== Workflow ===== getText ===== text:', text);
     const isVariable = destination?.VARIABLE?.selected;
     const isTable = destination?.TABLE?.selected;
     if (isTable) {
@@ -183,10 +188,6 @@ class Workflow {
     order = 1,
     attribute,
   }) {
-    console.log(
-      '🚀 ===== Workflow ===== getAttribute ===== selector:',
-      selector
-    );
     console.log('===== GET ATTRIBUTE =====');
     let text = '';
     if (selector_type === 'SINGLE') {
@@ -211,12 +212,21 @@ class Workflow {
     // return text;
   }
 
+  async scroll({
+    selector,
+    scroll_behavior,
+    horizontal,
+    vertical,
+    order = 1,
+    attribute,
+  }) {
+    console.log('=== SCROLL ===')
+    await this.page.keyboard.press("PageDown");
+    await sleep(3000)
+  }
+
   async loop({ id, workflows, loop_through = 'CUSTOM_DATA' }) {
     try {
-      console.log(
-        '🚀 ===== Workflow ===== loop ===== workflows:',
-        JSON.stringify(workflows, null, 2)
-      );
       if (loop_through === 'CUSTOM_DATA') {
         for (const data of this.loopData[id]) {
           for (let i = 0; i < workflows?.length; i++) {
@@ -230,8 +240,6 @@ class Workflow {
         }
       } else {
         const { from, to } = this.loopData[id];
-        console.log('🚀 ===== Workflow ===== loop ===== from:', from);
-        console.log('🚀 ===== Workflow ===== loop ===== to:', to);
         for (let i = parseInt(from, 10); i <= parseInt(to, 10); i++) {
           console.log('🚀 ===== Workflow ===== loop ===== i:', i);
           for (let j = 0; j < workflows?.length; j++) {
@@ -251,14 +259,14 @@ class Workflow {
     }
   }
 
-  async breakLoop({ loopID }) {
+  async breakLoop(widget) {
+    const {loopID} = widget
+    // this.breakLoopStack.push(widget)
     const brokenLoop = this.loopControl.get(loopID);
-    console.log('🚀 ===== Workflow ===== run ===== brokenLoop:', brokenLoop);
     this.loopData = {
       ...this.loopData,
       [loopID]: brokenLoop?.data,
     };
-    console.log('loopData', this.loopData);
     await this.loop({
       id: loopID,
       workflows: brokenLoop.workflows,
@@ -287,10 +295,12 @@ class Workflow {
             loop_through: widget?.loop_through,
           });
           this.currentLoopId = widget?.id;
+          // console.log('loopControl', [...this.loopControl.entries()])
           break;
         }
         case 'break-loop': {
-          await this.breakLoop(widget);
+          // await this.breakLoop(widget);
+          this.breakLoopStack.push(widget)
           break;
         }
         default: {
@@ -304,6 +314,12 @@ class Workflow {
             });
           }
           break;
+        }
+      }
+      if(this.breakLoopStack.length===this.loopControl.size){
+        while(!isEmpty(this.breakLoopStack)){
+          const breakLoop = this.breakLoopStack.pop()
+          await this.breakLoop(breakLoop)
         }
       }
     }

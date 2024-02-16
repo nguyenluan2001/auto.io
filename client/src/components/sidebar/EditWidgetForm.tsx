@@ -109,6 +109,7 @@ const RenderForm = memo(function ({
     {
       ...selectedNode?.data,
       setValues,
+      id: selectedNode?.id,
     }
   );
 });

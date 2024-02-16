@@ -8,18 +8,47 @@ import {
 } from '@mui/material';
 import React, { useState } from 'react';
 import { Controller, useForm } from 'react-hook-form';
+import { yupResolver } from '@hookform/resolvers/yup';
 import { Icon } from '@iconify/react';
 import { useCookies } from 'react-cookie';
 import { enqueueSnackbar } from 'notistack';
 import { useNavigate } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
+import * as Yup from 'yup';
+import { GoogleLogin, useGoogleLogin } from '@react-oauth/google';
 import FieldTitle from '@/components/common/FieldTitle';
 import CustomTextField from '@/components/common/CustomTextField';
 import { axiosInstance } from '@/utils/axios';
 import { useSignUp } from '@/hooks/useSignUp';
 
 function SignUp() {
-  const { control, handleSubmit } = useForm();
+  const SCHEMA = Yup.object().shape({
+    email: Yup.string()
+      .email('Email must be a valid email')
+      .required('Email is required'),
+    password: Yup.string().required('Password is required'),
+    repeat_password: Yup.string()
+      .required('Repeat password is required')
+      .test(
+        'validate-password',
+        'Password did not match',
+        (value, context) => value === context.parent.password
+      ),
+  });
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm({
+    defaultValues: {
+      email: '',
+      password: '',
+      repeat_password: '',
+    },
+    resolver: yupResolver(SCHEMA),
+    mode: 'onSubmit',
+  });
+  console.log('🚀 ===== SignUp ===== errors:', errors);
   const [passwordToggle, setPasswordToggle] = useState({
     password: false,
     repeat_password: false,
@@ -27,8 +56,6 @@ function SignUp() {
   const [cookies, setCookie, removeCookie] = useCookies(['autoflow_token']);
   const navigate = useNavigate();
   const { data, mutateAsync, isLoading } = useSignUp();
-  console.log('🚀 ===== SignUp ===== data:', data);
-
   const handleTogglePassword = (type) => {
     setPasswordToggle((pre) => ({
       ...pre,
@@ -57,32 +84,56 @@ function SignUp() {
       console.log('🚀 ===== onSubmit ===== error:', error);
     }
   };
+  const onGoogleSuccess = async (credential) => {
+    try {
+      const response = await axiosInstance.post('/api/auth/google', {
+        token: credential?.credential,
+      });
+      if (response?.status === 200) {
+        setCookie('autoflow_token', response?.data?.data?.token);
+        enqueueSnackbar('Sign up successfully', {
+          variant: 'success',
+        });
+        return navigate('/workflows');
+      }
+      enqueueSnackbar('Sign up failed. Please try again.', {
+        variant: 'error',
+      });
+    } catch (error) {
+      enqueueSnackbar('Sign up failed. Please try again.');
+    }
+  };
+  // const onClickSignUpGoogle = () => {
+  //    window.location.href('http://localhost:3000/api/auth/google');
+  // };
   return (
     <Stack direction="column" spacing={2}>
-      <Button
-        variant="outlined"
-        fullWidth
-        startIcon={<Icon icon="flat-color-icons:google" />}
-      >
-        Sign up with Google
-      </Button>
-      <Divider>or</Divider>
+      {/* <GoogleLogin
+        onSuccess={onGoogleSuccess}
+        onError={() => {
+          console.log('Login Failed');
+        }}
+      />
+      <Divider>or</Divider> */}
       <Stack spacing={2} direction="column">
         <Box>
-          <FieldTitle title="Email" />
+          <FieldTitle title="Email" required />
           <Controller
             name="email"
             control={control}
-            render={({ field }) => <CustomTextField {...field} />}
+            render={({ field, formState: { errors } }) => (
+              <CustomTextField error={errors?.email} {...field} />
+            )}
           />
         </Box>
         <Box>
-          <FieldTitle title="Password" />
+          <FieldTitle required title="Password" />
           <Controller
             name="password"
             control={control}
-            render={({ field }) => (
+            render={({ field, formState: { errors } }) => (
               <CustomTextField
+                error={errors?.password}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -107,12 +158,13 @@ function SignUp() {
           />
         </Box>
         <Box>
-          <FieldTitle title="Repeat password" />
+          <FieldTitle required title="Repeat password" />
           <Controller
             name="repeat_password"
             control={control}
-            render={({ field }) => (
+            render={({ field, formState: { errors } }) => (
               <CustomTextField
+                error={errors?.repeat_password}
                 InputProps={{
                   endAdornment: (
                     <InputAdornment position="end">
@@ -135,6 +187,11 @@ function SignUp() {
               />
             )}
           />
+        </Box>
+        <Box>
+          <ul style={{ color: 'red' }}>
+            {Object.values(errors)?.map((error) => <li>{error?.message}</li>)}
+          </ul>
         </Box>
         <LoadingButton
           loading={isLoading}

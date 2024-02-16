@@ -167,6 +167,21 @@ const generateNode = ({ type, position }: Params) => {
         type: 'customNode',
       };
     }
+    case 'scroll': {
+      return {
+        id: uuidv4(),
+        data: {
+          title: 'Scroll',
+          key: 'scroll',
+          description: '',
+          url: '',
+          icon: WIDGET_ICON.scroll,
+          // numOfHandler: 2,
+        },
+        position,
+        type: 'customNode',
+      };
+    }
     default: {
       return false;
     }

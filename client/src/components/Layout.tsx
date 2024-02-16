@@ -2,6 +2,7 @@ import { Stack } from '@mui/material';
 import React from 'react';
 import { Outlet } from 'react-router-dom';
 import MainSidebar from './sidebar/MainSidebar';
+import Auth from '@/HOCs/Auth';
 
 function Layout() {
   return (
@@ -15,4 +16,4 @@ function Layout() {
   );
 }
 
-export default Layout;
+export default Auth(Layout);

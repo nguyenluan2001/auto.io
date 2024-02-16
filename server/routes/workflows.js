@@ -1,18 +1,26 @@
 const express = require('express');
 const { omit } = require('lodash');
 const { v4: uuidv4 } = require('uuid');
+const {fork} = require('child_process')
 const { prisma } = require('../config/prisma');
 const Workflow = require('../core/Workflow');
 const { convertFlow } = require('../helper/workflow');
 
 const router = express.Router();
 
-const runWorkflows = async ({workflows, uuid}, res) => {
+const runWorkflows = async ({id, uuid, workflows, process_uuid }, res) => {
     try{
 
-    console.log("🚀 ===== runWorkflows ===== workflows:", workflows);
-    const workflow = new Workflow(uuid, workflows)
-    workflow.run()
+    const childProcess = fork('./run.js')
+    childProcess.send({id, uuid, workflows, process_uuid})
+    childProcess.on('message', ({status}) => {
+        if(status==='SUCCESS'){
+            return res.json({message:"Run workflow successfully"})
+        }
+        return res.status(500).json({message:"Run workflow failed"})
+    })
+    // const workflow = new Workflow(uuid, workflows)
+    // workflow.run()
     }catch(error){
         console.log('error',error)
     }
@@ -138,24 +146,21 @@ router.put('/:uuid', async (req, res) => {
 router.post('/:uuid/run', async(req,res) => {
     const body=req?.body
     const {uuid} = req?.params
+    const {process_uuid} = body
     const workflow= await prisma.workflows.findFirst({
         where:{
             uuid
         }
     })
-    console.log("🚀 ===== router.post ===== workflow:", workflow);
     const flows = workflow?.flows?.map((item) => ({
         ...item?.data,
         id: item?.id
     }))
-    // const workflows = body.map((item) => ({
-    //   ...item?.data,
-    //   id: item?.id
-    // }))
     await runWorkflows({
       uuid,
+      id: workflow?.id,
       workflows:flows,
+      process_uuid
     },res)
-    return res.json({message:'connect oke'})
 })
 module.exports = router;
