@@ -1,10 +1,14 @@
-import { RouterProvider, Routes, createBrowserRouter } from 'react-router-dom';
+import {
+  Navigate,
+  RouterProvider,
+  Routes,
+  createBrowserRouter,
+} from 'react-router-dom';
 import { GoogleOAuthProvider } from '@react-oauth/google';
 import { QueryClient, QueryClientProvider } from 'react-query';
 import { SnackbarProvider } from 'notistack';
 import { CookiesProvider } from 'react-cookie';
-import Homepage from './pages/Homepage';
-import WorkflowEdit from './components/WorkflowEdit';
+import { useEffect } from 'react';
 import EditPage from './pages/EditPage';
 import Storage from './pages/Storage';
 import Layout from './components/Layout';
@@ -14,6 +18,8 @@ import AuthLayout from './components/AuthLayout';
 import SignUp from './pages/SignUp';
 import SignIn from './pages/SignIn';
 import { VITE_APP_GOOGLE_CLIENT_ID } from './utils/constant';
+import { socket } from './utils/socket';
+import Workflow from './pages/Workflow';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -30,9 +36,12 @@ function App() {
       element: <Layout />,
       children: [
         {
+          path: '/',
+          element: <Navigate to="/workflows" />,
+        },
+        {
           path: 'workflows',
-          // element: Homepage,
-          element: <Homepage />,
+          element: <Workflow />,
         },
         {
           path: 'storage',
@@ -73,6 +82,11 @@ function App() {
       ],
     },
   ]);
+  useEffect(() => {
+    socket.on('test', (data) => {
+      console.log('🚀 ===== socket.on ===== data:', data);
+    });
+  }, []);
   return (
     <CookiesProvider defaultSetOptions={{ path: '/' }}>
       <QueryClientProvider client={queryClient}>

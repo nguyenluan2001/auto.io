@@ -1,8 +1,12 @@
 const express = require('express');
 const { omit } = require('lodash');
 const qs = require('qs')
+const stream = require('stream')
+const fastcsv = require('fast-csv')
 const { prisma } = require('../config/prisma');
-const {parseQuery} = require('../helper/request')
+const {parseQuery} = require('../helper/request');
+const { exportData } = require('../helper/export');
+
 
 const router = express.Router();
 
@@ -15,7 +19,10 @@ router.post('/',async(req,res) => {
       name:body?.name,
       columns:{
         create: body?.columns
-      }
+      },
+      user:{
+          connect: { id: req?.user?.id }
+      },
     },
     include:{
       columns:true
@@ -29,6 +36,11 @@ router.post('/',async(req,res) => {
 router.get('/',async(req,res) => {
   try{
     const tables = await prisma.table.findMany({
+      where:{
+          user:{
+              id: req?.user?.id
+          }
+      },
       include:{
         columns:true
       }
@@ -155,6 +167,50 @@ router.get('/:id/clear',async(req,res) => {
     const transaction = await prisma.$transaction([deleteColumns])
     console.log("🚀 ===== router.delete ===== transaction:", transaction);
     res.status(200).json({message:"Clear success"})
+  }catch(error){
+    console.log("🚀 ===== router.get ===== error:", error);
+    res.status(500).json({message:'Error'})
+  }
+})
+router.get('/:id/export',async(req,res) => {
+  try{
+    const {id}=req.params
+    const {t:type}=req.query
+    const table = await prisma.table.findUnique({
+      // select:{
+      //   id:true,
+      //   name:true
+      // },
+      where:{
+        id:parseInt(id,10)
+      },
+      include:{
+        columns:true,
+        _count:{
+          select:{
+            rows:true
+          }
+        }
+        // rows:true
+      }
+    })
+    let rows = await prisma.row.findMany({
+      where:{
+        table:{
+          id: parseInt(id, 10)
+        }
+      },
+      orderBy:{
+        id:'asc'
+      }
+    })
+    rows = rows.map((row) => row?.data)
+    const columns = table?.columns?.map((col) => ({
+      header: col?.name,
+      key: col?.name,
+      width: 10,
+    }))
+    return exportData({type, table:{columns, rows}, res})
   }catch(error){
     console.log("🚀 ===== router.get ===== error:", error);
     res.status(500).json({message:'Error'})

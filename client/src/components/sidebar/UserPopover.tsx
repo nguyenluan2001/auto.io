@@ -14,14 +14,15 @@ import React from 'react';
 import { Icon } from '@iconify/react';
 import Cookies from 'js-cookie';
 import { useNavigate } from 'react-router-dom';
+import { ClickEvent } from 'models/Event';
 import { useUser } from '@/store/user';
 
 function UserPopover() {
-  const { setCurrentUser, currentUser } = useUser((state) => state);
+  const { setCurrentUser, currentUser } = useUser((state: any) => state);
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const navigate = useNavigate();
   const open = Boolean(anchorEl);
-  const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
+  const handleClick = (event: ClickEvent) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
@@ -37,10 +38,14 @@ function UserPopover() {
   };
   return (
     <Box sx={{ p: 2 }}>
-      <Avatar onClick={handleClick}>{currentUser?.email?.[0]}</Avatar>
-      <Paper width={320}>
+      <Box
+        onClick={handleClick}
+        sx={{ cursor: 'pointer', width: '40px', height: '40px' }}
+      >
+        <Avatar>{currentUser?.email?.[0]}</Avatar>
+      </Box>
+      <Paper>
         <Menu
-          dense
           anchorOrigin={{
             vertical: 'bottom',
             horizontal: 'right',
@@ -62,11 +67,8 @@ function UserPopover() {
               },
             },
           }}
-          anchorPosition={{
-            left: 800,
-          }}
         >
-          <Typography variant="body" sx={{ fontWeight: 600 }}>
+          <Typography variant="body1" sx={{ fontWeight: 600 }}>
             SIGNED IN AS
           </Typography>
           <Stack direction="row" spacing={2} sx={{ p: 1, py: 2 }}>

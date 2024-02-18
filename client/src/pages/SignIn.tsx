@@ -41,16 +41,18 @@ function SignIn() {
     resolver: yupResolver(SCHEMA),
     mode: 'onSubmit',
   });
-  const [passwordToggle, setPasswordToggle] = useState({
-    password: false,
-    repeat_password: false,
-  });
+  const [passwordToggle, setPasswordToggle] = useState<Record<string, boolean>>(
+    {
+      password: false,
+      repeat_password: false,
+    }
+  );
   const [cookies, setCookie, removeCookie] = useCookies(['autoflow_token']);
   const navigate = useNavigate();
   const { data, mutateAsync, isLoading } = useSignIn();
   console.log('🚀 ===== SignUp ===== data:', data);
 
-  const handleTogglePassword = (type) => {
+  const handleTogglePassword = (type: string) => {
     setPasswordToggle((pre) => ({
       ...pre,
       [type]: !pre?.[type],
@@ -70,7 +72,7 @@ function SignIn() {
         });
         return navigate('/workflows');
       }
-      enqueueSnackbar('Sign in failed. Please try again.', {
+      return enqueueSnackbar('Sign in failed. Please try again.', {
         variant: 'error',
       });
     } catch (error) {
@@ -79,29 +81,30 @@ function SignIn() {
       });
       console.log('🚀 ===== onSubmit ===== error:', error);
     }
+    return true;
   };
-  const onGoogleSuccess = async (credential) => {
-    try {
-      const response = await axiosInstance.post('/api/auth/google', {
-        token: credential?.credential,
-      });
-      if (response?.status === 200) {
-        setCookie('autoflow_token', response?.data?.data?.token);
-        enqueueSnackbar('Sign in successfully', {
-          variant: 'success',
-        });
-        return navigate('/workflows');
-      }
-      enqueueSnackbar('Sign in failed. Please try again.', {
-        variant: 'error',
-      });
-    } catch (error) {
-      enqueueSnackbar('Sign in failed. Please try again.');
-    }
-  };
-  const login = useGoogleLogin({
-    onSuccess: (tokenResponse) => console.log(tokenResponse),
-  });
+  // const onGoogleSuccess = async (credential) => {
+  //   try {
+  //     const response = await axiosInstance.post('/api/auth/google', {
+  //       token: credential?.credential,
+  //     });
+  //     if (response?.status === 200) {
+  //       setCookie('autoflow_token', response?.data?.data?.token);
+  //       enqueueSnackbar('Sign in successfully', {
+  //         variant: 'success',
+  //       });
+  //       return navigate('/workflows');
+  //     }
+  //     enqueueSnackbar('Sign in failed. Please try again.', {
+  //       variant: 'error',
+  //     });
+  //   } catch (error) {
+  //     enqueueSnackbar('Sign in failed. Please try again.');
+  //   }
+  // };
+  // const login = useGoogleLogin({
+  //   onSuccess: (tokenResponse) => console.log(tokenResponse),
+  // });
   return (
     <form onSubmit={handleSubmit(onSubmit)}>
       <Stack direction="column" spacing={2}>
@@ -126,7 +129,7 @@ function SignIn() {
             <Controller
               name="email"
               control={control}
-              render={({ field, formState: { errors } }) => (
+              render={({ field }) => (
                 <CustomTextField error={errors?.email} {...field} />
               )}
             />
@@ -136,7 +139,7 @@ function SignIn() {
             <Controller
               name="password"
               control={control}
-              render={({ field, formState: { errors } }) => (
+              render={({ field }) => (
                 <CustomTextField
                   error={errors?.password}
                   InputProps={{
@@ -164,7 +167,9 @@ function SignIn() {
           </Box>
           <Box>
             <ul style={{ color: 'red' }}>
-              {Object.values(errors)?.map((error) => <li>{error?.message}</li>)}
+              {Object.values(errors)?.map((error, index) => (
+                <li key={index}>{error?.message}</li>
+              ))}
             </ul>
           </Box>
           <LoadingButton

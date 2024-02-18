@@ -1,12 +1,12 @@
-import { useNavigate } from 'react-router-dom';
+import { Navigate, useNavigate } from 'react-router-dom';
 import { useEffect } from 'react';
 import { useCurrentUser } from '@/hooks/useCurrentUser';
 import LoadingScreen from '@/components/common/LoadingScreen';
 import { useUser } from '@/store/user';
 
-const Auth = (Component) =>
-  function (props) {
-    const { setCurrentUser, currentUser } = useUser((state) => state);
+const Auth = (Component: React.FC<any>) =>
+  function (props: any) {
+    const { setCurrentUser, currentUser } = useUser((state: any) => state);
     const {
       data: user,
       isLoading,
@@ -26,7 +26,7 @@ const Auth = (Component) =>
     if (!user?.id) {
       console.log('🚀 ===== user:', user);
       console.log('navigate');
-      return navigate('/sign-in');
+      return <Navigate to="/sign-in" />;
     }
 
     return <Component {...props} />;

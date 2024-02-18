@@ -108,12 +108,12 @@ function DialogAddTable({
     try {
       if (initialData) {
         const { id } = initialData;
-        await axiosInstance.put(`/tables/${id}`, values);
+        await axiosInstance.put(`/api/tables/${id}`, values);
         enqueueSnackbar('Update table successfully', {
           variant: 'success',
         });
       } else {
-        const response = await axiosInstance.post('/tables', values);
+        const response = await axiosInstance.post('/api/tables', values);
         enqueueSnackbar('Create table successfully', {
           variant: 'success',
         });

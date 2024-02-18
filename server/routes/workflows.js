@@ -2,16 +2,19 @@ const express = require('express');
 const { omit } = require('lodash');
 const { v4: uuidv4 } = require('uuid');
 const {fork} = require('child_process')
+const net = require('net')
 const { prisma } = require('../config/prisma');
 const Workflow = require('../core/Workflow');
 const { convertFlow } = require('../helper/workflow');
 
 const router = express.Router();
 
-const runWorkflows = async ({id, uuid, workflows, process_uuid }, res) => {
+const runWorkflows = async ({id, uuid, workflows, process_uuid },req, res) => {
     try{
-
-    const childProcess = fork('./run.js')
+    // setInterval(() => {
+    //   req.app.get('socket').emit('test', new Date());
+    // }, 1000)
+    const childProcess = fork('./core/run_process.js')
     childProcess.send({id, uuid, workflows, process_uuid})
     childProcess.on('message', ({status}) => {
         if(status==='SUCCESS'){
@@ -19,6 +22,7 @@ const runWorkflows = async ({id, uuid, workflows, process_uuid }, res) => {
         }
         return res.status(500).json({message:"Run workflow failed"})
     })
+
     // const workflow = new Workflow(uuid, workflows)
     // workflow.run()
     }catch(error){
@@ -161,6 +165,6 @@ router.post('/:uuid/run', async(req,res) => {
       id: workflow?.id,
       workflows:flows,
       process_uuid
-    },res)
+    },req, res)
 })
 module.exports = router;

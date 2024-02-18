@@ -17,7 +17,7 @@ const useTableById = ({
       const stringifyQuery = qs.stringify(query);
       console.log('🚀 ===== stringifyQuery:', stringifyQuery);
       const response = await axiosInstance.get(
-        `/tables/${id}?${stringifyQuery}`
+        `/api/tables/${id}?${stringifyQuery}`
       );
       return response.data;
     },

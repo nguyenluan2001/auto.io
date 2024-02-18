@@ -30,7 +30,7 @@ import CustomTextField from '@/components/common/CustomTextField';
 import UploadFile from '@/components/common/UploadFile';
 import { axiosInstance } from '@/utils/axios';
 
-function Homepage() {
+function Workflow() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [isOpenDialog, setIsOpenDialog] = useState<boolean>(false);
   const { data, isLoading } = useWorkflows();
@@ -188,4 +188,4 @@ function DialogImportWorkflow({ open, onClose }: DialogProps) {
   );
 }
 
-export default Homepage;
+export default Workflow;

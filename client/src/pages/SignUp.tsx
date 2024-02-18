@@ -49,14 +49,16 @@ function SignUp() {
     mode: 'onSubmit',
   });
   console.log('🚀 ===== SignUp ===== errors:', errors);
-  const [passwordToggle, setPasswordToggle] = useState({
-    password: false,
-    repeat_password: false,
-  });
+  const [passwordToggle, setPasswordToggle] = useState<Record<string, boolean>>(
+    {
+      password: false,
+      repeat_password: false,
+    }
+  );
   const [cookies, setCookie, removeCookie] = useCookies(['autoflow_token']);
   const navigate = useNavigate();
   const { data, mutateAsync, isLoading } = useSignUp();
-  const handleTogglePassword = (type) => {
+  const handleTogglePassword = (type: string) => {
     setPasswordToggle((pre) => ({
       ...pre,
       [type]: !pre?.[type],
@@ -83,26 +85,27 @@ function SignUp() {
       enqueueSnackbar('Sign up failed. Please try again.');
       console.log('🚀 ===== onSubmit ===== error:', error);
     }
+    return true;
   };
-  const onGoogleSuccess = async (credential) => {
-    try {
-      const response = await axiosInstance.post('/api/auth/google', {
-        token: credential?.credential,
-      });
-      if (response?.status === 200) {
-        setCookie('autoflow_token', response?.data?.data?.token);
-        enqueueSnackbar('Sign up successfully', {
-          variant: 'success',
-        });
-        return navigate('/workflows');
-      }
-      enqueueSnackbar('Sign up failed. Please try again.', {
-        variant: 'error',
-      });
-    } catch (error) {
-      enqueueSnackbar('Sign up failed. Please try again.');
-    }
-  };
+  // const onGoogleSuccess = async (credential) => {
+  //   try {
+  //     const response = await axiosInstance.post('/api/auth/google', {
+  //       token: credential?.credential,
+  //     });
+  //     if (response?.status === 200) {
+  //       setCookie('autoflow_token', response?.data?.data?.token);
+  //       enqueueSnackbar('Sign up successfully', {
+  //         variant: 'success',
+  //       });
+  //       return navigate('/workflows');
+  //     }
+  //     enqueueSnackbar('Sign up failed. Please try again.', {
+  //       variant: 'error',
+  //     });
+  //   } catch (error) {
+  //     enqueueSnackbar('Sign up failed. Please try again.');
+  //   }
+  // };
   // const onClickSignUpGoogle = () => {
   //    window.location.href('http://localhost:3000/api/auth/google');
   // };
@@ -121,7 +124,7 @@ function SignUp() {
           <Controller
             name="email"
             control={control}
-            render={({ field, formState: { errors } }) => (
+            render={({ field }) => (
               <CustomTextField error={errors?.email} {...field} />
             )}
           />
@@ -131,7 +134,7 @@ function SignUp() {
           <Controller
             name="password"
             control={control}
-            render={({ field, formState: { errors } }) => (
+            render={({ field }) => (
               <CustomTextField
                 error={errors?.password}
                 InputProps={{
@@ -162,7 +165,7 @@ function SignUp() {
           <Controller
             name="repeat_password"
             control={control}
-            render={({ field, formState: { errors } }) => (
+            render={({ field }) => (
               <CustomTextField
                 error={errors?.repeat_password}
                 InputProps={{
@@ -190,7 +193,9 @@ function SignUp() {
         </Box>
         <Box>
           <ul style={{ color: 'red' }}>
-            {Object.values(errors)?.map((error) => <li>{error?.message}</li>)}
+            {Object.values(errors)?.map((error, index) => (
+              <li key={index}>{error?.message}</li>
+            ))}
           </ul>
         </Box>
         <LoadingButton

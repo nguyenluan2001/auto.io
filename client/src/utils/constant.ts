@@ -29,3 +29,8 @@ export const WIDGET_ICON = {
   'get-attribute': codeBrackets,
   scroll: 'fluent:phone-vertical-scroll-20-regular',
 };
+export const FILE_EXTENSION = {
+  'application/json': 'json',
+  'application/csv': 'csv',
+  'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet': 'xlsx',
+};

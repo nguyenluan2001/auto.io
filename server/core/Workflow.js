@@ -5,6 +5,7 @@ const fs = require('fs');
 const path = require('path');
 const mustache = require('mustache');
 const { PrismaClient } = require('@prisma/client');
+// const socket = require("./socket")?.connection()
 
 const prisma = new PrismaClient();
 const { NODE_ENV } = process.env;
@@ -277,51 +278,59 @@ class Workflow {
   }
 
   async run() {
-    await this.launch();
-    for (let i = 0; i < this.workflows?.length; i++) {
-      const widget = this.workflows[i];
-      switch (widget?.key) {
-        case 'trigger': {
-          await this.trigger();
-          break;
-        }
-        case 'loop-data': {
-          this.loopControl.set(widget?.id, {
-            data:
-              widget?.loop_through === 'CUSTOM_DATA'
-                ? JSON.parse(widget?.data)
-                : widget?.numbers,
-            workflows: [],
-            loop_through: widget?.loop_through,
-          });
-          this.currentLoopId = widget?.id;
-          // console.log('loopControl', [...this.loopControl.entries()])
-          break;
-        }
-        case 'break-loop': {
-          // await this.breakLoop(widget);
-          this.breakLoopStack.push(widget)
-          break;
-        }
-        default: {
-          if (this.loopControl.size === 0) {
-            await this.handlers?.[widget?.key](widget);
-          } else {
-            const currentLoop = this.loopControl.get(this.currentLoopId);
-            this.loopControl.set(this.currentLoopId, {
-              ...currentLoop,
-              workflows: [...(currentLoop?.workflows || []), widget],
-            });
+    try{
+      await this.launch();
+      for (let i = 0; i < this.workflows?.length; i++) {
+        const widget = this.workflows[i];
+        
+        // socket.sendEvent(widget?.id, 'RUNNING')
+        switch (widget?.key) {
+          case 'trigger': {
+            await this.trigger();
+            break;
           }
-          break;
+          case 'loop-data': {
+            this.loopControl.set(widget?.id, {
+              data:
+                widget?.loop_through === 'CUSTOM_DATA'
+                  ? JSON.parse(widget?.data)
+                  : widget?.numbers,
+              workflows: [],
+              loop_through: widget?.loop_through,
+            });
+            this.currentLoopId = widget?.id;
+            // console.log('loopControl', [...this.loopControl.entries()])
+            break;
+          }
+          case 'break-loop': {
+            // await this.breakLoop(widget);
+            this.breakLoopStack.push(widget)
+            break;
+          }
+          default: {
+            if (this.loopControl.size === 0) {
+              await this.handlers?.[widget?.key](widget);
+            } else {
+              const currentLoop = this.loopControl.get(this.currentLoopId);
+              this.loopControl.set(this.currentLoopId, {
+                ...currentLoop,
+                workflows: [...(currentLoop?.workflows || []), widget],
+              });
+            }
+            break;
+          }
         }
-      }
-      if(this.breakLoopStack.length===this.loopControl.size){
-        while(!isEmpty(this.breakLoopStack)){
-          const breakLoop = this.breakLoopStack.pop()
-          await this.breakLoop(breakLoop)
+        if(this.breakLoopStack.length===this.loopControl.size){
+          while(!isEmpty(this.breakLoopStack)){
+            const breakLoop = this.breakLoopStack.pop()
+            await this.breakLoop(breakLoop)
+          }
         }
+        // await app.get('socketio').emit(widget?.id, 'SUCCESS')
       }
+
+    }catch(error){
+      console.log("🚀 ===== Workflow ===== run ===== error:", error);
     }
     // await this.close()
   }
