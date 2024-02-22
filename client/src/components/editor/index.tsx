@@ -101,7 +101,7 @@ function Editor({ onDragOver, onDrop, setReactFlowInstance, refetch }: Props) {
     [nodes, edges]
   );
   return (
-    <Box sx={{ height: '100vh', width: '100%' }}>
+    <Box sx={{ height: '100vh', width: '100%', position: 'relative' }}>
       <Toolbar refetch={refetch} />
       <ReactFlow
         onNodesChange={onNodesChange}

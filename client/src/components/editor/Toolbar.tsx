@@ -1,6 +1,9 @@
 import {
   Box,
   Button,
+  Dialog,
+  DialogContent,
+  DialogTitle,
   IconButton,
   ListItemIcon,
   ListItemText,
@@ -19,6 +22,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { axiosInstance } from '@/utils/axios';
 import { useFlow } from '@/store/flow';
 import Theme from '@/theme/Theme';
+import ProcessLog from '../common/ProcessLog';
 
 type Props = {
   refetch: () => void;
@@ -113,37 +117,44 @@ function Toolbar({ refetch }: Props) {
         sx={{
           position: 'absolute',
           top: 10,
-          right: 10,
+          // right: 10,
+          // left: 10,
           zIndex: 1000,
+          width: 'inherit',
+          p: 2,
         }}
+        justifyContent="space-between"
       >
-        {isRunning && (
-          <Button
-            startIcon={<Icon icon="codicon:stop-circle" />}
-            variant="contained"
-            color="error"
-            onClick={handleCancel}
+        <LogButton />
+        <Stack direction="row" spacing={2}>
+          {isRunning && (
+            <Button
+              startIcon={<Icon icon="codicon:stop-circle" />}
+              variant="contained"
+              color="error"
+              onClick={handleCancel}
+            >
+              Cancel
+            </Button>
+          )}
+          <LoadingButton
+            loading={isRunning}
+            startIcon={<Icon icon="mdi:play" />}
+            onClick={handleRun}
+            variant="outlined"
+            sx={{ bgcolor: 'neutral.pureWhite' }}
           >
-            Cancel
+            Run
+          </LoadingButton>
+          <Button
+            startIcon={<Icon icon="mdi:content-save-outline" />}
+            onClick={handleSave}
+            variant="contained"
+          >
+            Save
           </Button>
-        )}
-        <LoadingButton
-          loading={isRunning}
-          startIcon={<Icon icon="mdi:play" />}
-          onClick={handleRun}
-          variant="outlined"
-          sx={{ bgcolor: 'neutral.pureWhite' }}
-        >
-          Run
-        </LoadingButton>
-        <Button
-          startIcon={<Icon icon="mdi:content-save-outline" />}
-          onClick={handleSave}
-          variant="contained"
-        >
-          Save
-        </Button>
-        <MoreButton />
+          <MoreButton />
+        </Stack>
       </Stack>
     </Theme>
   );
@@ -194,6 +205,40 @@ function MoreButton() {
         </MenuItem>
       </Menu>
     </>
+  );
+}
+function LogButton() {
+  const [isOpen, setIsOpen] = useState(false);
+  const toggleDialog = () => setIsOpen((pre) => !pre);
+  return (
+    <Box>
+      <Button
+        startIcon={<Icon icon="icon-park-outline:log" />}
+        sx={{ height: 'inherit' }}
+        variant="contained"
+        onClick={toggleDialog}
+      >
+        Logs
+      </Button>
+      <Dialog fullWidth maxWidth="md" open={isOpen}>
+        <DialogTitle>Logs</DialogTitle>
+        <IconButton
+          aria-label="close"
+          onClick={toggleDialog}
+          sx={{
+            position: 'absolute',
+            right: 8,
+            top: 8,
+            color: (theme) => theme.palette.grey[500],
+          }}
+        >
+          <Icon icon="mdi:close" />
+        </IconButton>
+        <DialogContent>
+          <ProcessLog />
+        </DialogContent>
+      </Dialog>
+    </Box>
   );
 }
 

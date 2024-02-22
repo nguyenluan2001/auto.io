@@ -28,6 +28,7 @@
     "@uiw/react-codemirror": "^4.21.20",
     "axios": "^1.6.1",
     "codemirror": "^6.0.1",
+    "dayjs": "^1.11.10",
     "js-cookie": "^3.0.5",
     "localforage": "^1.10.0",
     "lodash": "^4.17.21",
