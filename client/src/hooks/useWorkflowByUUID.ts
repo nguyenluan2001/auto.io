@@ -10,7 +10,7 @@ const useWorkflowByUUID = ({ uuid, options }: Params) =>
   useQuery<unknown, unknown, Workflow>(
     ['get-workflow-by-uuid', uuid],
     async () => {
-      const response = await axiosInstance.get(`/workflows/${uuid}`);
+      const response = await axiosInstance.get(`/api/workflows/${uuid}`);
       console.log('🚀 ===== response:', response);
       return response.data;
     },

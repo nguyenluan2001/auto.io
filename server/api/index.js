@@ -40,12 +40,11 @@ app.use(passport.initialize())
 app.use(passport.session())
 
 
-// app.use('/workflows', auth, workflowRouter)
 app.use('/api/tables',auth, tableRouter)
 app.use('/api/auth', authRouter)
 app.use('/api/users', auth, userRouter)
 app.use('/api/processes', auth, processRouter)
-app.use('/workflows', auth, workflowRouter)
+app.use('/api/workflows', auth, workflowRouter)
 // connect(server);
 
 

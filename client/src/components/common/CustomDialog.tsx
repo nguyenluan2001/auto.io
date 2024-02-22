@@ -7,13 +7,14 @@ import {
   Stack,
   Typography,
 } from '@mui/material';
+import { ClickEvent } from 'models/Event';
 
 type Props = {
   open: boolean;
   title: string;
   description: string;
-  handleConfirm: () => void;
-  handleCancel: () => void;
+  handleConfirm: (e: ClickEvent) => void;
+  handleCancel: (e: ClickEvent) => void;
 };
 function CustomDialog({
   open,
@@ -23,7 +24,12 @@ function CustomDialog({
   handleCancel,
 }: Props) {
   return (
-    <Dialog open={open} maxWidth="xs" fullWidth>
+    <Dialog
+      onBackdropClick={(e) => e.stopPropagation()}
+      open={open}
+      maxWidth="xs"
+      fullWidth
+    >
       <DialogTitle>{title}</DialogTitle>
       <DialogContent>
         <Typography>{description}</Typography>

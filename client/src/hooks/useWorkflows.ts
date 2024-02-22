@@ -3,7 +3,7 @@ import { axiosInstance } from '@/utils/axios';
 
 const useWorkflows = () =>
   useQuery(['get-list-workflow'], () =>
-    axiosInstance.get('/workflows').then((data) => data?.data)
+    axiosInstance.get('/api/workflows').then((data) => data?.data)
   );
 
 export { useWorkflows };

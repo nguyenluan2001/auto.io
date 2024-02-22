@@ -6,6 +6,7 @@ const net = require('net')
 const { prisma } = require('../config/prisma');
 const Workflow = require('../core/Workflow');
 const { convertFlow } = require('../helper/workflow');
+const {  exportWorkflow } = require('../helper/export');
 
 const router = express.Router();
 
@@ -166,5 +167,81 @@ router.post('/:uuid/run', async(req,res) => {
       workflows:flows,
       process_uuid
     },req, res)
+})
+router.get('/:uuid/export', async (req, res) => {
+    console.log('params', req.params);
+    const { uuid } = req.params;
+    const workflow = await prisma.workflows.findFirst({
+        where: {
+            uuid,
+        },
+    });
+    const {nodes, edges} = workflow
+    return exportWorkflow({type:'JSON', data: JSON.stringify({nodes, edges}), res})
+});
+router.post('/:uuid/duplicate', async (req, res) => {
+    const { uuid } = req.params;
+    const { name } = req.body;
+    const workflow = await prisma.workflows.findFirst({
+        where: {
+            uuid,
+        },
+        include: {
+            table: true,
+        },
+    });
+    console.log("🚀 ===== router.post ===== workflow:", workflow);
+    const {description, nodes, edges, flows, table} = workflow
+    const duplicatedWorkflow = await prisma.workflows.create({
+        data:{
+            name,
+            description,
+            nodes,
+            edges,
+            flows,
+            uuid: uuidv4(),
+            user:{
+                connect:{id: req?.user?.id}
+            },
+            ...(table && {
+                table:{
+                    connect:{id: table?.id }
+                }
+            })
+        }
+    })
+    return res.json({message:"Duplicate successfully", uuid: duplicatedWorkflow?.uuid})
+});
+router.delete('/:uuid', async (req, res) => {
+    try{
+        const {uuid} = req.params
+        const workflow = await prisma.workflows.findFirst({
+            where:{
+                uuid
+            }
+        })
+        await prisma.workflows.update({
+            where:{
+                id: workflow?.id
+            },
+            data:{
+                processes:{
+                    deleteMany:{}
+                }
+            },
+            include:{
+                processes:true
+            }
+        })
+        await prisma.workflows.deleteMany({
+            where:{
+                uuid
+            }
+        })
+        return res.json({message:"Delete successfully"})
+    }catch(error){
+        console.log("🚀 ===== router.delete ===== error:", error);
+        return res.status(500)
+    }
 })
 module.exports = router;

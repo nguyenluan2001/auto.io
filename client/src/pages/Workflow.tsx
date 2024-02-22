@@ -33,7 +33,7 @@ import { axiosInstance } from '@/utils/axios';
 function Workflow() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const [isOpenDialog, setIsOpenDialog] = useState<boolean>(false);
-  const { data, isLoading } = useWorkflows();
+  const { data, isLoading, refetch } = useWorkflows();
   const navigate = useNavigate();
   const onClickCreate = () => {
     navigate('/create');
@@ -89,7 +89,7 @@ function Workflow() {
         </Menu>
       </Stack>
       <Stack>
-        <WorkflowList workflows={data} />
+        <WorkflowList workflows={data} refetch={refetch} />
       </Stack>
       <DialogImportWorkflow open={isOpenDialog} onClose={toggleDialog} />
     </Container>

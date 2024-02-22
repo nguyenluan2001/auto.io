@@ -1,11 +1,8 @@
 const express = require('express');
 const { omit } = require('lodash');
-const qs = require('qs')
-const stream = require('stream')
-const fastcsv = require('fast-csv')
 const { prisma } = require('../config/prisma');
 const {parseQuery} = require('../helper/request');
-const { exportData } = require('../helper/export');
+const {  exportTable } = require('../helper/export');
 
 
 const router = express.Router();
@@ -177,10 +174,6 @@ router.get('/:id/export',async(req,res) => {
     const {id}=req.params
     const {t:type}=req.query
     const table = await prisma.table.findUnique({
-      // select:{
-      //   id:true,
-      //   name:true
-      // },
       where:{
         id:parseInt(id,10)
       },
@@ -191,7 +184,6 @@ router.get('/:id/export',async(req,res) => {
             rows:true
           }
         }
-        // rows:true
       }
     })
     let rows = await prisma.row.findMany({
@@ -210,7 +202,7 @@ router.get('/:id/export',async(req,res) => {
       key: col?.name,
       width: 10,
     }))
-    return exportData({type, table:{columns, rows}, res})
+    return exportTable({type, table:{columns, rows}, res})
   }catch(error){
     console.log("🚀 ===== router.get ===== error:", error);
     res.status(500).json({message:'Error'})

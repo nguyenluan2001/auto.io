@@ -26,7 +26,7 @@ const exportExcel = ({columns, data}) => {
     return workbook.xlsx
 }
 
-const exportData = async ({type, table, res}) => {
+const exportTable = async ({type, table, res}) => {
     if(type==='JSON'){
         res.set({
         'Content-Disposition': `attachment; filename='data.json'`,
@@ -55,4 +55,12 @@ const exportData = async ({type, table, res}) => {
 
     }
 }
-module.exports={exportData}
+const exportWorkflow = async ({data, res}) => {
+    res.set({
+    'Content-Disposition': `attachment; filename='data.json'`,
+    'Content-Type': 'application/json',
+    });
+    return exportJSON(data).pipe(res) 
+
+}
+module.exports={exportTable, exportWorkflow}

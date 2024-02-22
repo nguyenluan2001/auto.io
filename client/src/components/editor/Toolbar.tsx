@@ -36,7 +36,7 @@ function Toolbar({ refetch }: Props) {
       setIsRunning(true);
       const process_uuid = uuidv4();
       setProcessUUID(process_uuid);
-      const response = await axiosInstance.post(`/workflows/${uuid}/run`, {
+      const response = await axiosInstance.post(`/api/workflows/${uuid}/run`, {
         process_uuid,
       });
       console.log('🚀 ===== handleClick ===== response:', response);
@@ -56,7 +56,7 @@ function Toolbar({ refetch }: Props) {
   const handleSave = async () => {
     try {
       if (uuid) {
-        const response = await axiosInstance.put(`/workflows/${uuid}`, {
+        const response = await axiosInstance.put(`/api/workflows/${uuid}`, {
           name,
           description,
           tableId: table?.id,
@@ -70,7 +70,7 @@ function Toolbar({ refetch }: Props) {
         refetch();
         return;
       }
-      const response = await axiosInstance.post('/workflows/create', {
+      const response = await axiosInstance.post('/api/workflows/create', {
         name,
         description,
         tableId: table?.id,
@@ -165,11 +165,10 @@ function MoreButton() {
       JSON.stringify({
         nodes,
         edges,
-        flows,
       }),
     ]);
     const link = document.createElement('a');
-    link.download = 'workflow.json';
+    link.download = `${name}.json`;
     link.href = window.URL.createObjectURL(blob);
     link.click();
   };
