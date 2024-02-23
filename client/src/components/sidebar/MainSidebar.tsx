@@ -15,7 +15,7 @@ import databaseIcon from '@iconify/icons-mdi/database';
 import { Icon, IconifyIcon } from '@iconify/react';
 import UserPopover from './UserPopover';
 
-function CustomIcon({ icon }: { icon: IconifyIcon }) {
+function CustomIcon({ icon }: { icon: IconifyIcon | string }) {
   return <Icon style={{ fontSize: '24px' }} icon={icon} />;
 }
 const sidebarConfig = [
@@ -30,6 +30,12 @@ const sidebarConfig = [
     title: 'Storage',
     icon: <CustomIcon icon={databaseIcon} />,
     url: '/storage',
+  },
+  {
+    id: 2,
+    title: 'Logs',
+    icon: <CustomIcon icon="icon-park-outline:log" />,
+    url: '/logs',
   },
 ];
 

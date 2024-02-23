@@ -1,5 +1,6 @@
 generator client {
   provider = "prisma-client-js"
+  previewFeatures = ["fullTextSearch"]
 }
 
 datasource db {
@@ -82,6 +83,7 @@ model Process {
   workflowId   Int
   workflow     Workflows    @relation(fields: [workflowId], references: [id])
   status  ProcessStatus @default(RUNNING)
+  duration Int @default(0)
 }
 
 enum ProcessStatus {

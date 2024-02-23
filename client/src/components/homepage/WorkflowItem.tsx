@@ -238,7 +238,11 @@ function DialogDuplicate({
       <DialogTitle>Duplicate workflow</DialogTitle>
       <DialogContent>
         <FieldTitle title="Name" />
-        <CustomTextField onChange={handleChangeName} value={name} />
+        <CustomTextField
+          onClick={(e: ClickEvent) => e.stopPropagation()}
+          onChange={handleChangeName}
+          value={name}
+        />
       </DialogContent>
       <DialogActions>
         <Stack direction="row" spacing={2} justifyContent="flex-end">

@@ -2,6 +2,7 @@ const { v4: uuidv4 } = require('uuid');
 const { prisma } = require("../config/prisma")
 const Workflow = require("./Workflow")
 
+const start = process.hrtime()
 process.on('message', async ({id, uuid, workflows, process_uuid})=> {
     console.log('pid', process.pid)
     const runningProcess=await prisma.process.create({
@@ -10,7 +11,8 @@ process.on('message', async ({id, uuid, workflows, process_uuid})=> {
             pid: process.pid.toString(),
             workflow:{
                 connect:{id}
-            }
+            },
+            status:"RUNNING"
         }
     })
     try{
@@ -21,11 +23,12 @@ process.on('message', async ({id, uuid, workflows, process_uuid})=> {
                 id: runningProcess?.id
             },
             data:{
-                status:"SUCCESS"
+                status:"SUCCESS",
+                duration: process.hrtime(start)[0]
             }
         })
         if(updatedProcess?.id){
-            process.send({status:'SUCCESS'})
+            process.send({status:'SUCCESS' })
             process.exit()
         }
 
@@ -36,7 +39,8 @@ process.on('message', async ({id, uuid, workflows, process_uuid})=> {
                 id: runningProcess?.id
             },
             data:{
-                status:"FAILED"
+                status:"FAILED",
+                duration: process.hrtime(start)[0]
             }
         })
 

@@ -22,7 +22,7 @@ import { v4 as uuidv4 } from 'uuid';
 import { axiosInstance } from '@/utils/axios';
 import { useFlow } from '@/store/flow';
 import Theme from '@/theme/Theme';
-import ProcessLog from '../common/ProcessLog';
+import ProcessLogTable from '../log/ProcessLogTable';
 
 type Props = {
   refetch: () => void;
@@ -125,7 +125,7 @@ function Toolbar({ refetch }: Props) {
         }}
         justifyContent="space-between"
       >
-        <LogButton />
+        <LogButton uuid={uuid} />
         <Stack direction="row" spacing={2}>
           {isRunning && (
             <Button
@@ -207,7 +207,7 @@ function MoreButton() {
     </>
   );
 }
-function LogButton() {
+function LogButton({ uuid }: { uuid: string }) {
   const [isOpen, setIsOpen] = useState(false);
   const toggleDialog = () => setIsOpen((pre) => !pre);
   return (
@@ -235,7 +235,7 @@ function LogButton() {
           <Icon icon="mdi:close" />
         </IconButton>
         <DialogContent>
-          <ProcessLog />
+          <ProcessLogTable uuid={uuid} />
         </DialogContent>
       </Dialog>
     </Box>

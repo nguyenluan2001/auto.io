@@ -20,6 +20,7 @@ import SignIn from './pages/SignIn';
 import { VITE_APP_GOOGLE_CLIENT_ID } from './utils/constant';
 import { socket } from './utils/socket';
 import Workflow from './pages/Workflow';
+import LogPage from './pages/LogPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -46,6 +47,10 @@ function App() {
         {
           path: 'storage',
           element: <Storage />,
+        },
+        {
+          path: 'logs',
+          element: <LogPage />,
         },
         {
           path: 'storage/tables/:id',
