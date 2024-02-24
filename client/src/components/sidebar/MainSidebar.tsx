@@ -32,10 +32,16 @@ const sidebarConfig = [
     url: '/storage',
   },
   {
-    id: 2,
+    id: 3,
     title: 'Logs',
     icon: <CustomIcon icon="icon-park-outline:log" />,
     url: '/logs',
+  },
+  {
+    id: 3,
+    title: 'Schedule',
+    icon: <CustomIcon icon="ic:outline-schedule" />,
+    url: '/schedules',
   },
 ];
 

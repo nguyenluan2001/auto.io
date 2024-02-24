@@ -9,6 +9,8 @@ import { QueryClient, QueryClientProvider } from 'react-query';
 import { SnackbarProvider } from 'notistack';
 import { CookiesProvider } from 'react-cookie';
 import { useEffect } from 'react';
+import { LocalizationProvider } from '@mui/x-date-pickers';
+import { AdapterDayjs } from '@mui/x-date-pickers/AdapterDayjs';
 import EditPage from './pages/EditPage';
 import Storage from './pages/Storage';
 import Layout from './components/Layout';
@@ -21,6 +23,7 @@ import { VITE_APP_GOOGLE_CLIENT_ID } from './utils/constant';
 import { socket } from './utils/socket';
 import Workflow from './pages/Workflow';
 import LogPage from './pages/LogPage';
+import SchedulePage from './pages/SchedulePage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -51,6 +54,10 @@ function App() {
         {
           path: 'logs',
           element: <LogPage />,
+        },
+        {
+          path: 'schedules',
+          element: <SchedulePage />,
         },
         {
           path: 'storage/tables/:id',
@@ -93,15 +100,17 @@ function App() {
     });
   }, []);
   return (
-    <CookiesProvider defaultSetOptions={{ path: '/' }}>
-      <QueryClientProvider client={queryClient}>
-        <SnackbarProvider autoHideDuration={2000}>
-          <GoogleOAuthProvider clientId={VITE_APP_GOOGLE_CLIENT_ID}>
-            <RouterProvider router={router} />
-          </GoogleOAuthProvider>
-        </SnackbarProvider>
-      </QueryClientProvider>
-    </CookiesProvider>
+    <LocalizationProvider dateAdapter={AdapterDayjs}>
+      <CookiesProvider defaultSetOptions={{ path: '/' }}>
+        <QueryClientProvider client={queryClient}>
+          <SnackbarProvider autoHideDuration={2000}>
+            <GoogleOAuthProvider clientId={VITE_APP_GOOGLE_CLIENT_ID}>
+              <RouterProvider router={router} />
+            </GoogleOAuthProvider>
+          </SnackbarProvider>
+        </QueryClientProvider>
+      </CookiesProvider>
+    </LocalizationProvider>
   );
 }
 
