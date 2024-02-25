@@ -4,7 +4,7 @@ const { v4: uuidv4 } = require('uuid');
 const http = require('http')
 const socketIO = require('socket.io')
 
-
+// 
 const app = express()
 const cors = require('cors')
 const queryType = require('query-types');
@@ -18,13 +18,15 @@ const tableRouter = require('../routes/tables')
 const authRouter = require('../routes/auth');
 const userRouter = require('../routes/users');
 const processRouter = require('../routes/process');
+const scheduleRouter = require('../routes/schedule');
 const { auth } = require('../middlewares/auth');
+const {job}=require('../core/cronjob')
 require('dotenv').config()
 require('../config/passport')
 
 const server = http.createServer(app)
 const io = socketIO(server, {cors: {origin: "*"}});
-
+// job()
 app.set('socket', io);
 app.use(cookieParser())
 app.use(cors())
@@ -45,6 +47,7 @@ app.use('/api/auth', authRouter)
 app.use('/api/users', auth, userRouter)
 app.use('/api/processes', auth, processRouter)
 app.use('/api/workflows', auth, workflowRouter)
+app.use('/api/schedules', auth, scheduleRouter)
 // connect(server);
 
 

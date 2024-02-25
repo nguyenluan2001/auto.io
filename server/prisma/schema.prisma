@@ -32,6 +32,7 @@ model Users {
   provider      String   @db.VarChar(255)
   workflows      Workflows[]
   tables      Table[]
+  schedules      Schedule[]
 }
 model Workflows {
   id          Int      @id @default(autoincrement())
@@ -50,6 +51,7 @@ model Workflows {
   userId   Int?
   user     Users?    @relation(fields: [userId], references: [id])
   processes Process[]
+  schedules Schedule[]
 }
 
 
@@ -92,3 +94,49 @@ enum ProcessStatus {
   CANCELED
   RUNNING
 }
+
+
+model Schedule {
+  id        Int      @id @default(autoincrement())
+  uuid      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  workflowId   Int
+  workflow     Workflows    @relation(fields: [workflowId], references: [id])
+  userId   Int
+  user     Users    @relation(fields: [userId], references: [id])
+  status  ScheduleStatus @default(ACTIVE)
+  triggers Trigger[]
+}
+enum ScheduleStatus {
+  ACTIVE
+  INACTIVE
+}
+
+
+model Trigger {
+  id        Int      @id @default(autoincrement())
+  uuid      String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  status  TriggerStatus @default(ACTIVE)
+  interval Int? @default(0)
+  delay Int? @default(0)
+  last_timestamp DateTime? @default(now())
+  expression String? @default("")
+  date DateTime? @default(now())
+  next_run DateTime? 
+  type TriggerType 
+  scheduleId   Int
+  schedule     Schedule    @relation(fields: [scheduleId], references: [id])
+}
+enum TriggerStatus {
+  ACTIVE
+  INACTIVE
+}
+enum TriggerType {
+  INTERVAL
+  CRON_JOB
+  ON_A_SPECIFIC_DATE
+}
+

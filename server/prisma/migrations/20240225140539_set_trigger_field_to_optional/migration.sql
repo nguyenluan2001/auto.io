@@ -1,0 +1,6 @@
+-- AlterTable
+ALTER TABLE "Trigger" ALTER COLUMN "interval" DROP NOT NULL,
+ALTER COLUMN "delay" DROP NOT NULL,
+ALTER COLUMN "last_timestamp" DROP NOT NULL,
+ALTER COLUMN "expression" DROP NOT NULL,
+ALTER COLUMN "date" DROP NOT NULL;

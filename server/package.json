@@ -18,6 +18,8 @@
     "body-parser": "^1.20.2",
     "cookie-parser": "^1.4.6",
     "cors": "^2.8.5",
+    "cron": "^3.1.6",
+    "cron-parser": "^4.9.0",
     "dayjs": "^1.11.10",
     "dotenv": "^16.3.1",
     "exceljs": "^4.4.0",

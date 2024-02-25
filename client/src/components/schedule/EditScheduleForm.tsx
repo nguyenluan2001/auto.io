@@ -119,18 +119,21 @@ function AddTriggerButton({ handleAddTrigger }) {
       component: Interval,
       interval: 60,
       delay: 5,
+      type: 'INTERVAL',
     },
     {
       id: 2,
       title: 'Cron job',
       component: Cronjob,
       expression: '* * * * *',
+      type: 'CRON_JOB',
     },
     {
       id: 3,
       title: 'On a specific date',
       component: OnASpecificDate,
       date: new Date(),
+      type: 'ON_A_SPECIFIC_DATE',
     },
   ];
   const handleSelectTrigger = (trigger) => {

@@ -24,6 +24,7 @@ import ScheduleTable from '@/components/schedule/ScheduleTable';
 import FieldTitle from '@/components/common/FieldTitle';
 import { useWorkflows } from '@/hooks/useWorkflows';
 import EditScheduleForm from '@/components/schedule/EditScheduleForm';
+import { axiosInstance } from '@/utils/axios';
 
 function SchedulePage() {
   return (
@@ -52,8 +53,10 @@ function DialogCreateSchedule({ open }) {
       triggers: [],
     },
   });
-  const onSubmit = (values) => {
+  const onSubmit = async (values) => {
+    const response = await axiosInstance.post('/api/schedules', values);
     console.log('🚀 ===== onSubmit ===== values:', values);
+    console.log('🚀 ===== onSubmit ===== response:', response);
   };
   return (
     <Dialog fullWidth maxWidth="sm" open={open}>
