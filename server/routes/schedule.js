@@ -13,11 +13,12 @@ const router = express.Router();
 const formatTrigger= (trigger) => {
     if(trigger?.type==='INTERVAL') {
         return {
-            interval:+trigger?.interval,
+            interval:parseInt(trigger?.interval, 10),
             delay:trigger?.delay,
             uuid:trigger?.uuid,
             type:trigger?.type,
-            next_run: dayjs().add(trigger?.interval,'minutes')
+            next_run: dayjs().add(trigger?.interval,'minutes'),
+            is_active: trigger?.is_active
         }
     }
     if(trigger?.type==='CRON_JOB'){
@@ -25,7 +26,8 @@ const formatTrigger= (trigger) => {
             expression: trigger?.expression,
             uuid:trigger?.uuid,
             type:trigger?.type,
-            next_run: new Date(parser.parseExpression(trigger?.expression).next().toString())
+            next_run: new Date(parser.parseExpression(trigger?.expression).next().toString()),
+            is_active: trigger?.is_active
         }
     }
     return {
@@ -33,8 +35,29 @@ const formatTrigger= (trigger) => {
             uuid:trigger?.uuid,
             type:trigger?.type,
             next_run: trigger?.date,
+            is_active: trigger?.is_active
     }
 }
+router.get('/', async(req,res) => {
+    try{
+        const schedules = await prisma.schedule.findMany({
+            where:{
+                user:{
+                    id: req?.user?.id
+                }
+            },
+            include:{
+                user:true,
+                triggers:true,
+                workflow:true
+            }
+        })
+        return res.json({schedules})
+    }catch(error){
+        console.log("🚀 ===== router.get ===== error:", error);
+        return res.status(500).json({message:"Cancel running workflow failed"})
+    }
+})
 router.post('/', async(req,res) => {
     try{
         const body=req?.body
@@ -60,14 +83,6 @@ router.post('/', async(req,res) => {
                 workflow:true
             }
         })
-        // for(const trigger of triggers){
-        //     await prisma.trigger.create({
-        //         data:{
-        //             ...trigger,
-                    
-        //         }
-        //     })
-        // }
         return res.json({createdSchedule})
 
     }catch(error){
@@ -75,34 +90,64 @@ router.post('/', async(req,res) => {
         return res.status(500).json({message:"Cancel running workflow failed"})
     }
 })
-router.get('/:uuid/cancel', async(req,res) => {
+router.put('/:id', async(req,res) => {
     try{
-        const body=req?.body
-        const {uuid} = req?.params
-        console.log("🚀 ===== router.get ===== uuid:", uuid);
-        const runningProcess=await prisma.process.findFirst({
+        const {workflow, triggers, status} = req.body
+        const {id} = req.params
+        const updatedSchedule = await prisma.schedule.update({
             where:{
-                uuid,
-                status: 'RUNNING'
-            },
-            orderBy: {
-                id: 'desc',
-            },
-        })
-        console.log("🚀 ===== router.get ===== runningProcess:", runningProcess);
-        process.kill(parseInt(runningProcess?.pid, 10), 9)
-        const now = dayjs()
-        const createdAt = dayjs(runningProcess?.createdAt)
-        await prisma.process.update({
-            where:{
-                id: runningProcess?.id
+                id: parseInt(id, 10)
             },
             data:{
-                status:"CANCELED",
-                duration: now.diff(createdAt,'second')
+                status:status || 'ACTIVE',
+                workflow:{
+                    connect:{id: workflow?.id}
+                },
+            },
+            include:{
+                triggers:true,
+                workflow:true
             }
         })
-        return res.json({message:'Cancel running workflow successfully'})
+        for(const trigger of triggers) {
+            await prisma.trigger.update({
+                where:{
+                    id: parseInt(trigger?.id, 10)
+                },
+                data:formatTrigger(trigger)
+            })
+        }
+        
+        return res.json({schedule: updatedSchedule, message:'Updated schedule successfully'})
+
+    }catch(error){
+        console.log("🚀 ===== router.get ===== error:", error);
+        return res.status(500).json({message:"Cancel running workflow failed"})
+    }
+})
+router.delete('/:id', async(req,res) => {
+    try{
+        const {id} = req.params
+        await prisma.schedule.update({
+            where:{
+                id: parseInt(id, 10)
+            },
+            data:{
+                triggers:{
+                    deleteMany:{}
+                }
+            },
+            include:{
+                triggers:true
+            }
+        })
+        await prisma.schedule.delete({
+            where:{
+                id: parseInt(id, 10)
+            },
+        })
+        
+        return res.json({ message:'Delete schedule successfully'})
 
     }catch(error){
         console.log("🚀 ===== router.get ===== error:", error);

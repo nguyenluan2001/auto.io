@@ -30,7 +30,7 @@ const job = new CronJob(
 					),
 					lte: new Date()
 				},
-				status: 'ACTIVE'
+				is_active:true
 			},
 			include:{
 				schedule:{

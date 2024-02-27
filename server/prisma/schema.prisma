@@ -119,7 +119,7 @@ model Trigger {
   uuid      String
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  status  TriggerStatus @default(ACTIVE)
+  is_active Boolean @default(true)
   interval Int? @default(0)
   delay Int? @default(0)
   last_timestamp DateTime? @default(now())
@@ -129,10 +129,6 @@ model Trigger {
   type TriggerType 
   scheduleId   Int
   schedule     Schedule    @relation(fields: [scheduleId], references: [id])
-}
-enum TriggerStatus {
-  ACTIVE
-  INACTIVE
 }
 enum TriggerType {
   INTERVAL

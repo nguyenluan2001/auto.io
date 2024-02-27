@@ -12,7 +12,6 @@ const router = express.Router();
 router.post('/', async(req,res) => {
     try{
         const body=req?.body
-        console.log("🚀 ===== router.post ===== body:", body);
         const processes=await prisma.process.findMany({
             ...body,
             include:{
@@ -33,9 +32,7 @@ router.post('/', async(req,res) => {
 })
 router.get('/:uuid/cancel', async(req,res) => {
     try{
-        const body=req?.body
-        const {uuid} = req?.params
-        console.log("🚀 ===== router.get ===== uuid:", uuid);
+        const {uuid} = req.params
         const runningProcess=await prisma.process.findFirst({
             where:{
                 uuid,
@@ -45,7 +42,6 @@ router.get('/:uuid/cancel', async(req,res) => {
                 id: 'desc',
             },
         })
-        console.log("🚀 ===== router.get ===== runningProcess:", runningProcess);
         process.kill(parseInt(runningProcess?.pid, 10), 9)
         const now = dayjs()
         const createdAt = dayjs(runningProcess?.createdAt)

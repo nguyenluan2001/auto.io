@@ -29,6 +29,7 @@ import FieldTitle from '@/components/common/FieldTitle';
 import CustomTextField from '@/components/common/CustomTextField';
 import UploadFile from '@/components/common/UploadFile';
 import { axiosInstance } from '@/utils/axios';
+import Theme from '@/theme/Theme';
 
 function Workflow() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -51,48 +52,50 @@ function Workflow() {
   };
   if (isLoading) return <LoadingScreen />;
   return (
-    <Container maxWidth="xl" sx={{ py: 5 }}>
-      <Stack
-        direction="row"
-        justifyContent="space-between"
-        alignItems="center"
-        sx={{ mb: 2 }}
-      >
-        <Typography variant="h4">Workflows</Typography>
-        <ButtonGroup>
-          <Button
-            onClick={onClickCreate}
-            startIcon={<Icon icon={plusIcon} />}
-            variant="contained"
-          >
-            Create
-          </Button>
-          <Button variant="contained" onClick={handleClick}>
-            <Icon icon="mdi:chevron-down" />
-          </Button>
-        </ButtonGroup>
-        <Menu
-          id="basic-menu"
-          anchorEl={anchorEl}
-          open={open}
-          onClose={handleClose}
-          MenuListProps={{
-            'aria-labelledby': 'basic-button',
-          }}
+    <Theme>
+      <Container maxWidth="xl" sx={{ py: 5 }}>
+        <Stack
+          direction="row"
+          justifyContent="space-between"
+          alignItems="center"
+          sx={{ mb: 2 }}
         >
-          <MenuItem onClick={onClickImport}>
-            <ListItemIcon>
-              <Icon icon="mdi:tray-upload" />
-            </ListItemIcon>
-            <ListItemText>Import workflow</ListItemText>
-          </MenuItem>
-        </Menu>
-      </Stack>
-      <Stack>
-        <WorkflowList workflows={data} refetch={refetch} />
-      </Stack>
-      <DialogImportWorkflow open={isOpenDialog} onClose={toggleDialog} />
-    </Container>
+          <Typography variant="h4">Workflows</Typography>
+          <ButtonGroup>
+            <Button
+              onClick={onClickCreate}
+              startIcon={<Icon icon={plusIcon} />}
+              variant="contained"
+            >
+              Create
+            </Button>
+            <Button variant="contained" onClick={handleClick}>
+              <Icon icon="mdi:chevron-down" />
+            </Button>
+          </ButtonGroup>
+          <Menu
+            id="basic-menu"
+            anchorEl={anchorEl}
+            open={open}
+            onClose={handleClose}
+            MenuListProps={{
+              'aria-labelledby': 'basic-button',
+            }}
+          >
+            <MenuItem onClick={onClickImport}>
+              <ListItemIcon>
+                <Icon icon="mdi:tray-upload" />
+              </ListItemIcon>
+              <ListItemText>Import workflow</ListItemText>
+            </MenuItem>
+          </Menu>
+        </Stack>
+        <Stack>
+          <WorkflowList workflows={data} refetch={refetch} />
+        </Stack>
+        <DialogImportWorkflow open={isOpenDialog} onClose={toggleDialog} />
+      </Container>
+    </Theme>
   );
 }
 type DialogProps = {

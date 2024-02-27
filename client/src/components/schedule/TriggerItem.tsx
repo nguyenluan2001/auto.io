@@ -1,77 +1,72 @@
-import styled from '@emotion/styled';
-import { IconButton, Stack, Typography } from '@mui/material';
-import React from 'react';
-import MuiAccordion from '@mui/material/Accordion';
-import MuiAccordionSummary from '@mui/material/AccordionSummary';
-import MuiAccordionDetails from '@mui/material/AccordionDetails';
 import { Icon } from '@iconify/react';
+import {
+  Collapse,
+  IconButton,
+  Paper,
+  Stack,
+  Switch,
+  Tooltip,
+  Typography,
+} from '@mui/material';
+import { omit } from 'lodash';
+import React from 'react';
 
-const Accordion = styled((props) => (
-  <MuiAccordion disableGutters elevation={0} square {...props} />
-))(({ theme }) => ({
-  border: `1px solid ${theme.palette.divider}`,
-  marginTop: 0,
-  '&:not(:last-child)': {
-    borderBottom: 0,
-  },
-  '&::before': {
-    display: 'none',
-  },
-}));
-
-const AccordionSummary = styled((props) => (
-  <MuiAccordionSummary
-    expandIcon={<Icon icon="mdi:chevron-down" />}
-    {...props}
-  />
-))(({ theme }) => ({
-  backgroundColor:
-    theme.palette.mode === 'dark'
-      ? 'rgba(255, 255, 255, .05)'
-      : 'rgba(0, 0, 0, .03)',
-  flexDirection: 'row-reverse',
-  '& .MuiAccordionSummary-expandIconWrapper.Mui-expanded': {
-    transform: 'rotate(90deg)',
-  },
-  '& .MuiAccordionSummary-content': {
-    marginLeft: theme.spacing(1),
-  },
-}));
-
-const AccordionDetails = styled(MuiAccordionDetails)(({ theme }) => ({
-  padding: theme.spacing(2),
-  borderTop: '1px solid rgba(0, 0, 0, .125)',
-}));
-
-function TriggerItem({ title, component, handleDelete, ...others }) {
+type Props = {
+  title: string;
+  component: any;
+  handleDelete: () => void;
+  others: any;
+};
+function TriggerItem({ title, component, handleDelete, ...others }: Props) {
   const [expanded, setExpanded] = React.useState(false);
 
-  const handleChange = (panel) => (event, newExpanded) => {
+  const handleChange = (e: any) => {
+    e.stopPropagation();
     setExpanded((pre) => !pre);
   };
+  const handleToggleTrigger = (e: any) => {
+    e.preventDefault();
+    e.stopPropagation();
+    (others as any)?.handleUpdate({
+      ...omit(others, 'handleUpdate'),
+      is_active: e?.target?.checked,
+    });
+    return false;
+  };
   return (
-    <Accordion
-      expanded={expanded}
-      onChange={handleChange('panel1')}
-      disableGutters
-    >
-      <AccordionSummary aria-controls="panel1d-content" id="panel1d-header">
-        <Stack
-          sx={{ width: '100%' }}
-          alignItems="center"
-          direction="row"
-          justifyContent="space-between"
-        >
-          <Typography>{title}</Typography>
-          <IconButton onClick={handleDelete}>
-            <Icon icon="mdi:delete-outline" />
+    <Paper variant="outlined">
+      <Stack
+        sx={{ width: '100%' }}
+        alignItems="center"
+        direction="row"
+        justifyContent="space-between"
+      >
+        <Stack direction="row" spacing={2} alignItems="center">
+          <IconButton onClick={handleChange}>
+            <Icon icon={!expanded ? 'mdi:chevron-down' : 'mdi:chevron-up'} />
           </IconButton>
+          <Typography>{title}</Typography>
         </Stack>
-      </AccordionSummary>
-      <AccordionDetails>
-        {React.createElement(component, others)}
-      </AccordionDetails>
-    </Accordion>
+        <Stack direction="row" spacing={2}>
+          <Tooltip title="Toggle trigger">
+            <Switch
+              checked={(others as any)?.is_active}
+              onChange={handleToggleTrigger}
+            />
+          </Tooltip>
+          <Tooltip title="Delete trigger">
+            <IconButton onClick={handleDelete}>
+              <Icon icon="mdi:delete-outline" />
+            </IconButton>
+          </Tooltip>
+        </Stack>
+      </Stack>
+      {expanded && (
+        <Collapse sx={{ p: 2 }} in={expanded}>
+          {React.createElement(component, others)}
+        </Collapse>
+      )}
+    </Paper>
   );
 }
 

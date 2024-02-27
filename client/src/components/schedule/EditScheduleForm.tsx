@@ -1,3 +1,4 @@
+import { Icon } from '@iconify/react';
 import {
   Autocomplete,
   Box,
@@ -8,41 +9,23 @@ import {
   Stack,
   TextField,
 } from '@mui/material';
+import { Workflow } from 'models/Workflow';
 import React from 'react';
-import { Controller, useFieldArray, useForm } from 'react-hook-form';
-import { Icon } from '@iconify/react';
+import { Controller, useFieldArray } from 'react-hook-form';
 import { v4 as uuidv4 } from 'uuid';
 import FieldTitle from '../common/FieldTitle';
-import TriggerItem from './TriggerItem';
-import Interval from './Interval';
 import Cronjob from './Cronjob';
+import Interval from './Interval';
 import OnASpecificDate from './OnASpecificDate';
+import TriggerItem from './TriggerItem';
 
-function EditScheduleForm({ workflows, control }) {
-  //   const { control, watch } = useForm({
-  //     defaultValues: {
-  //       workflow: null,
-  //       triggers: [],
-  //       //   triggers: [
-  //       //     {
-  //       //       title: 'Interval',
-  //       //       component: Interval,
-  //       //       interval: 60,
-  //       //       delay: 5,
-  //       //     },
-  //       //     {
-  //       //       title: 'Cron job',
-  //       //       component: Cronjob,
-  //       //       expression: '* * * * *',
-  //       //     },
-  //       //     {
-  //       //       title: 'On a specific date',
-  //       //       component: OnASpecificDate,
-  //       //       date: new Date(),
-  //       //     },
-  //       //   ],
-  //     },
-  //   });
+function EditScheduleForm({
+  workflows,
+  control,
+}: {
+  workflows: Workflow[];
+  control: any;
+}) {
   const {
     fields: triggers,
     append,
@@ -52,16 +35,16 @@ function EditScheduleForm({ workflows, control }) {
     name: 'triggers',
     control,
   });
-  const handleAddTrigger = (trigger) => {
+  const handleAddTrigger = (trigger: any) => {
     append({
       ...trigger,
       uuid: uuidv4(),
     });
   };
-  const handleDeleteTrigger = (index) => {
+  const handleDeleteTrigger = (index: number) => {
     remove(index);
   };
-  const handleUpdateTrigger = (index, value) => {
+  const handleUpdateTrigger = (index: number, value: any) => {
     update(index, {
       ...triggers[index],
       ...value,
@@ -80,6 +63,10 @@ function EditScheduleForm({ workflows, control }) {
               renderInput={(params) => <TextField {...params} />}
               getOptionLabel={(option) => option?.name}
               onChange={(e, value) => field?.onChange(value)}
+              value={field?.value}
+              isOptionEqualToValue={(option, value) =>
+                option?.id?.toString() === value?.id?.toString()
+              }
             />
           )}
         />
@@ -90,11 +77,11 @@ function EditScheduleForm({ workflows, control }) {
         <AddTriggerButton handleAddTrigger={handleAddTrigger} />
       </Stack>
       <Box>
-        {triggers?.map((trigger, index) => (
+        {triggers?.map((trigger: any, index) => (
           <TriggerItem
             key={trigger?.uuid}
             handleDelete={() => handleDeleteTrigger(index)}
-            handleUpdate={(value) => handleUpdateTrigger(index, value)}
+            handleUpdate={(value: any) => handleUpdateTrigger(index, value)}
             {...trigger}
           />
         ))}
@@ -103,10 +90,14 @@ function EditScheduleForm({ workflows, control }) {
   );
 }
 
-function AddTriggerButton({ handleAddTrigger }) {
+function AddTriggerButton({
+  handleAddTrigger,
+}: {
+  handleAddTrigger: (value: any) => void;
+}) {
   const [anchorEl, setAnchorEl] = React.useState(null);
   const open = Boolean(anchorEl);
-  const handleClick = (event) => {
+  const handleClick = (event: any) => {
     setAnchorEl(event.currentTarget);
   };
   const handleClose = () => {
@@ -136,7 +127,7 @@ function AddTriggerButton({ handleAddTrigger }) {
       type: 'ON_A_SPECIFIC_DATE',
     },
   ];
-  const handleSelectTrigger = (trigger) => {
+  const handleSelectTrigger = (trigger: any) => {
     handleAddTrigger(trigger);
     setAnchorEl(null);
   };

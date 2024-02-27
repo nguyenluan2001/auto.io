@@ -3,8 +3,12 @@ import { Box, Stack } from '@mui/material';
 import FieldTitle from '../common/FieldTitle';
 import CustomTextField from '../common/CustomTextField';
 
-function Cronjob({ expression, handleUpdate }) {
-  const handleChange = (e) => {
+type Props = {
+  expression: string;
+  handleUpdate: (value: any) => void;
+};
+function Cronjob({ expression, handleUpdate }: Props) {
+  const handleChange = (e: any) => {
     handleUpdate({
       expression: e?.target?.value,
     });

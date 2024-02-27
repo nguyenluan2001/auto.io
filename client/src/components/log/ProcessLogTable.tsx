@@ -1,8 +1,12 @@
-import React, { useState } from 'react';
+import dotsHorizontalCircleOutline from '@iconify/icons-mdi/dots-horizontal-circle-outline';
+import { Icon } from '@iconify/react';
 import {
   Box,
   Button,
   Chip,
+  IconButton,
+  Menu,
+  MenuItem,
   Pagination,
   Stack,
   Table,
@@ -13,16 +17,16 @@ import {
 } from '@mui/material';
 import dayjs from 'dayjs';
 import { isEmpty } from 'lodash';
-import { Icon } from '@iconify/react';
+import { ClickEvent } from 'models/Event';
 import { Process } from 'models/Process';
-import Theme from '@/theme/Theme';
-import { useProcesses } from '@/hooks/useProcesses';
-import LoadingScreen from '../common/LoadingScreen';
-import LoadingIcon from '../common/LoadingIcon';
-import { ROWS_PER_PAGE } from '@/utils/constant';
+import React, { useState } from 'react';
 import { convertPage } from '@/utils/pagination';
-import SearchBar from '../common/SearchBar';
+import { ROWS_PER_PAGE } from '@/utils/constant';
+import { axiosInstance } from '@/utils/axios';
+import { useProcesses } from '@/hooks/useProcesses';
 import Empty from '../common/Empty';
+import LoadingIcon from '../common/LoadingIcon';
+import SearchBar from '../common/SearchBar';
 
 type Props = {
   uuid?: string | null;
@@ -82,16 +86,19 @@ function ProcessLogTable({ uuid = null }: Props) {
       <Table>
         <TableHead>
           <TableRow>
+            <TableCell>#</TableCell>
             <TableCell>Name</TableCell>
             <TableCell>Run at</TableCell>
             <TableCell>Duration</TableCell>
             <TableCell>Status</TableCell>
+            <TableCell />
           </TableRow>
         </TableHead>
         <TableBody>
           <TableBodyDecision
             isLoading={isLoading || isFetching}
             processes={processes}
+            refetch={refetch}
           />
         </TableBody>
       </Table>
@@ -113,9 +120,11 @@ function ProcessLogTable({ uuid = null }: Props) {
 function TableBodyDecision({
   processes,
   isLoading,
+  refetch,
 }: {
   processes: Process[];
   isLoading: boolean;
+  refetch: () => void;
 }) {
   if (isLoading) {
     return (
@@ -135,40 +144,97 @@ function TableBodyDecision({
       </TableRow>
     );
   }
-  return processes?.map((process) => {
+  return processes?.map((process, index) => {
     return (
-      <TableRow key={process?.id}>
-        <TableCell>{process?.workflow?.name}</TableCell>
-        <TableCell>
-          {dayjs(process?.createdAt).format('HH:mm DD/MM/YYYY')}
-        </TableCell>
-        <TableCell>{process?.duration}s</TableCell>
-        <TableCell>
-          {process?.status === 'SUCCESS' && (
-            <Chip
-              avatar={<Icon icon="gg:check-o" />}
-              color="success"
-              label={process?.status}
-            />
-          )}
-          {process?.status === 'RUNNING' && (
-            <Chip
-              avatar={<Icon icon="eos-icons:loading" />}
-              color="warning"
-              label={process?.status}
-            />
-          )}
-          {['FAILED', 'CANCELED']?.includes(process?.status) && (
-            <Chip
-              avatar={<Icon icon="ic:outline-cancel" />}
-              color="error"
-              label={process?.status}
-            />
-          )}
-        </TableCell>
-      </TableRow>
+      <TableItem
+        key={process?.id}
+        index={index + 1}
+        process={process}
+        refetch={refetch}
+      />
     );
   });
+}
+
+function TableItem({
+  process,
+  refetch,
+  index,
+}: {
+  process: any;
+  refetch: () => void;
+  index: number;
+}) {
+  const [anchorEl, setAnchorEl] = React.useState<any>(null);
+  const open = Boolean(anchorEl);
+  const handleClick = (event: ClickEvent) => {
+    event.stopPropagation();
+    setAnchorEl(event.currentTarget);
+  };
+  const handleClose = (e: ClickEvent) => {
+    e.stopPropagation();
+    setAnchorEl(null);
+  };
+  const handleCancelProcess = async () => {
+    await axiosInstance.get(`/api/processes/${process?.uuid}/cancel`);
+    refetch();
+  };
+  const handleDeleteProcess = () => {};
+  return (
+    <TableRow key={process?.id}>
+      <TableCell>{index}</TableCell>
+      <TableCell>{process?.workflow?.name}</TableCell>
+      <TableCell>
+        {dayjs(process?.createdAt).format('HH:mm DD/MM/YYYY')}
+      </TableCell>
+      <TableCell>{process?.duration}s</TableCell>
+      <TableCell>
+        {process?.status === 'SUCCESS' && (
+          <Chip
+            avatar={<Icon icon="gg:check-o" />}
+            color="success"
+            label={process?.status}
+          />
+        )}
+        {process?.status === 'RUNNING' && (
+          <Chip
+            avatar={<Icon icon="eos-icons:loading" />}
+            color="warning"
+            label={process?.status}
+          />
+        )}
+        {['FAILED', 'CANCELED']?.includes(process?.status) && (
+          <Chip
+            avatar={<Icon icon="ic:outline-cancel" />}
+            color="error"
+            label={process?.status}
+          />
+        )}
+      </TableCell>
+      <TableCell align="left">
+        <IconButton onClick={handleClick}>
+          <Icon icon={dotsHorizontalCircleOutline} />
+        </IconButton>
+        <Menu
+          id="basic-menu"
+          anchorEl={anchorEl}
+          open={open}
+          onClose={handleClose}
+          MenuListProps={{
+            'aria-labelledby': 'basic-button',
+          }}
+        >
+          <MenuItem
+            disabled={process?.status !== 'RUNNING'}
+            onClick={handleCancelProcess}
+          >
+            Cancel
+          </MenuItem>
+          <MenuItem onClick={handleDeleteProcess}>Delete</MenuItem>
+        </Menu>
+      </TableCell>
+    </TableRow>
+  );
 }
 
 export default ProcessLogTable;
