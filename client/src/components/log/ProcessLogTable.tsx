@@ -20,6 +20,7 @@ import { isEmpty } from 'lodash';
 import { ClickEvent } from 'models/Event';
 import { Process } from 'models/Process';
 import React, { useState } from 'react';
+import { enqueueSnackbar } from 'notistack';
 import { convertPage } from '@/utils/pagination';
 import { ROWS_PER_PAGE } from '@/utils/constant';
 import { axiosInstance } from '@/utils/axios';
@@ -27,6 +28,7 @@ import { useProcesses } from '@/hooks/useProcesses';
 import Empty from '../common/Empty';
 import LoadingIcon from '../common/LoadingIcon';
 import SearchBar from '../common/SearchBar';
+import CustomDialog from '../common/CustomDialog';
 
 type Props = {
   uuid?: string | null;
@@ -34,6 +36,7 @@ type Props = {
 function ProcessLogTable({ uuid = null }: Props) {
   const [page, setPage] = useState(1);
   const [keywords, setKeywords] = useState('');
+  const [isOpenConfirmDialog, setIsOpenConfirmDialog] = useState(false);
   const {
     data: { processes, meta },
     isLoading,
@@ -70,18 +73,44 @@ function ProcessLogTable({ uuid = null }: Props) {
   const onRefresh = () => {
     refetch();
   };
+  const onClearLog = async () => {
+    try {
+      await axiosInstance.post(`/api/processes/clear`, {
+        workflowUUID: uuid,
+      });
+      enqueueSnackbar('Clear log successfully', {
+        variant: 'success',
+      });
+      refetch();
+      toggleConfirmDialog();
+    } catch (error) {
+      enqueueSnackbar('Clear log failed', {
+        variant: 'error',
+      });
+    }
+  };
+  const toggleConfirmDialog = () => setIsOpenConfirmDialog((pre) => !pre);
   return (
     <Stack direction="column" spacing={2}>
       <Stack direction="row" justifyContent="space-between">
         {!uuid && <SearchBar keywords={keywords} setKeywords={setKeywords} />}
         <Box sx={{ flex: 1 }} />
-        <Button
-          onClick={onRefresh}
-          variant="contained"
-          startIcon={<Icon icon="ion:refresh" />}
-        >
-          Refresh
-        </Button>
+        <Stack direction="row" spacing={2}>
+          <Button
+            onClick={toggleConfirmDialog}
+            variant="contained"
+            startIcon={<Icon icon="icon-park-outline:clear" />}
+          >
+            Clear log
+          </Button>
+          <Button
+            onClick={onRefresh}
+            variant="contained"
+            startIcon={<Icon icon="ion:refresh" />}
+          >
+            Refresh
+          </Button>
+        </Stack>
       </Stack>
       <Table>
         <TableHead>
@@ -114,6 +143,13 @@ function ProcessLogTable({ uuid = null }: Props) {
           />
         </Stack>
       )}
+      <CustomDialog
+        open={isOpenConfirmDialog}
+        title="Clear logs"
+        description="Are you sure you want to clear all logs? "
+        handleCancel={toggleConfirmDialog}
+        handleConfirm={onClearLog}
+      />
     </Stack>
   );
 }
@@ -129,7 +165,7 @@ function TableBodyDecision({
   if (isLoading) {
     return (
       <TableRow>
-        <TableCell sx={{ p: 0 }} colSpan={4}>
+        <TableCell sx={{ p: 0 }} colSpan={6}>
           <LoadingIcon />
         </TableCell>
       </TableRow>
@@ -138,7 +174,7 @@ function TableBodyDecision({
   if (isEmpty(processes)) {
     return (
       <TableRow>
-        <TableCell sx={{ p: 0 }} colSpan={4}>
+        <TableCell sx={{ p: 0 }} colSpan={6}>
           <Empty />
         </TableCell>
       </TableRow>
@@ -179,7 +215,19 @@ function TableItem({
     await axiosInstance.get(`/api/processes/${process?.uuid}/cancel`);
     refetch();
   };
-  const handleDeleteProcess = () => {};
+  const handleDeleteProcess = async () => {
+    try {
+      await axiosInstance.delete(`/api/processes/${process?.uuid}`);
+      refetch();
+      enqueueSnackbar('Delete log successfully', {
+        variant: 'success',
+      });
+    } catch (error) {
+      enqueueSnackbar('Delete log failed', {
+        variant: 'error',
+      });
+    }
+  };
   return (
     <TableRow key={process?.id}>
       <TableCell>{index}</TableCell>

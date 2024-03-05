@@ -1,10 +1,12 @@
-import { Box, Stack, Typography } from '@mui/material';
+import { Box, Stack, Tooltip, Typography } from '@mui/material';
 import { Handle, Node, Position } from 'reactflow';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Icon } from '@iconify/react';
+import { v4 as uuidv4 } from 'uuid';
 import { useFlow } from '@/store/flow';
 import { generateNode } from '@/utils/generateNode';
 import { socket } from '@/utils/socket';
+import Theme from '@/theme/Theme';
 
 const handleStyle = { left: 10 };
 
@@ -35,6 +37,12 @@ function CustomNode(node: Node) {
         background: 'white',
         borderRadius: 1,
         p: 1,
+        position: 'relative',
+        '&:hover': {
+          '#toolbar': {
+            display: 'inherit',
+          },
+        },
       }}
       onClick={handleClickNode}
     >
@@ -46,6 +54,7 @@ function CustomNode(node: Node) {
         <Typography sx={{ fontWeight: '600', fontSize: '10px' }}>
           {node?.data?.title}
         </Typography>
+        <Toolbar node={node} />
       </Stack>
       {node?.data?.description && (
         <Typography variant="caption">{node?.data?.description}</Typography>
@@ -110,6 +119,64 @@ function RenderHandler({ num }: { num: number }) {
           );
         })}
     </>
+  );
+}
+function Toolbar({ node }) {
+  console.log('🚀 ===== Toolbar ===== node:', node);
+  const addNode = useFlow((state: any) => state.addNode);
+  const handleDuplicate = () => {
+    addNode((nds: Node[]) =>
+      nds.concat({
+        ...node,
+        id: uuidv4(),
+        position: {
+          x: node?.xPos + 10,
+          y: node?.yPos + 10,
+        },
+      })
+    );
+  };
+  return (
+    <Theme>
+      <Box
+        id="toolbar"
+        sx={{
+          position: 'absolute',
+          top: '-60%',
+          left: 0,
+          right: 0,
+          borderRadius: '4px',
+          height: 'fit-content',
+          display: 'none',
+          paddingBottom: '5px',
+          boxSizing: 'border-box',
+        }}
+      >
+        <Stack
+          direction="row"
+          sx={{
+            width: '100%',
+            backgroundColor: 'neutral.bgGrey',
+            borderRadius: '4px',
+            height: 'fit-content',
+          }}
+        >
+          <Tooltip placement="top" title="Delete">
+            <Icon icon="mdi:delete-outline" />
+          </Tooltip>
+          <Tooltip placement="top" title="Copy">
+            <Icon icon="heroicons-outline:clipboard-copy" />
+          </Tooltip>
+          <Tooltip placement="top" title="Duplicate">
+            <Icon
+              onClick={handleDuplicate}
+              style={{ cursor: 'pointer' }}
+              icon="humbleicons:duplicate"
+            />
+          </Tooltip>
+        </Stack>
+      </Box>
+    </Theme>
   );
 }
 export default CustomNode;

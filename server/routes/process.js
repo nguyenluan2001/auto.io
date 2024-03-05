@@ -61,4 +61,51 @@ router.get('/:uuid/cancel', async(req,res) => {
         return res.status(500).json({message:"Cancel running workflow failed"})
     }
 })
+router.delete('/:uuid', async(req,res) => {
+    try{
+        const {uuid} = req.params
+        await prisma.process.deleteMany({
+            where:{
+                uuid,
+            },
+        })
+        return res.json({message:'Delete log successfully'})
+
+    }catch(error){
+        console.log("🚀 ===== router.get ===== error:", error);
+        return res.status(500).json({message:"Cancel running workflow failed"})
+    }
+})
+router.post('/clear', async(req,res) => {
+    try{
+        const {workflowUUID:uuid} = req.body
+        if(uuid){
+            const workflow = await prisma.workflows.findFirst({
+                where:{
+                    uuid
+                }
+            })
+            await prisma.workflows.update({
+                where:{
+                    id: workflow?.id
+                },
+                data:{
+                    processes: {
+                        deleteMany:{}
+                    }
+                },
+                include:{
+                    processes: true
+                }
+            })
+        }else{
+            await prisma.process.deleteMany({})
+        }
+        return res.json({message:'Clear log successfully'})
+
+    }catch(error){
+        console.log("🚀 ===== router.get ===== error:", error);
+        return res.status(500).json({message:"Cancel running workflow failed"})
+    }
+})
 module.exports = router;
