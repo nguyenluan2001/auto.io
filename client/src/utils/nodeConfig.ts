@@ -6,6 +6,7 @@ import GetText from '@/components/nodeConfig/GetText';
 import LoopData from '@/components/nodeConfig/LoopData';
 import NewTab from '@/components/nodeConfig/NewTab';
 import Repeat from '@/components/nodeConfig/Repeat';
+import SaveAsset from '@/components/nodeConfig/SaveAsset';
 import Scroll from '@/components/nodeConfig/Scroll';
 import Trigger from '@/components/nodeConfig/Trigger';
 
@@ -20,5 +21,6 @@ const config: Record<string, any> = {
   repeat: Repeat,
   'get-attribute': GetAttribute,
   scroll: Scroll,
+  'save-asset': SaveAsset,
 };
 export { config };

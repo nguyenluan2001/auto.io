@@ -46,6 +46,7 @@ function WorkflowEdit({ refetch }: Props) {
         x: event.clientX,
         y: event.clientY,
       });
+      console.log('🚀 ===== WorkflowEdit ===== position:', position);
       const newNode = generateNode({ type, position }) as Node;
       console.log('🚀 ===== App ===== newNode:', newNode);
 

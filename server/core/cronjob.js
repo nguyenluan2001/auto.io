@@ -15,7 +15,7 @@ const calculateNextRun = (trigger) => {
 	}
 }
 const job = new CronJob(
-	'* * * * * *', // cronTime
+	'*/1 * * * * *', // cronTime
 	( async () => {
 		const today = new Date()
 		const triggers = await prisma.trigger.findMany({

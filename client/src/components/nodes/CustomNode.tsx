@@ -1,5 +1,14 @@
-import { Box, Stack, Tooltip, Typography } from '@mui/material';
-import { Handle, Node, Position } from 'reactflow';
+import { Box, IconButton, Stack, Tooltip, Typography } from '@mui/material';
+import chevronLeft from '@iconify/icons-mdi/chevron-left';
+import {
+  Edge,
+  Handle,
+  Node,
+  Position,
+  getConnectedEdges,
+  getIncomers,
+  getOutgoers,
+} from 'reactflow';
 import React, { useEffect, useMemo, useState } from 'react';
 import { Icon } from '@iconify/react';
 import { v4 as uuidv4 } from 'uuid';
@@ -23,12 +32,12 @@ function CustomNode(node: Node) {
     return nodeConfig?.data?.icon;
   }, [node]);
 
-  useEffect(() => {
-    socket.on('test', (status) => {
-      console.log('🚀 ===== socket.on ===== status:', status);
-      setStatus(status);
-    });
-  }, []);
+  // useEffect(() => {
+  //   socket.on('test', (status) => {
+  //     console.log('🚀 ===== socket.on ===== status:', status);
+  //     setStatus(status);
+  //   });
+  // }, []);
 
   return (
     <Box
@@ -38,11 +47,11 @@ function CustomNode(node: Node) {
         borderRadius: 1,
         p: 1,
         position: 'relative',
-        '&:hover': {
-          '#toolbar': {
-            display: 'inherit',
-          },
-        },
+        // '&:hover': {
+        //   '#toolbar': {
+        //     display: 'inherit',
+        //   },
+        // },
       }}
       onClick={handleClickNode}
     >
@@ -54,7 +63,7 @@ function CustomNode(node: Node) {
         <Typography sx={{ fontWeight: '600', fontSize: '10px' }}>
           {node?.data?.title}
         </Typography>
-        <Toolbar node={node} />
+        {/* <Toolbar node={node} /> */}
       </Stack>
       {node?.data?.description && (
         <Typography variant="caption">{node?.data?.description}</Typography>
@@ -122,19 +131,54 @@ function RenderHandler({ num }: { num: number }) {
   );
 }
 function Toolbar({ node }) {
-  console.log('🚀 ===== Toolbar ===== node:', node);
+  const edges = useFlow((state: any) => state.edges);
+  const nodes = useFlow((state: any) => state.nodes);
+  const setEdges = useFlow((state: any) => state.setEdges);
+  const deleteNode = useFlow((state: any) => state.deleteNode);
   const addNode = useFlow((state: any) => state.addNode);
-  const handleDuplicate = () => {
-    addNode((nds: Node[]) =>
-      nds.concat({
-        ...node,
-        id: uuidv4(),
-        position: {
-          x: node?.xPos + 10,
-          y: node?.yPos + 10,
-        },
-      })
-    );
+  const handleDuplicateNode = (e) => {
+    // e.stopPropagation();
+    alert('Click duplicate');
+    // return true;
+
+    // const newNode = {
+    //   ...node,
+    //   id: uuidv4(),
+    //   position: {
+    //     x: node?.xPos * 2 + 10,
+    //     y: node?.yPos + 10,
+    //   },
+    // };
+    // console.log('🚀 ===== handleDuplicate ===== node:', node);
+    // console.log('🚀 ===== handleDuplicate ===== newNode:', newNode);
+    // addNode((nds: Node[]) => nds.concat(newNode));
+  };
+  const handleDeleteNode = (e) => {
+    e.stopPropagation();
+    alert('Delete node');
+    return true;
+    const newEdges = [node].reduce((acc, _node) => {
+      const incomers = getIncomers(_node as Node, nodes, edges);
+      const outgoers = getOutgoers(_node as Node, nodes, edges);
+      const connectedEdges = getConnectedEdges([_node as Node], edges);
+
+      const remainingEdges = acc.filter(
+        (edge: Edge) => !connectedEdges.includes(edge)
+      );
+
+      const createdEdges = incomers.flatMap(({ id: source }) =>
+        outgoers.map(({ id: target }) => ({
+          id: `${source}->${target}`,
+          source,
+          target,
+          type: 'customEdge',
+        }))
+      );
+
+      return [...remainingEdges, ...createdEdges];
+    }, edges);
+    setEdges(newEdges);
+    deleteNode(node?.id);
   };
   return (
     <Theme>
@@ -150,7 +194,9 @@ function Toolbar({ node }) {
           display: 'none',
           paddingBottom: '5px',
           boxSizing: 'border-box',
+          zIndex: 1000,
         }}
+        onClick={(e) => alert('Click toolbar')}
       >
         <Stack
           direction="row"
@@ -159,21 +205,20 @@ function Toolbar({ node }) {
             backgroundColor: 'neutral.bgGrey',
             borderRadius: '4px',
             height: 'fit-content',
+            zIndex: 100000,
           }}
         >
           <Tooltip placement="top" title="Delete">
-            <Icon icon="mdi:delete-outline" />
+            <Icon icon="mdi:delete-outline" onClick={handleDeleteNode} />
           </Tooltip>
-          <Tooltip placement="top" title="Copy">
+          <Tooltip placement="top" title="Copy" onClick={handleDeleteNode}>
             <Icon icon="heroicons-outline:clipboard-copy" />
           </Tooltip>
-          <Tooltip placement="top" title="Duplicate">
-            <Icon
-              onClick={handleDuplicate}
-              style={{ cursor: 'pointer' }}
-              icon="humbleicons:duplicate"
-            />
-          </Tooltip>
+          <Icon
+            id={`duplicate-icon-${node?.id}`}
+            onClick={handleDuplicateNode}
+            icon="humbleicons:duplicate"
+          />
         </Stack>
       </Box>
     </Theme>

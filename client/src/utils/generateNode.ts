@@ -182,6 +182,21 @@ const generateNode = ({ type, position }: Params) => {
         type: 'customNode',
       };
     }
+    case 'save-asset': {
+      return {
+        id: uuidv4(),
+        data: {
+          title: 'Save asset',
+          key: 'save-asset',
+          description: '',
+          url: '',
+          icon: WIDGET_ICON['save-asset'],
+          // numOfHandler: 2,
+        },
+        position,
+        type: 'customNode',
+      };
+    }
     default: {
       return false;
     }

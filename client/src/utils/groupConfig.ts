@@ -68,6 +68,12 @@ const GROUPS = [
         key: 'scroll',
         icon: WIDGET_ICON.scroll,
       },
+      {
+        id: 6,
+        title: 'Save asset',
+        key: 'save-asset',
+        icon: WIDGET_ICON['save-asset'],
+      },
     ],
   },
   {

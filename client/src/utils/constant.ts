@@ -28,6 +28,7 @@ export const WIDGET_ICON = {
   repeat: repeatVariant,
   'get-attribute': codeBrackets,
   scroll: 'fluent:phone-vertical-scroll-20-regular',
+  'save-asset': 'mdi:file-image',
 };
 export const FILE_EXTENSION = {
   'application/json': 'json',

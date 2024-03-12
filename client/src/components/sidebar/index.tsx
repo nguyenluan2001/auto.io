@@ -20,6 +20,16 @@ function Sidebar() {
             <Typography variant="h6">{selectedNode?.data?.title}</Typography>
           </Stack>
         )}
+        <Icon
+          style={{
+            position: 'absolute',
+            zIndex: 100000,
+            top: 10,
+            right: 10,
+          }}
+          onClick={() => alert(123)}
+          icon={chevronLeft}
+        />
         {!selectedNode && <EditWorkflowForm />}
         {selectedNode && <EditWidgetForm />}
       </Box>

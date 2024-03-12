@@ -5,6 +5,8 @@ const fs = require('fs');
 const path = require('path');
 const mustache = require('mustache');
 const { PrismaClient } = require('@prisma/client');
+const axios = require('axios');
+const { downloadFile } = require('../utils/downloadFile');
 // const socket = require("./socket")?.connection()
 
 const prisma = new PrismaClient();
@@ -27,6 +29,7 @@ class Workflow {
       'get-attribute': async (data) => await this.getAttribute(data),
       'loop-data': async (data) => await this.loop(data),
       'scroll': async (data) => await this.scroll(data),
+      'save-asset': async (data) => await this.saveAsset(data),
     };
     this.loopData = {};
     this.loopControl = new Map();
@@ -224,6 +227,36 @@ class Workflow {
     console.log('=== SCROLL ===')
     await this.page.keyboard.press("PageDown");
     await sleep(3000)
+  }
+
+  async saveAsset({
+    selector,
+    destination,
+    selector_type = 'SINGLE',
+    loop_through,
+    select,
+    order = 1,
+    file_name
+  }){
+    console.log('==== SAVE ASSET ====')
+    let src = '';
+    if (selector_type === 'SINGLE') {
+      src = await this.page.$eval(
+        selector,
+        (element, attribute) => element.getAttribute(attribute),
+        'src'
+      );
+    } else {
+      src = await this.page.$eval(
+        `${loop_through}:nth-child(${order}) ${select}`,
+        (element, attribute) => element.getAttribute(attribute),
+        'src'
+      );
+    }
+    if (!src) return;
+    await downloadFile(src,`./video/${file_name}`)
+    await sleep(3000)
+    console.log('==== src =====', src)
   }
 
   async loop({ id, workflows, loop_through = 'CUSTOM_DATA' }) {
