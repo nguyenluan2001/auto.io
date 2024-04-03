@@ -33,6 +33,7 @@ model Users {
   workflows      Workflows[]
   tables      Table[]
   schedules      Schedule[]
+  connection Connection?
 }
 model Workflows {
   id          Int      @id @default(autoincrement())
@@ -136,3 +137,14 @@ enum TriggerType {
   ON_A_SPECIFIC_DATE
 }
 
+model Connection {
+  id        Int      @id @default(autoincrement())
+  uuid      String
+  provider String
+  token      Json     @default("{}")
+  profile      Json     @default("{}")
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  userId   Int @unique
+  user     Users    @relation(fields: [userId], references: [id])
+}

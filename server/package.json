@@ -28,6 +28,7 @@
     "express": "^4.18.2",
     "express-session": "^1.18.0",
     "fast-csv": "^5.0.1",
+    "googleapis": "^134.0.0",
     "jsonwebtoken": "^9.0.2",
     "lodash": "^4.17.21",
     "mustache": "^4.2.0",

@@ -38,10 +38,16 @@ const sidebarConfig = [
     url: '/logs',
   },
   {
-    id: 3,
+    id: 4,
     title: 'Schedule',
     icon: <CustomIcon icon="ic:outline-schedule" />,
     url: '/schedules',
+  },
+  {
+    id: 5,
+    title: 'Connection',
+    icon: <CustomIcon icon="mdi:connection" />,
+    url: '/connections',
   },
 ];
 

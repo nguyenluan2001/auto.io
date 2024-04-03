@@ -24,6 +24,7 @@ import { socket } from './utils/socket';
 import Workflow from './pages/Workflow';
 import LogPage from './pages/LogPage';
 import SchedulePage from './pages/SchedulePage';
+import ConnectionPage from './pages/ConnectionPage';
 
 const queryClient = new QueryClient({
   defaultOptions: {
@@ -58,6 +59,10 @@ function App() {
         {
           path: 'schedules',
           element: <SchedulePage />,
+        },
+        {
+          path: 'connections',
+          element: <ConnectionPage />,
         },
         {
           path: 'storage/tables/:id',

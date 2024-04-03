@@ -7,6 +7,7 @@ const mustache = require('mustache');
 const { PrismaClient } = require('@prisma/client');
 const axios = require('axios');
 const { downloadFile } = require('../utils/downloadFile');
+const { driveUpload } = require('../utils/google');
 // const socket = require("./socket")?.connection()
 
 const prisma = new PrismaClient();
@@ -254,9 +255,11 @@ class Workflow {
       );
     }
     if (!src) return;
-    await downloadFile(src,`./video/${file_name}`)
+    const connection = await prisma.connection.findFirst()
+    const {token} = connection
+    await driveUpload(token, src)
+
     await sleep(3000)
-    console.log('==== src =====', src)
   }
 
   async loop({ id, workflows, loop_through = 'CUSTOM_DATA' }) {

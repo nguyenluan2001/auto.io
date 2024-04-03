@@ -11,9 +11,6 @@ const downloadFile = async (fileUrl,localFilePath) => {
     });
 
     await response.data.pipe(fs.createWriteStream(localFilePath));
-    // w.on('finish', () => {
-    //   console.log('Successfully downloaded file!');
-    // });
   } catch (err) { 
     throw new Error(err);
   }
