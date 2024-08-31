@@ -248,13 +248,18 @@ class Workflow {
         'src'
       );
     } else {
+      console.log('selector', `${loop_through}:nth-child(${order}) ${select}` )
       src = await this.page.$eval(
         `${loop_through}:nth-child(${order}) ${select}`,
-        (element, attribute) => element.getAttribute(attribute),
+        (element, attribute) => {
+          console.log("🚀 ===== Workflow ===== element:", element);
+          element.getAttribute('src')
+        },
         'src'
       );
     }
-    if (!src) return;
+    console.log("🚀 ===== Workflow ===== src:", src);
+    if (!src || !src.startsWith('http')) return;
     const connection = await prisma.connection.findFirst()
     const {token} = connection
     await driveUpload(token, src)

@@ -56,9 +56,9 @@ const driveUpload = async (token,stream) => {
     }
     const res = await drive.files.create({
     requestBody: {
-      name: 'testimage.png',
+      name: `image-${Date.now()}.png`,
       mimeType: 'image/png',
-      parents:["1I7B7wzoGYwbiTKhmSNnsX3ywmznuf1co"]
+      // parents:["1I7B7wzoGYwbiTKhmSNnsX3ywmznuf1co"]
     },
     media: {
       mimeType: 'image/png',

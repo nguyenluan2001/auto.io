@@ -33,7 +33,7 @@ model Users {
   workflows      Workflows[]
   tables      Table[]
   schedules      Schedule[]
-  connection Connection?
+  connections Connection[]
 }
 model Workflows {
   id          Int      @id @default(autoincrement())
@@ -145,6 +145,6 @@ model Connection {
   profile      Json     @default("{}")
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
-  userId   Int @unique
+  userId   Int
   user     Users    @relation(fields: [userId], references: [id])
 }
