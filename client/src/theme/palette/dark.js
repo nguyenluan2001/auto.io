@@ -11,4 +11,12 @@ const border = {
   main: '#283040',
   dark: '#283040',
 };
-export { background, border };
+
+const anchor = {
+  light: '#6bb3dc',
+  main: '#3a95c9',
+  purpleColor: '#999',
+  purpleHoverColor: '#f3f3f3',
+  lightBlueColor: '#a3c5eb',
+};
+export { background, border, anchor };

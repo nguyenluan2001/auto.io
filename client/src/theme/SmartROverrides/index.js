@@ -12,6 +12,7 @@ import Table from './Table';
 import Tabs from './Tabs';
 import Tooltip from './Tooltip';
 import Typography from './Typography';
+import Menu from '../overrides/Menu';
 
 // ----------------------------------------------------------------------
 
@@ -29,6 +30,7 @@ export default function ComponentsOverrides(theme) {
     Backdrop(theme),
     Typography(theme),
     IconButton(theme),
-    Autocomplete(theme)
+    Autocomplete(theme),
+    Menu(theme)
   );
 }

@@ -14,6 +14,7 @@ import palette from './palette';
 import shadows, { customShadows } from './shadows';
 import shape from './shape';
 import typography from './SmartRTypography';
+import ComponentsOverrides from './overrides';
 
 // ----------------------------------------------------------------------
 
@@ -23,6 +24,7 @@ export default function ThemeConfig({ children }: { children: any }) {
       mode: 'dark',
       ...palette.darkMode,
     },
+    components: ComponentsOverrides,
   });
 
   return (

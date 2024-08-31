@@ -46,6 +46,10 @@ type Props = {
 
 const StyledWorkflowItem = styled(Card)(({ theme }) => ({
   background: theme.palette.background.darker,
+  boxSizing: 'border-box',
+  [`&:hover`]: {
+    border: `1px solid ${theme.palette.border.main}`,
+  },
 }));
 
 function WorkflowItem({ workflow, refetch }: Props) {

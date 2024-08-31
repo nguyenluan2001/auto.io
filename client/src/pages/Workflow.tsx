@@ -2,7 +2,6 @@ import React, { useState } from 'react';
 import {
   Box,
   Button,
-  ButtonGroup,
   Container,
   Dialog,
   DialogActions,
@@ -31,6 +30,7 @@ import CustomTextField from '@/components/common/CustomTextField';
 import UploadFile from '@/components/common/UploadFile';
 import { axiosInstance } from '@/utils/axios';
 import Theme from '@/theme/Theme';
+import ButtonGroup from '@/components/common/button/ButtonGroup';
 
 const StyledWrapper = styled(Container)(({ theme }) => ({
   background: theme.palette.background.darkest,
@@ -66,18 +66,11 @@ function Workflow() {
           sx={{ mb: 2 }}
         >
           <Typography variant="h4">Workflows</Typography>
-          <ButtonGroup>
-            <Button
-              onClick={onClickCreate}
-              startIcon={<Icon icon={plusIcon} />}
-              variant="contained"
-            >
-              Create
-            </Button>
-            <Button variant="contained" onClick={handleClick}>
-              <Icon icon="mdi:chevron-down" />
-            </Button>
-          </ButtonGroup>
+          <ButtonGroup
+            title="Create Workflow"
+            onClickCreate={onClickCreate}
+            onClickDropdown={handleClick}
+          />
           <Menu
             id="basic-menu"
             anchorEl={anchorEl}
@@ -85,6 +78,14 @@ function Workflow() {
             onClose={handleClose}
             MenuListProps={{
               'aria-labelledby': 'basic-button',
+            }}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
             }}
           >
             <MenuItem onClick={onClickImport}>

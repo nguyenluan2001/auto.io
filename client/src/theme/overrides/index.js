@@ -12,23 +12,9 @@ import Table from './Table';
 import Tabs from './Tabs';
 import Tooltip from './Tooltip';
 import Typography from './Typography';
+import Menu from './Menu';
 
 // ----------------------------------------------------------------------
 
-export default function ComponentsOverrides(theme) {
-  return merge(
-    Tabs(theme),
-    Table(theme),
-    Link(theme),
-    Card(theme),
-    Lists(theme),
-    Paper(theme),
-    Input(theme),
-    Button(theme),
-    Tooltip(theme),
-    Backdrop(theme),
-    Typography(theme),
-    IconButton(theme),
-    Autocomplete(theme)
-  );
-}
+const ComponentsOverrides = merge(Menu);
+export default ComponentsOverrides;
