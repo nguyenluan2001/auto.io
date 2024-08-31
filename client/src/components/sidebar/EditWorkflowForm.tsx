@@ -64,20 +64,14 @@ function EditWorkflowForm() {
           }
         />
       </Box>
-      <Box sx={{ flex: 0.95 }}>
+      <Box sx={{ flex: 1, minHeight: 100 }}>
         <SimpleBar
           style={
             {
-              minHeight: 100,
-              maxHeight: '90%',
+              height: '100%',
               '& .simplebar-placeholder': {
-                maxHeight: '500px',
+                height: '100%',
               },
-              // '& .simplebar-content': {
-              //   maxHeight: '100%',
-              //   // display: 'flex',
-              //   // flexDirection: 'column',
-              // },
             } as React.CSSProperties
           }
         >

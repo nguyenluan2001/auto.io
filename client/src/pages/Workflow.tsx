@@ -13,6 +13,7 @@ import {
   Menu,
   MenuItem,
   Stack,
+  styled,
   TextField,
   Typography,
 } from '@mui/material';
@@ -30,6 +31,10 @@ import CustomTextField from '@/components/common/CustomTextField';
 import UploadFile from '@/components/common/UploadFile';
 import { axiosInstance } from '@/utils/axios';
 import Theme from '@/theme/Theme';
+
+const StyledWrapper = styled(Container)(({ theme }) => ({
+  background: theme.palette.background.darkest,
+}));
 
 function Workflow() {
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
@@ -53,7 +58,7 @@ function Workflow() {
   if (isLoading) return <LoadingScreen />;
   return (
     <Theme>
-      <Container maxWidth="xl" sx={{ py: 5 }}>
+      <StyledWrapper maxWidth="xl" sx={{ py: 5 }}>
         <Stack
           direction="row"
           justifyContent="space-between"
@@ -94,7 +99,7 @@ function Workflow() {
           <WorkflowList workflows={data} refetch={refetch} />
         </Stack>
         <DialogImportWorkflow open={isOpenDialog} onClose={toggleDialog} />
-      </Container>
+      </StyledWrapper>
     </Theme>
   );
 }

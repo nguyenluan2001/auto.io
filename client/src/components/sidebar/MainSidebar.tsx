@@ -5,6 +5,7 @@ import {
   ListItemIcon,
   ListItemText,
   Stack,
+  styled,
   Tooltip,
   Typography,
 } from '@mui/material';
@@ -14,6 +15,7 @@ import sitemapOutline from '@iconify/icons-mdi/sitemap-outline';
 import databaseIcon from '@iconify/icons-mdi/database';
 import { Icon, IconifyIcon } from '@iconify/react';
 import UserPopover from './UserPopover';
+import { customStyled } from '@/theme/styled';
 
 function CustomIcon({ icon }: { icon: IconifyIcon | string }) {
   return <Icon style={{ fontSize: '24px' }} icon={icon} />;
@@ -73,14 +75,7 @@ function MainSidebar() {
   const location = useLocation();
 
   return (
-    <Stack
-      direction="column"
-      alignItems="center"
-      sx={{ p: 1, borderRight: '1px solid black', width: '100px' }}
-    >
-      {/* <Typography variant="h5" sx={{ mb: 5 }}>
-        AutoFlow
-      </Typography> */}
+    <StyledSidebar direction="column" alignItems="center">
       <img src="/public/autoflow.png" alt="auto-flow" />
       <List component="nav" aria-label="main mailbox folders">
         {sidebarConfig?.map((tab) => (
@@ -95,9 +90,16 @@ function MainSidebar() {
       </List>
       <Box sx={{ flex: 1 }} />
       <UserPopover />
-    </Stack>
+    </StyledSidebar>
   );
 }
+
+const StyledSidebar = styled(Stack)(({ theme }) => ({
+  background: theme.palette.background.darkest,
+  borderRight: `1px solid ${theme.palette.border.main}`,
+  width: 100,
+}));
+
 type NavItemProps = {
   label: string;
   icon: any;

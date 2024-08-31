@@ -3,16 +3,16 @@ import React from 'react';
 import { Outlet } from 'react-router-dom';
 import MainSidebar from './sidebar/MainSidebar';
 import Auth from '@/HOCs/Auth';
+import Theme from '../theme/Theme';
 
 function Layout() {
   return (
-    <Stack
-      direction="row"
-      sx={{ width: '100vw', height: '100vh', background: '#f1f2f3' }}
-    >
-      <MainSidebar />
-      <Outlet />
-    </Stack>
+    <Theme>
+      <Stack direction="row" sx={{ width: '100vw', height: '100vh' }}>
+        <MainSidebar />
+        <Outlet />
+      </Stack>
+    </Theme>
   );
 }
 

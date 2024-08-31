@@ -10,7 +10,7 @@ import { useMemo } from 'react';
 import breakpoints from './breakpoints';
 import GlobalStyles from './globalStyles';
 import componentsOverride from './SmartROverrides';
-import palette from './SmartRPalette';
+import palette from './palette';
 import shadows, { customShadows } from './shadows';
 import shape from './shape';
 import typography from './SmartRTypography';
@@ -18,21 +18,12 @@ import typography from './SmartRTypography';
 // ----------------------------------------------------------------------
 
 export default function ThemeConfig({ children }: { children: any }) {
-  const themeOptions = useMemo(
-    () => ({
-      palette,
-      shape,
-      typography,
-      breakpoints,
-      shadows,
-      customShadows,
-      direction: 'ltr',
-    }),
-    []
-  ) as any;
-
-  const theme = createTheme(themeOptions);
-  theme.components = componentsOverride(theme);
+  const theme = createTheme({
+    palette: {
+      mode: 'dark',
+      ...palette.darkMode,
+    },
+  });
 
   return (
     <StyledEngineProvider injectFirst>

@@ -27,6 +27,7 @@ import {
   MenuList,
   Paper,
   Stack,
+  styled,
   Typography,
 } from '@mui/material';
 import { Link, NavLink, useNavigate } from 'react-router-dom';
@@ -42,6 +43,11 @@ type Props = {
   workflow: Workflow;
   refetch: () => void;
 };
+
+const StyledWorkflowItem = styled(Card)(({ theme }) => ({
+  background: theme.palette.background.darker,
+}));
+
 function WorkflowItem({ workflow, refetch }: Props) {
   return (
     <Grid
@@ -53,7 +59,7 @@ function WorkflowItem({ workflow, refetch }: Props) {
       sx={{ height: 'auto', '& a': { textDecoration: 'none' } }}
     >
       <Link to={`/workflows/${workflow?.uuid}`}>
-        <Card sx={{ height: '100%', cursor: 'pointer' }}>
+        <StyledWorkflowItem sx={{ height: '100%', cursor: 'pointer' }}>
           <CardHeader
             title={
               <Stack direction="row" spacing={1} alignItems="center">
@@ -78,7 +84,7 @@ function WorkflowItem({ workflow, refetch }: Props) {
               <Typography variant="body1">{workflow?.description}</Typography>
             </Box>
           </CardContent>
-        </Card>
+        </StyledWorkflowItem>
       </Link>
     </Grid>
   );
