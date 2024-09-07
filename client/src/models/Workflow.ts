@@ -11,6 +11,7 @@ type Workflow = {
   nodes?: Node[];
   edges?: Edge[];
   flows: any;
+  latestFlow: any;
   table: Table;
 };
 

@@ -6,6 +6,7 @@ import Sidebar from '@/components/sidebar';
 import { useFlow } from '@/store/flow';
 
 import { generateNode } from '@/utils/generateNode';
+import ThemeConfig from '@/theme/Theme';
 
 type Props = {
   refetch: () => void;
@@ -55,32 +56,34 @@ function WorkflowEdit({ refetch }: Props) {
     [reactFlowInstance]
   );
   return (
-    <ReactFlowProvider>
-      <Box
-        sx={{ width: '100%', overflowX: 'hidden' }}
-        className="reactflow-wrapper"
-        ref={reactFlowWrapper}
-      >
-        <Stack
-          direction="row"
-          style={{
-            // width: '100vw',
-            overflow: 'hidden',
-            flex: 1,
-          }}
+    <ThemeConfig>
+      <ReactFlowProvider>
+        <Box
+          sx={{ width: '100%', overflowX: 'hidden' }}
+          className="reactflow-wrapper"
+          ref={reactFlowWrapper}
         >
-          <Sidebar />
-          <Box style={{ flex: 1 }}>
-            <Editor
-              onDrop={onDrop}
-              onDragOver={onDragOver}
-              setReactFlowInstance={setReactFlowInstance}
-              refetch={refetch}
-            />
-          </Box>
-        </Stack>
-      </Box>
-    </ReactFlowProvider>
+          <Stack
+            direction="row"
+            style={{
+              // width: '100vw',
+              overflow: 'hidden',
+              flex: 1,
+            }}
+          >
+            <Sidebar />
+            <Box style={{ flex: 1 }}>
+              <Editor
+                onDrop={onDrop}
+                onDragOver={onDragOver}
+                setReactFlowInstance={setReactFlowInstance}
+                refetch={refetch}
+              />
+            </Box>
+          </Stack>
+        </Box>
+      </ReactFlowProvider>
+    </ThemeConfig>
   );
 }
 

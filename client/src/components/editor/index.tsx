@@ -20,13 +20,14 @@ import ReactFlow, {
 } from 'reactflow';
 
 import 'reactflow/dist/style.css';
-import { Box } from '@mui/material';
+import { Box, useTheme } from '@mui/material';
 import { useFlow } from '../../store/flow';
 import CustomNode from '../nodes/CustomNode';
 import Toolbar from './Toolbar';
 import CustomEdge from '../edge/CustomEdge';
 import { nodeTypes } from '@/utils/nodeCustomType';
 import { edgeTypes } from '@/utils/edgeCustomType';
+import ThemeConfig, { ITheme } from '@/theme/Theme';
 
 type Props = {
   onDragOver: (event: React.DragEvent<HTMLDivElement>) => void;
@@ -36,9 +37,9 @@ type Props = {
 };
 
 function Editor({ onDragOver, onDrop, setReactFlowInstance, refetch }: Props) {
+  const theme: ITheme = useTheme();
   const nodes: Node[] = useFlow((state: any) => state.nodes);
   const edges: Edge[] = useFlow((state: any) => state.edges);
-  console.log('🚀 ===== Editor ===== edges:', edges);
   const addNode: (cb: (nds: Node[]) => void) => void = useFlow(
     (state: any) => state.addNode
   );
@@ -101,27 +102,29 @@ function Editor({ onDragOver, onDrop, setReactFlowInstance, refetch }: Props) {
     [nodes, edges]
   );
   return (
-    <Box sx={{ height: '100vh', width: '100%', position: 'relative' }}>
-      <Toolbar refetch={refetch} />
-      <ReactFlow
-        onNodesChange={onNodesChange}
-        style={{ background: '#F5F5F5' }}
-        // onEdgesChange={onEdgesChange}
-        fitView
-        nodes={nodes}
-        edges={edges}
-        onConnect={onConnect}
-        nodeTypes={nodeTypes as unknown as NodeTypes}
-        edgeTypes={edgeTypes}
-        onDragOver={onDragOver}
-        onDrop={onDrop}
-        onInit={setReactFlowInstance}
-        // onNodesDelete={onNodesDelete}
-      >
-        <Background gap={10} variant={'dots' as BackgroundVariant} />
-        <Controls />
-      </ReactFlow>
-    </Box>
+    <ThemeConfig>
+      <Box sx={{ height: '100vh', width: '100%', position: 'relative' }}>
+        <Toolbar refetch={refetch} />
+        <ReactFlow
+          onNodesChange={onNodesChange}
+          style={{ background: theme.palette.background.darkest }}
+          // onEdgesChange={onEdgesChange}
+          fitView
+          nodes={nodes}
+          edges={edges}
+          onConnect={onConnect}
+          nodeTypes={nodeTypes as unknown as NodeTypes}
+          edgeTypes={edgeTypes}
+          onDragOver={onDragOver}
+          onDrop={onDrop}
+          onInit={setReactFlowInstance}
+          // onNodesDelete={onNodesDelete}
+        >
+          <Background gap={10} variant={'dots' as BackgroundVariant} />
+          <Controls />
+        </ReactFlow>
+      </Box>
+    </ThemeConfig>
   );
 }
 

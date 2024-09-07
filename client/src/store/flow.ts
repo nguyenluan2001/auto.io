@@ -1,6 +1,7 @@
 import { Edge } from 'reactflow';
 import { create } from 'zustand';
 import { generateNode } from '@/utils/generateNode';
+import { convertFlow } from '@/utils/flow';
 
 // const initialNodes = [
 //   {
@@ -55,22 +56,6 @@ const initialNodes = [
   }),
 ];
 const initialEdges = [{ id: '1-2', source: '1', target: '2' }];
-const convertFlow = ({ nodes, edges }: { nodes: any[]; edges: any[] }) => {
-  const map = new Map();
-  const nodeObjects = nodes?.reduce((pre, current) => {
-    return {
-      ...pre,
-      [current?.id]: current,
-    };
-  }, {});
-  for (const edge of edges) {
-    if (!map.has(edge?.source)) {
-      map.set(edge?.source, nodeObjects?.[edge?.source]);
-    }
-    map.set(edge?.target, nodeObjects?.[edge?.target]);
-  }
-  return [...map.values()];
-};
 const initialState = {
   name: '',
   description: '',
@@ -80,25 +65,17 @@ const initialState = {
   edges: [],
   flows: [],
   selectedNode: null,
+  latestFlow: null,
 };
 const useFlow = create((set, get) => ({
   ...initialState,
   reset: () => {
     set(initialState);
   },
+  // === NODE ===
   setNodes: (nodes: Node[]) =>
     set((state: any) => {
-      console.log('🚀 ===== initNodes: ===== nodes:', nodes);
       return { nodes };
-    }),
-  setEdges: (edges: Edge[]) =>
-    set((state: any) => {
-      return { edges };
-    }),
-  setWorkflow: (nodes: Node[], edges: Edge[]) =>
-    set((state: any) => {
-      const flows = convertFlow({ nodes, edges });
-      return { flows };
     }),
   addNode: (cb: (value: Node[]) => void) =>
     set((state: any) => ({ nodes: cb(state.nodes) })),
@@ -110,12 +87,23 @@ const useFlow = create((set, get) => ({
       const flows = convertFlow({ nodes: newNodes, edges: state.edges });
       return { nodes: newNodes, flows };
     }),
-  // setEdges: (eds: Edge[]) => set((state) => ({ edges: eds })),
+  // === EDGE ===
+  setEdges: (edges: Edge[]) =>
+    set((state: any) => {
+      return { edges };
+    }),
   addEdge: (cb: (edges: any[]) => void) =>
     set((state: any) => {
       const newEdges = cb(state.edges) as unknown as any[];
       const flows = convertFlow({ nodes: state.nodes, edges: newEdges });
       return { edges: newEdges, flows };
+    }),
+
+  // === WORKFLOW ===
+  setWorkflow: (nodes: Node[], edges: Edge[]) =>
+    set((state: any) => {
+      const flows = convertFlow({ nodes, edges });
+      return { flows, latestFlow: flows };
     }),
   setSelectedNode: (node: Node) => {
     set((state: any) => ({ selectedNode: node }));

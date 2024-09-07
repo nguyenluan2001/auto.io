@@ -12,12 +12,21 @@ import {
 import React, { useEffect, useMemo, useState } from 'react';
 import { Icon } from '@iconify/react';
 import { v4 as uuidv4 } from 'uuid';
+import { styled } from '@material-ui/core';
 import { useFlow } from '@/store/flow';
 import { generateNode } from '@/utils/generateNode';
 import { socket } from '@/utils/socket';
-import Theme from '@/theme/Theme';
+import Theme, { ITheme } from '@/theme/Theme';
 
 const handleStyle = { left: 10 };
+
+const StyledNode = styled(Box)(({ theme }: { theme?: ITheme }) => ({
+  background: theme?.palette.form.fieldBackgroundColor,
+  border: '1px solid black',
+  borderRadius: '4px',
+  padding: '8px 14px',
+  position: 'relative',
+}));
 
 function CustomNode(node: Node) {
   const setSelectedNode = useFlow((state: any) => state.setSelectedNode);
@@ -40,25 +49,11 @@ function CustomNode(node: Node) {
   // }, []);
 
   return (
-    <Box
-      sx={{
-        border: '1px solid black',
-        background: 'white',
-        borderRadius: 1,
-        p: 1,
-        position: 'relative',
-        // '&:hover': {
-        //   '#toolbar': {
-        //     display: 'inherit',
-        //   },
-        // },
-      }}
-      onClick={handleClickNode}
-    >
+    <StyledNode onClick={handleClickNode}>
       {node?.data?.key !== 'trigger' && (
         <Handle type="target" position={Position.Left} />
       )}
-      <Stack direction="row" alignItems="center">
+      <Stack direction="row" alignItems="center" spacing={1}>
         <Icon style={{ fontSize: '14px' }} icon={icon} />
         <Typography sx={{ fontWeight: '600', fontSize: '10px' }}>
           {node?.data?.title}
@@ -66,7 +61,9 @@ function CustomNode(node: Node) {
         {/* <Toolbar node={node} /> */}
       </Stack>
       {node?.data?.description && (
-        <Typography variant="caption">{node?.data?.description}</Typography>
+        <Typography sx={{ fontSize: '8px', marginTop: 1 }}>
+          {node?.data?.description}
+        </Typography>
       )}
       {/* <Handle type="source" position={Position.Bottom} id="a" />
       <Handle type="source" position={Position.Bottom} id="b" /> */}
@@ -101,7 +98,7 @@ function CustomNode(node: Node) {
           }}
         />
       )}
-    </Box>
+    </StyledNode>
   );
 }
 function RenderHandler({ num }: { num: number }) {

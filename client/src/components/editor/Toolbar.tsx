@@ -1,4 +1,5 @@
 import {
+  Badge,
   Box,
   Button,
   Dialog,
@@ -11,13 +12,13 @@ import {
   MenuItem,
   Stack,
 } from '@mui/material';
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { enqueueSnackbar } from 'notistack';
 import { Workflow } from 'models/Workflow';
 import { Icon } from '@iconify/react';
 import { useNavigate } from 'react-router-dom';
 import { LoadingButton } from '@material-ui/lab';
-import { set } from 'lodash';
+import { isEqual, set } from 'lodash';
 import { v4 as uuidv4 } from 'uuid';
 import { axiosInstance } from '@/utils/axios';
 import { useFlow } from '@/store/flow';
@@ -29,12 +30,14 @@ type Props = {
 };
 function Toolbar({ refetch }: Props) {
   // const flows = useFlow((state: any) => state.flows);
-  const { uuid, name, description, table, nodes, edges, flows } = useFlow(
-    (state) => state
-  ) as Workflow;
+  const { uuid, name, description, table, nodes, edges, flows, latestFlow } =
+    useFlow((state) => state) as Workflow;
+  console.log('nodes', nodes);
+  console.log('edges', edges);
   const navigate = useNavigate();
   const [isRunning, setIsRunning] = useState(false);
   const [processUUID, setProcessUUID] = useState('');
+  const [isDiff, setIsDiff] = useState<boolean>(false);
   const handleRun = async () => {
     try {
       setIsRunning(true);
@@ -57,6 +60,7 @@ function Toolbar({ refetch }: Props) {
       });
     }
   };
+
   const handleSave = async () => {
     try {
       if (uuid) {
@@ -109,6 +113,14 @@ function Toolbar({ refetch }: Props) {
       });
     }
   };
+
+  useEffect(() => {
+    if (!isEqual(flows, latestFlow)) {
+      setIsDiff(true);
+    } else {
+      setIsDiff(false);
+    }
+  }, [flows]);
   return (
     <Theme>
       <Stack
@@ -146,13 +158,23 @@ function Toolbar({ refetch }: Props) {
           >
             Run
           </LoadingButton>
-          <Button
-            startIcon={<Icon icon="mdi:content-save-outline" />}
-            onClick={handleSave}
-            variant="contained"
+          <Badge
+            color="warning"
+            variant="dot"
+            anchorOrigin={{
+              vertical: 'top',
+              horizontal: 'left',
+            }}
+            invisible={!isDiff}
           >
-            Save
-          </Button>
+            <Button
+              startIcon={<Icon icon="mdi:content-save-outline" />}
+              onClick={handleSave}
+              variant="contained"
+            >
+              Save
+            </Button>
+          </Badge>
           <MoreButton />
         </Stack>
       </Stack>

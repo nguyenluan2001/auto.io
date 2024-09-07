@@ -7,6 +7,7 @@ import {
 } from '@mui/material/styles';
 import { useMemo } from 'react';
 //
+import { Palette, Theme } from '@material-ui/core';
 import breakpoints from './breakpoints';
 import GlobalStyles from './globalStyles';
 import componentsOverride from './SmartROverrides';
@@ -15,16 +16,21 @@ import shadows, { customShadows } from './shadows';
 import shape from './shape';
 import typography from './SmartRTypography';
 import ComponentsOverrides from './overrides';
+import { IPalette } from './palette/dark';
 
 // ----------------------------------------------------------------------
+interface ITheme extends Theme {
+  palette: Palette & IPalette;
+}
+export type { ITheme };
 
 export default function ThemeConfig({ children }: { children: any }) {
   const theme = createTheme({
     palette: {
       mode: 'dark',
       ...palette.darkMode,
-    },
-    components: ComponentsOverrides,
+    } as any,
+    components: ComponentsOverrides as any,
   });
 
   return (

@@ -12,9 +12,9 @@ import { useFlow } from '@/store/flow';
 import { CustomTextArea } from '../common/styled';
 import CustomTextField from '../common/CustomTextField';
 import FieldTitle from '../common/FieldTitle';
+import { enqueueSnackbar } from 'notistack';
 
 function EditWidgetForm() {
-  console.log('🚀 ===== EditForm ===== EditForm:');
   const selectedNode = useFlow((state: any) => state.selectedNode) as {
     id: string;
     data: Record<string, string>;
@@ -40,6 +40,9 @@ function EditWidgetForm() {
     updateNodeInformation({
       ...(values || {}),
       description,
+    });
+    enqueueSnackbar('Update widget successfully', {
+      variant: 'success',
     });
   };
   const handleDeleteNode = () => {
