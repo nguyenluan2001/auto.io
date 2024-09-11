@@ -56,7 +56,6 @@ function Editor({ onDragOver, onDrop, setReactFlowInstance, refetch }: Props) {
   );
   const onConnect = useCallback(
     (connection: Connection) => {
-      console.log('🚀 ===== Editor ===== connection:', connection);
       addEdgeFlow((eds) =>
         addEdge(
           {

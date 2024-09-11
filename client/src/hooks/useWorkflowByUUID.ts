@@ -7,16 +7,14 @@ type Params = {
   options: QueryOptions | undefined;
 };
 const useWorkflowByUUID = ({ uuid, options }: Params) =>
-  useQuery<unknown, unknown, Workflow>(
+  useQuery<Workflow, null, Workflow>(
     ['get-workflow-by-uuid', uuid],
     async () => {
       const response = await axiosInstance.get(`/api/workflows/${uuid}`);
-      console.log('🚀 ===== response:', response);
       return response.data;
     },
     {
-      initialData: {},
-      ...options,
+      ...(options as any),
     }
   );
 export { useWorkflowByUUID };

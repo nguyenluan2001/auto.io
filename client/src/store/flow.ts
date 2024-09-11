@@ -1,5 +1,6 @@
-import { Edge } from 'reactflow';
+import { Edge, Node } from 'reactflow';
 import { create } from 'zustand';
+import { Table } from 'models/Table';
 import { generateNode } from '@/utils/generateNode';
 import { convertFlow } from '@/utils/flow';
 
@@ -59,28 +60,43 @@ const initialEdges = [{ id: '1-2', source: '1', target: '2' }];
 const initialState = {
   name: '',
   description: '',
-  table: null,
+  table: null as Table | null,
   uuid: '',
-  nodes: initialNodes,
-  edges: [],
-  flows: [],
-  selectedNode: null,
-  latestFlow: null,
+  nodes: initialNodes as Node[],
+  edges: [] as Edge[],
+  flows: [] as Node[],
+  selectedNode: null as Node | null,
+  latestFlow: [] as Node[],
 };
-const useFlow = create((set, get) => ({
+
+type IInitialState = typeof initialState;
+
+interface IFlowStore extends IInitialState {
+  reset: () => void;
+  setNodes: (nodes: Node[]) => void;
+  addNode: (callback: (nodes: Node[]) => Node[]) => void;
+  deleteNode: (nodeId: string) => void;
+  setEdges: (edges: Edge[]) => void;
+  addEdge: (callback: (edges: Edge[]) => Edge[]) => void;
+  setWorkflow: (nodes: Node[], edges: Edge[]) => void;
+  setSelectedNode: (node: Node | null) => void;
+  setName: (name: string) => void;
+  setDescription: (description: string) => void;
+  setConnectTable: (table: Table) => void;
+  setUUID: (uuid: string) => void;
+  updateNodeInformation: (data: Node) => void;
+}
+const useFlow = create<IFlowStore>((set, get) => ({
   ...initialState,
   reset: () => {
     set(initialState);
   },
   // === NODE ===
-  setNodes: (nodes: Node[]) =>
-    set((state: any) => {
-      return { nodes };
-    }),
-  addNode: (cb: (value: Node[]) => void) =>
-    set((state: any) => ({ nodes: cb(state.nodes) })),
+  setNodes: (nodes: Node[]) => set({ nodes }),
+  addNode: (cb: (value: Node[]) => Node[]) =>
+    set((state: IInitialState) => ({ nodes: cb(state.nodes) })),
   deleteNode: (nodeId: string) =>
-    set((state: any) => {
+    set((state: IInitialState) => {
       const newNodes = state.nodes?.filter(
         (node: Node & { id: string }) => node?.id !== nodeId
       );
@@ -89,7 +105,7 @@ const useFlow = create((set, get) => ({
     }),
   // === EDGE ===
   setEdges: (edges: Edge[]) =>
-    set((state: any) => {
+    set((state: IInitialState) => {
       return { edges };
     }),
   addEdge: (cb: (edges: any[]) => void) =>
@@ -100,23 +116,19 @@ const useFlow = create((set, get) => ({
     }),
 
   // === WORKFLOW ===
-  setWorkflow: (nodes: Node[], edges: Edge[]) =>
-    set((state: any) => {
-      const flows = convertFlow({ nodes, edges });
-      return { flows, latestFlow: flows };
-    }),
-  setSelectedNode: (node: Node) => {
-    set((state: any) => ({ selectedNode: node }));
+  setWorkflow: (nodes: Node[], edges: Edge[]) => {
+    const flows = convertFlow({ nodes, edges });
+    set({ flows, latestFlow: flows });
   },
-  setName: (name: string) => set(() => ({ name })),
-  setDescription: (description: string) => set(() => ({ description })),
-  setConnectTable: (table: any) => set(() => ({ table })),
-  setUUID: (uuid: string) => set(() => ({ uuid })),
-  updateNodeInformation: (data: any) => {
-    console.log('🚀 ===== useFlow ===== data:', data);
+  setSelectedNode: (node: Node | null) => {
+    set({ selectedNode: node });
+  },
+  setName: (name: string) => set({ name }),
+  setDescription: (description: string) => set({ description }),
+  setConnectTable: (table: Table) => set({ table }),
+  setUUID: (uuid: string) => set({ uuid }),
+  updateNodeInformation: (data: Node) => {
     const { selectedNode, nodes, edges } = get() as any;
-    console.log('🚀 ===== useFlow ===== edges:', edges);
-    console.log('🚀 ===== useFlow ===== selectedNode:', selectedNode);
     const newNodes = nodes?.map((node: any) => {
       if (node?.id === selectedNode?.id) {
         return {
@@ -129,13 +141,11 @@ const useFlow = create((set, get) => ({
       }
       return node;
     });
-    console.log('🚀 ===== newNodes ===== newNodes:', newNodes);
     const newFlows = convertFlow({ nodes: newNodes, edges });
-    console.log('🚀 ===== useFlow ===== newFlows:', newFlows);
-    set(() => ({
+    set({
       nodes: newNodes,
       flows: newFlows,
-    }));
+    });
   },
 }));
 export { useFlow };

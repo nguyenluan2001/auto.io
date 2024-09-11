@@ -1,5 +1,6 @@
 import React, { useEffect } from 'react';
 import { useParams } from 'react-router-dom';
+import { Node } from 'reactflow';
 import WorkflowEdit from '../components/WorkflowEdit';
 import { useWorkflowByUUID } from '@/hooks/useWorkflowByUUID';
 import { useFlow } from '@/store/flow';
@@ -22,6 +23,8 @@ function EditPage() {
     setName,
     setDescription,
     setConnectTable,
+    selectedNode,
+    setSelectedNode,
   } = useFlow((state: any) => state);
   useEffect(() => {
     if (!isLoading && !isFetching && workflow?.id) {
@@ -35,9 +38,12 @@ function EditPage() {
         workflow?.config?.edges || workflow?.edges
       );
       setConnectTable(workflow?.table);
+      const newSelectedNode = workflow?.config?.nodes?.find(
+        (node: Node) => node.id === selectedNode.id
+      );
+      setSelectedNode(newSelectedNode);
     }
   }, [workflow, isFetching, isLoading]);
-  console.log('🚀 ===== EditPage ===== workflow:', workflow);
   if (isLoading || isFetching) return <LoadingScreen />;
   return <WorkflowEdit refetch={refetch} />;
 }

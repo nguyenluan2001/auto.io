@@ -7,19 +7,15 @@ import {
   getIncomers,
   getOutgoers,
 } from 'reactflow';
+import { enqueueSnackbar } from 'notistack';
 import { config } from '@/utils/nodeConfig';
 import { useFlow } from '@/store/flow';
 import { CustomTextArea } from '../common/styled';
 import CustomTextField from '../common/CustomTextField';
 import FieldTitle from '../common/FieldTitle';
-import { enqueueSnackbar } from 'notistack';
 
 function EditWidgetForm() {
-  const selectedNode = useFlow((state: any) => state.selectedNode) as {
-    id: string;
-    data: Record<string, string>;
-  };
-  const setSelectedNode = useFlow((state: any) => state.setSelectedNode);
+  const { selectedNode, setSelectedNode } = useFlow();
   const edges = useFlow((state: any) => state.edges);
   const nodes = useFlow((state: any) => state.nodes);
   const updateNodeInformation = useFlow(
@@ -72,7 +68,6 @@ function EditWidgetForm() {
   };
   return (
     <Stack direction="column" spacing={2}>
-      {/* {selectedNode?.id} */}
       <Box>
         <FieldTitle title="Description" />
         <CustomTextArea
@@ -84,14 +79,16 @@ function EditWidgetForm() {
       </Box>
       <RenderForm selectedNode={selectedNode} setValues={setValues} />
       <Stack direction="row" spacing={2}>
-        <Button
-          sx={{ flex: 1 }}
-          variant="contained"
-          color="error"
-          onClick={handleDeleteNode}
-        >
-          Delete
-        </Button>
+        {selectedNode?.data?.key !== 'trigger' && (
+          <Button
+            sx={{ flex: 1 }}
+            variant="contained"
+            color="error"
+            onClick={handleDeleteNode}
+          >
+            Delete
+          </Button>
+        )}
         <Button sx={{ flex: 1 }} variant="contained" onClick={handleUpdateNode}>
           Update
         </Button>

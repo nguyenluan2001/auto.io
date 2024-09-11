@@ -17,7 +17,6 @@ const getId = () => `dndnode_${id++}`;
 function WorkflowEdit({ refetch }: Props) {
   const addNode = useFlow((state: any) => state.addNode);
   const nodes = useFlow((state: any) => state.nodes);
-  console.log('🚀 ===== App ===== nodes:', nodes);
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance | null>(null);
   const reactFlowWrapper = useRef(null);

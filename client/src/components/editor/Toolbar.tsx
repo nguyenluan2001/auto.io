@@ -31,13 +31,12 @@ type Props = {
 function Toolbar({ refetch }: Props) {
   // const flows = useFlow((state: any) => state.flows);
   const { uuid, name, description, table, nodes, edges, flows, latestFlow } =
-    useFlow((state) => state) as Workflow;
-  console.log('nodes', nodes);
-  console.log('edges', edges);
+    useFlow();
   const navigate = useNavigate();
   const [isRunning, setIsRunning] = useState(false);
   const [processUUID, setProcessUUID] = useState('');
   const [isDiff, setIsDiff] = useState<boolean>(false);
+
   const handleRun = async () => {
     try {
       setIsRunning(true);
@@ -46,7 +45,6 @@ function Toolbar({ refetch }: Props) {
       const response = await axiosInstance.post(`/api/workflows/${uuid}/run`, {
         process_uuid,
       });
-      console.log('🚀 ===== handleClick ===== response:', response);
       if (response.status === 200) {
         enqueueSnackbar('Run workflow successfully', {
           variant: 'success',
@@ -182,9 +180,7 @@ function Toolbar({ refetch }: Props) {
   );
 }
 function MoreButton() {
-  const { uuid, name, description, table, nodes, edges, flows } = useFlow(
-    (state) => state
-  ) as Workflow;
+  const { uuid, name, description, table, nodes, edges, flows } = useFlow();
   const [anchorEl, setAnchorEl] = React.useState<null | HTMLElement>(null);
   const open = Boolean(anchorEl);
   const handleClick = (event: React.MouseEvent<HTMLButtonElement>) => {
