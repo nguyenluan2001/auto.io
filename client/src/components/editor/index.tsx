@@ -1,33 +1,27 @@
-import { useCallback, useMemo, useState } from 'react';
+import { useCallback } from 'react';
 import ReactFlow, {
+  addEdge,
+  applyNodeChanges,
   Background,
+  BackgroundVariant,
   Connection,
   Controls,
   Edge,
-  EdgeChange,
+  EdgeMouseHandler,
   MarkerType,
   Node,
   NodeChange,
   NodeTypes,
-  applyEdgeChanges,
-  applyNodeChanges,
-  getConnectedEdges,
-  getIncomers,
-  getOutgoers,
-  addEdge,
-  EdgeTypes,
-  BackgroundVariant,
 } from 'reactflow';
 
-import 'reactflow/dist/style.css';
 import { Box, useTheme } from '@mui/material';
-import { useFlow } from '../../store/flow';
-import CustomNode from '../nodes/CustomNode';
-import Toolbar from './Toolbar';
-import CustomEdge from '../edge/CustomEdge';
-import { nodeTypes } from '@/utils/nodeCustomType';
-import { edgeTypes } from '@/utils/edgeCustomType';
 import ThemeConfig, { ITheme } from '@/theme/Theme';
+import { edgeTypes } from '@/utils/edgeCustomType';
+import { nodeTypes } from '@/utils/nodeCustomType';
+import 'reactflow/dist/style.css';
+import { useFlow } from '../../store/flow';
+import Toolbar from './Toolbar';
+import BottomToolbar from './BottomToolbar';
 
 type Props = {
   onDragOver: (event: React.DragEvent<HTMLDivElement>) => void;
@@ -38,15 +32,14 @@ type Props = {
 
 function Editor({ onDragOver, onDrop, setReactFlowInstance, refetch }: Props) {
   const theme: ITheme = useTheme();
-  const nodes: Node[] = useFlow((state: any) => state.nodes);
-  const edges: Edge[] = useFlow((state: any) => state.edges);
+  const { nodes, edges, setEdges } = useFlow();
+
   const addNode: (cb: (nds: Node[]) => void) => void = useFlow(
     (state: any) => state.addNode
   );
   const addEdgeFlow: (cb: (params: any) => void) => void = useFlow(
     (state: any) => state.addEdge
   );
-  const setEdges = useFlow((state: any) => state.setEdges);
 
   const onNodesChange = useCallback(
     (changes: NodeChange[]) => {
@@ -74,32 +67,35 @@ function Editor({ onDragOver, onDrop, setReactFlowInstance, refetch }: Props) {
     },
     [addEdgeFlow]
   );
-  const onNodesDelete = useCallback(
-    (deleted: Node[]) => {
-      setEdges(
-        deleted.reduce((acc, node) => {
-          const incomers = getIncomers(node, nodes, edges);
-          const outgoers = getOutgoers(node, nodes, edges);
-          const connectedEdges = getConnectedEdges([node], edges);
 
-          const remainingEdges = acc.filter(
-            (edge) => !connectedEdges.includes(edge)
-          );
+  const onEdgeMouseEnter: EdgeMouseHandler = (_, edge) => {
+    setEdges(
+      edges?.map((item) => {
+        if (item?.id === edge.id) {
+          return {
+            ...item,
+            isHovered: true,
+          };
+        }
+        return {
+          ...item,
+          isHovered: false,
+        };
+      })
+    );
+  };
 
-          const createdEdges = incomers.flatMap(({ id: source }) =>
-            outgoers.map(({ id: target }) => ({
-              id: `${source}->${target}`,
-              source,
-              target,
-            }))
-          );
+  const onEdgeMouseLeave: EdgeMouseHandler = () => {
+    setEdges(
+      edges?.map((item) => {
+        return {
+          ...item,
+          isHovered: false,
+        };
+      })
+    );
+  };
 
-          return [...remainingEdges, ...createdEdges];
-        }, edges)
-      );
-    },
-    [nodes, edges]
-  );
   return (
     <ThemeConfig>
       <Box sx={{ height: '100vh', width: '100%', position: 'relative' }}>
@@ -107,7 +103,6 @@ function Editor({ onDragOver, onDrop, setReactFlowInstance, refetch }: Props) {
         <ReactFlow
           onNodesChange={onNodesChange}
           style={{ background: theme.palette.background.darkest }}
-          // onEdgesChange={onEdgesChange}
           fitView
           nodes={nodes}
           edges={edges}
@@ -117,11 +112,12 @@ function Editor({ onDragOver, onDrop, setReactFlowInstance, refetch }: Props) {
           onDragOver={onDragOver}
           onDrop={onDrop}
           onInit={setReactFlowInstance}
-          // onNodesDelete={onNodesDelete}
+          onEdgeMouseEnter={onEdgeMouseEnter}
+          onEdgeMouseLeave={onEdgeMouseLeave}
         >
           <Background gap={10} variant={'dots' as BackgroundVariant} />
-          <Controls />
         </ReactFlow>
+        <BottomToolbar />
       </Box>
     </ThemeConfig>
   );

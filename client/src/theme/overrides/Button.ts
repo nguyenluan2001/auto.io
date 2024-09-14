@@ -22,6 +22,10 @@ const Button = {
           background: 'white',
         },
       }),
+      containedWarning: ({ theme }: { theme: ITheme }) => ({
+        background: theme.palette.warning.main,
+        color: theme.palette.background.main,
+      }),
     },
   },
 };

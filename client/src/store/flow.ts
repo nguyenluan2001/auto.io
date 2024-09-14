@@ -1,55 +1,10 @@
 import { Edge, Node } from 'reactflow';
 import { create } from 'zustand';
 import { Table } from 'models/Table';
+import { IEdge } from 'models/Edge';
 import { generateNode } from '@/utils/generateNode';
 import { convertFlow } from '@/utils/flow';
 
-// const initialNodes = [
-//   {
-//     id: uuidv4(),
-//     data: { title: 'Trigger', key: 'trigger' },
-//     position: { x: 0, y: 0 },
-//     type: 'customNode',
-//   },
-//   // {
-//   //   id: uuidv4(),
-//   //   data: { label: 'New tab', name: 'new-tab', url: 'https://devnoob.id.vn' },
-//   //   position: { x: 0, y: 200 },
-//   //   type: 'customNode',
-//   // },
-//   // {
-//   //   id: uuidv4(),
-//   //   data: {
-//   //     label: 'Form',
-//   //     name: 'form',
-//   //     selector: '#APjFqb',
-//   //     value: 'Puppeteer',
-//   //   },
-//   //   position: { x: 200, y: 200 },
-//   //   type: 'customNode',
-//   // },
-//   // {
-//   //   id: uuidv4(),
-//   //   data: {
-//   //     label: 'Form',
-//   //     name: 'form',
-//   //     selector: '#APjFqb',
-//   //     value: 'Puppeteer',
-//   //   },
-//   //   position: { x: 400, y: 200 },
-//   //   type: 'customNode',
-//   // },
-//   // {
-//   //   id: uuidv4(),
-//   //   data: {
-//   //     label: 'Click element',
-//   //     name: 'event-click',
-//   //     selector: '#menu > li:nth-child(1) > a',
-//   //   },
-//   //   position: { x: 600, y: 200 },
-//   //   type: 'customNode',
-//   // },
-// ];
 const initialNodes = [
   generateNode({
     type: 'trigger',
@@ -63,7 +18,7 @@ const initialState = {
   table: null as Table | null,
   uuid: '',
   nodes: initialNodes as Node[],
-  edges: [] as Edge[],
+  edges: [] as IEdge[],
   flows: [] as Node[],
   selectedNode: null as Node | null,
   latestFlow: [] as Node[],
@@ -76,7 +31,7 @@ interface IFlowStore extends IInitialState {
   setNodes: (nodes: Node[]) => void;
   addNode: (callback: (nodes: Node[]) => Node[]) => void;
   deleteNode: (nodeId: string) => void;
-  setEdges: (edges: Edge[]) => void;
+  setEdges: (edges: IEdge[]) => void;
   addEdge: (callback: (edges: Edge[]) => Edge[]) => void;
   setWorkflow: (nodes: Node[], edges: Edge[]) => void;
   setSelectedNode: (node: Node | null) => void;
@@ -104,10 +59,7 @@ const useFlow = create<IFlowStore>((set, get) => ({
       return { nodes: newNodes, flows };
     }),
   // === EDGE ===
-  setEdges: (edges: Edge[]) =>
-    set((state: IInitialState) => {
-      return { edges };
-    }),
+  setEdges: (edges: IEdge[]) => set({ edges }),
   addEdge: (cb: (edges: any[]) => void) =>
     set((state: any) => {
       const newEdges = cb(state.edges) as unknown as any[];

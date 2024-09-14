@@ -8,8 +8,10 @@ import {
   getSimpleBezierPath,
   getSmoothStepPath,
   getStraightPath,
+  useEdgesState,
 } from 'reactflow';
 import closeCircleOutline from '@iconify/icons-mdi/close-circle-outline';
+import { useMemo } from 'react';
 import { useFlow } from '@/store/flow';
 
 type Props = {
@@ -21,6 +23,7 @@ type Props = {
   sourcePosition: Position;
   targetPosition: Position;
   markerEnd: string;
+  data: any;
 };
 export default function CustomEdge({
   id,
@@ -31,11 +34,11 @@ export default function CustomEdge({
   sourcePosition,
   targetPosition,
   markerEnd,
+  data,
 }: Props) {
-  const { edges, setEdges } = useFlow((state) => state) as {
-    edges: any;
-    setEdges: (edges: any[]) => void;
-  };
+  console.log('edge data', data);
+  const { edges, setEdges } = useFlow();
+
   const [edgePath, labelX, labelY] = getSmoothStepPath({
     sourceX,
     sourceY,
@@ -44,33 +47,37 @@ export default function CustomEdge({
     sourcePosition,
     targetPosition,
   });
+
   const handleRemoveEdge = () => {
     const newEdges = edges.filter((edge: any) => edge.id !== id);
-    console.log('🚀 ===== handleRemoveEdge ===== newEdges:', newEdges);
     setEdges(newEdges);
   };
 
+  const isHovered = useMemo(() => {
+    const edge = edges?.find((item) => item.id === id);
+    if (edge) {
+      return edge.isHovered;
+    }
+    return false;
+  }, [id, edges]);
+
   return (
     <>
-      <BaseEdge
-        style={{ background: 'red' }}
-        markerEnd={markerEnd}
-        id={id}
-        path={edgePath}
-      />
-      ;
+      <BaseEdge markerEnd={markerEnd} id={id} path={edgePath} />
       <EdgeLabelRenderer>
-        <IconButton
-          onClick={handleRemoveEdge}
-          sx={{
-            position: 'absolute',
-            transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
-            pointerEvents: 'all',
-          }}
-          className="nodrag nopan"
-        >
-          <Icon style={{ fontSize: '16px' }} icon={closeCircleOutline} />
-        </IconButton>
+        {isHovered && (
+          <IconButton
+            onClick={handleRemoveEdge}
+            sx={{
+              position: 'absolute',
+              transform: `translate(-50%, -50%) translate(${labelX}px,${labelY}px)`,
+              pointerEvents: 'all',
+            }}
+            className="nodrag nopan"
+          >
+            <Icon style={{ fontSize: '16px' }} icon={closeCircleOutline} />
+          </IconButton>
+        )}
       </EdgeLabelRenderer>
     </>
   );

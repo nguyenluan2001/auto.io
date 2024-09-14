@@ -33,31 +33,7 @@ function Toolbar({ refetch }: Props) {
   const { uuid, name, description, table, nodes, edges, flows, latestFlow } =
     useFlow();
   const navigate = useNavigate();
-  const [isRunning, setIsRunning] = useState(false);
-  const [processUUID, setProcessUUID] = useState('');
   const [isDiff, setIsDiff] = useState<boolean>(false);
-
-  const handleRun = async () => {
-    try {
-      setIsRunning(true);
-      const process_uuid = uuidv4();
-      setProcessUUID(process_uuid);
-      const response = await axiosInstance.post(`/api/workflows/${uuid}/run`, {
-        process_uuid,
-      });
-      if (response.status === 200) {
-        enqueueSnackbar('Run workflow successfully', {
-          variant: 'success',
-        });
-        setIsRunning(false);
-      }
-    } catch (error) {
-      console.log('🚀 ===== handleRun ===== error:', error);
-      enqueueSnackbar('Run workflow fail', {
-        variant: 'error',
-      });
-    }
-  };
 
   const handleSave = async () => {
     try {
@@ -95,23 +71,6 @@ function Toolbar({ refetch }: Props) {
     }
   };
 
-  const handleCancel = async () => {
-    try {
-      const response = await axiosInstance.get(
-        `/api/processes/${processUUID}/cancel`
-      );
-      setIsRunning(false);
-      enqueueSnackbar('Cancel running workflow successfully', {
-        variant: 'success',
-      });
-    } catch (error) {
-      console.log('🚀 ===== handleCancel ===== error:', error);
-      enqueueSnackbar('Cancel running workflow failed', {
-        variant: 'error',
-      });
-    }
-  };
-
   useEffect(() => {
     if (!isEqual(flows, latestFlow)) {
       setIsDiff(true);
@@ -127,8 +86,6 @@ function Toolbar({ refetch }: Props) {
         sx={{
           position: 'absolute',
           top: 10,
-          // right: 10,
-          // left: 10,
           zIndex: 1000,
           width: 'inherit',
           p: 2,
@@ -137,25 +94,6 @@ function Toolbar({ refetch }: Props) {
       >
         <LogButton uuid={uuid} />
         <Stack direction="row" spacing={2}>
-          {isRunning && (
-            <Button
-              startIcon={<Icon icon="codicon:stop-circle" />}
-              variant="contained"
-              color="error"
-              onClick={handleCancel}
-            >
-              Cancel
-            </Button>
-          )}
-          <LoadingButton
-            loading={isRunning}
-            startIcon={<Icon icon="mdi:play" />}
-            onClick={handleRun}
-            variant="outlined"
-            sx={{ bgcolor: 'neutral.pureWhite' }}
-          >
-            Run
-          </LoadingButton>
           <Badge
             color="warning"
             variant="dot"

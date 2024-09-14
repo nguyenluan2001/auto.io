@@ -30,6 +30,8 @@
     "axios": "^1.6.1",
     "codemirror": "^6.0.1",
     "dayjs": "^1.11.10",
+    "dexie": "^4.0.8",
+    "dexie-react-hooks": "^1.1.7",
     "js-cookie": "^3.0.5",
     "localforage": "^1.10.0",
     "lodash": "^4.17.21",

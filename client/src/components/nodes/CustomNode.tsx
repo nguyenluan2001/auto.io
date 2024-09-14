@@ -20,16 +20,20 @@ import Theme, { ITheme } from '@/theme/Theme';
 
 const handleStyle = { left: 10 };
 
-const StyledNode = styled(Box)(({ theme }: { theme?: ITheme }) => ({
-  background: theme?.palette.form.fieldBackgroundColor,
-  border: '1px solid black',
-  borderRadius: '4px',
-  padding: '8px 14px',
-  position: 'relative',
-}));
+const StyledNode = styled(Box)(
+  ({ theme, $selected }: { theme?: ITheme; $selected: boolean }) => ({
+    background: theme?.palette.form.fieldBackgroundColor,
+    border: $selected
+      ? `1px solid ${theme?.palette.border.nodeSelected}`
+      : 'none',
+    borderRadius: '4px',
+    padding: '8px 14px',
+    position: 'relative',
+  })
+);
 
 function CustomNode(node: Node) {
-  const setSelectedNode = useFlow((state: any) => state.setSelectedNode);
+  const { setSelectedNode, selectedNode } = useFlow();
   const [status, setStatus] = useState(null);
   const handleClickNode = () => {
     setSelectedNode(node);
@@ -41,15 +45,11 @@ function CustomNode(node: Node) {
     return nodeConfig?.data?.icon;
   }, [node]);
 
-  // useEffect(() => {
-  //   socket.on('test', (status) => {
-  //     console.log('🚀 ===== socket.on ===== status:', status);
-  //     setStatus(status);
-  //   });
-  // }, []);
-
   return (
-    <StyledNode onClick={handleClickNode}>
+    <StyledNode
+      $selected={node.id === selectedNode?.id}
+      onClick={handleClickNode}
+    >
       {node?.data?.key !== 'trigger' && (
         <Handle type="target" position={Position.Left} />
       )}

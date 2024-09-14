@@ -12,11 +12,8 @@ type Props = {
   refetch: () => void;
 };
 
-let id = 0;
-const getId = () => `dndnode_${id++}`;
 function WorkflowEdit({ refetch }: Props) {
-  const addNode = useFlow((state: any) => state.addNode);
-  const nodes = useFlow((state: any) => state.nodes);
+  const { addNode, nodes } = useFlow();
   const [reactFlowInstance, setReactFlowInstance] =
     useState<ReactFlowInstance | null>(null);
   const reactFlowWrapper = useRef(null);
@@ -25,31 +22,19 @@ function WorkflowEdit({ refetch }: Props) {
     event.preventDefault();
     event.dataTransfer.dropEffect = 'move';
   }, []);
+
   const onDrop = useCallback(
     (event: any) => {
       event.preventDefault();
 
       const type = event.dataTransfer.getData('application/reactflow');
-      console.log('🚀 ===== App ===== type:', type);
-
-      // check if the dropped element is valid
-      // if (typeof type === 'undefined' || !type) {
-      //   return;
-      // }
-
-      // reactFlowInstance.project was renamed to reactFlowInstance.screenToFlowPosition
-      // and you don't need to subtract the reactFlowBounds.left/top anymore
-      // details: https://reactflow.dev/whats-new/2023-11-10
       const position = (
         reactFlowInstance as ReactFlowInstance
       ).screenToFlowPosition({
         x: event.clientX,
         y: event.clientY,
       });
-      console.log('🚀 ===== WorkflowEdit ===== position:', position);
       const newNode = generateNode({ type, position }) as Node;
-      console.log('🚀 ===== App ===== newNode:', newNode);
-
       addNode((nds: Node[]) => nds.concat(newNode));
     },
     [reactFlowInstance]

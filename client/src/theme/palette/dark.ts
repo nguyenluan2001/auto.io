@@ -13,6 +13,7 @@ const border = {
   inverted: '#3f4a5f',
   success: '#aad19b',
   focused: '#2d78a4',
+  nodeSelected: 'rgb(73, 189, 254)',
 };
 
 const anchor = {
@@ -36,12 +37,19 @@ const form = {
   helpTrainingBackground: '#0000',
 };
 
+const warning = {
+  dark: '#ccba45',
+  main: '#e6d566',
+  light: '#fdfcf2',
+};
+
 // eslint-disable-next-line prettier/prettier
 interface IPalette {
   background: typeof background;
   border: typeof border;
   anchor: typeof anchor;
   form: typeof form;
+  warning: typeof warning;
 }
 export type { IPalette };
-export { background, border, anchor, form };
+export { background, border, anchor, form, warning };
