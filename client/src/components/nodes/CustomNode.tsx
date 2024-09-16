@@ -9,14 +9,16 @@ import {
   getIncomers,
   getOutgoers,
 } from 'reactflow';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { FC, useEffect, useMemo, useState } from 'react';
 import { Icon } from '@iconify/react';
 import { v4 as uuidv4 } from 'uuid';
 import { styled } from '@material-ui/core';
+import { ICustomNodeProps } from 'models';
 import { useFlow } from '@/store/flow';
 import { generateNode } from '@/utils/generateNode';
 import { socket } from '@/utils/socket';
 import Theme, { ITheme } from '@/theme/Theme';
+import Toolbar from './Toolbar';
 
 const handleStyle = { left: 10 };
 
@@ -29,13 +31,17 @@ const StyledNode = styled(Box)(
     borderRadius: '4px',
     padding: '8px 14px',
     position: 'relative',
+    '&:hover .node-toolbar': {
+      display: 'block',
+    },
   })
 );
 
-function CustomNode(node: Node) {
+function CustomNode(node: ICustomNodeProps) {
   const { setSelectedNode, selectedNode } = useFlow();
   const [status, setStatus] = useState(null);
   const handleClickNode = () => {
+    console.log('click node');
     setSelectedNode(node);
   };
   const icon = useMemo(() => {
@@ -47,7 +53,7 @@ function CustomNode(node: Node) {
 
   return (
     <StyledNode
-      $selected={node.id === selectedNode?.id}
+      $selected={node?.id === selectedNode?.id}
       onClick={handleClickNode}
     >
       {node?.data?.key !== 'trigger' && (
@@ -58,15 +64,13 @@ function CustomNode(node: Node) {
         <Typography sx={{ fontWeight: '600', fontSize: '10px' }}>
           {node?.data?.title}
         </Typography>
-        {/* <Toolbar node={node} /> */}
       </Stack>
       {node?.data?.description && (
         <Typography sx={{ fontSize: '8px', marginTop: 1 }}>
           {node?.data?.description}
         </Typography>
       )}
-      {/* <Handle type="source" position={Position.Bottom} id="a" />
-      <Handle type="source" position={Position.Bottom} id="b" /> */}
+      <Toolbar node={node} />
       <RenderHandler num={node?.data?.numOfHandler || 1} />
       {status === 'RUNNING' && (
         <Icon
@@ -125,100 +129,6 @@ function RenderHandler({ num }: { num: number }) {
           );
         })}
     </>
-  );
-}
-function Toolbar({ node }) {
-  const edges = useFlow((state: any) => state.edges);
-  const nodes = useFlow((state: any) => state.nodes);
-  const setEdges = useFlow((state: any) => state.setEdges);
-  const deleteNode = useFlow((state: any) => state.deleteNode);
-  const addNode = useFlow((state: any) => state.addNode);
-  const handleDuplicateNode = (e) => {
-    // e.stopPropagation();
-    alert('Click duplicate');
-    // return true;
-
-    // const newNode = {
-    //   ...node,
-    //   id: uuidv4(),
-    //   position: {
-    //     x: node?.xPos * 2 + 10,
-    //     y: node?.yPos + 10,
-    //   },
-    // };
-    // console.log('🚀 ===== handleDuplicate ===== node:', node);
-    // console.log('🚀 ===== handleDuplicate ===== newNode:', newNode);
-    // addNode((nds: Node[]) => nds.concat(newNode));
-  };
-  const handleDeleteNode = (e) => {
-    e.stopPropagation();
-    alert('Delete node');
-    return true;
-    const newEdges = [node].reduce((acc, _node) => {
-      const incomers = getIncomers(_node as Node, nodes, edges);
-      const outgoers = getOutgoers(_node as Node, nodes, edges);
-      const connectedEdges = getConnectedEdges([_node as Node], edges);
-
-      const remainingEdges = acc.filter(
-        (edge: Edge) => !connectedEdges.includes(edge)
-      );
-
-      const createdEdges = incomers.flatMap(({ id: source }) =>
-        outgoers.map(({ id: target }) => ({
-          id: `${source}->${target}`,
-          source,
-          target,
-          type: 'customEdge',
-        }))
-      );
-
-      return [...remainingEdges, ...createdEdges];
-    }, edges);
-    setEdges(newEdges);
-    deleteNode(node?.id);
-  };
-  return (
-    <Theme>
-      <Box
-        id="toolbar"
-        sx={{
-          position: 'absolute',
-          top: '-60%',
-          left: 0,
-          right: 0,
-          borderRadius: '4px',
-          height: 'fit-content',
-          display: 'none',
-          paddingBottom: '5px',
-          boxSizing: 'border-box',
-          zIndex: 1000,
-        }}
-        onClick={(e) => alert('Click toolbar')}
-      >
-        <Stack
-          direction="row"
-          sx={{
-            width: '100%',
-            backgroundColor: 'neutral.bgGrey',
-            borderRadius: '4px',
-            height: 'fit-content',
-            zIndex: 100000,
-          }}
-        >
-          <Tooltip placement="top" title="Delete">
-            <Icon icon="mdi:delete-outline" onClick={handleDeleteNode} />
-          </Tooltip>
-          <Tooltip placement="top" title="Copy" onClick={handleDeleteNode}>
-            <Icon icon="heroicons-outline:clipboard-copy" />
-          </Tooltip>
-          <Icon
-            id={`duplicate-icon-${node?.id}`}
-            onClick={handleDuplicateNode}
-            icon="humbleicons:duplicate"
-          />
-        </Stack>
-      </Box>
-    </Theme>
   );
 }
 export default CustomNode;

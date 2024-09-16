@@ -24,20 +24,33 @@ import { axiosInstance } from '@/utils/axios';
 import { useFlow } from '@/store/flow';
 import Theme from '@/theme/Theme';
 import ProcessLogTable from '../log/ProcessLogTable';
+import { setHistory } from '@/services/dexie';
+import { useHistory } from '@/store/history';
 
 type Props = {
   refetch: () => void;
 };
 function Toolbar({ refetch }: Props) {
-  // const flows = useFlow((state: any) => state.flows);
   const { uuid, name, description, table, nodes, edges, flows, latestFlow } =
     useFlow();
+  const { addHistoryId } = useHistory();
   const navigate = useNavigate();
   const [isDiff, setIsDiff] = useState<boolean>(false);
 
   const handleSave = async () => {
     try {
       if (uuid) {
+        const historyId = await setHistory({
+          id: uuidv4(),
+          uuid,
+          name,
+          description,
+          nodes,
+          edges,
+        });
+        if (historyId) {
+          addHistoryId(historyId);
+        }
         const response = await axiosInstance.put(`/api/workflows/${uuid}`, {
           name,
           description,

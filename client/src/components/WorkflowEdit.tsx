@@ -50,7 +50,6 @@ function WorkflowEdit({ refetch }: Props) {
           <Stack
             direction="row"
             style={{
-              // width: '100vw',
               overflow: 'hidden',
               flex: 1,
             }}

@@ -99,11 +99,6 @@ function App() {
       ],
     },
   ]);
-  useEffect(() => {
-    socket.on('test', (data) => {
-      console.log('🚀 ===== socket.on ===== data:', data);
-    });
-  }, []);
   return (
     <LocalizationProvider dateAdapter={AdapterDayjs}>
       <CookiesProvider defaultSetOptions={{ path: '/' }}>

@@ -4,6 +4,7 @@ import { Table } from 'models/Table';
 import { IEdge } from 'models/Edge';
 import { generateNode } from '@/utils/generateNode';
 import { convertFlow } from '@/utils/flow';
+import { IFlowHistory } from '@/services/dexie';
 
 const initialNodes = [
   generateNode({
@@ -40,6 +41,7 @@ interface IFlowStore extends IInitialState {
   setConnectTable: (table: Table) => void;
   setUUID: (uuid: string) => void;
   updateNodeInformation: (data: Node) => void;
+  setWorkflowFromHistory: (data: IFlowHistory) => void;
 }
 const useFlow = create<IFlowStore>((set, get) => ({
   ...initialState,
@@ -47,7 +49,9 @@ const useFlow = create<IFlowStore>((set, get) => ({
     set(initialState);
   },
   // === NODE ===
-  setNodes: (nodes: Node[]) => set({ nodes }),
+  setNodes: (nodes: Node[]) => {
+    set({ nodes });
+  },
   addNode: (cb: (value: Node[]) => Node[]) =>
     set((state: IInitialState) => ({ nodes: cb(state.nodes) })),
   deleteNode: (nodeId: string) =>
@@ -98,6 +102,9 @@ const useFlow = create<IFlowStore>((set, get) => ({
       nodes: newNodes,
       flows: newFlows,
     });
+  },
+  setWorkflowFromHistory: (data: IFlowHistory) => {
+    set(data);
   },
 }));
 export { useFlow };

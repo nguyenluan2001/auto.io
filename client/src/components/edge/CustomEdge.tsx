@@ -36,7 +36,6 @@ export default function CustomEdge({
   markerEnd,
   data,
 }: Props) {
-  console.log('edge data', data);
   const { edges, setEdges } = useFlow();
 
   const [edgePath, labelX, labelY] = getSmoothStepPath({

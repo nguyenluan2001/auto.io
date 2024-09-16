@@ -8,7 +8,6 @@ type Props = {
   handleChange: (value: string) => void;
 };
 function CodeEditor({ value, handleChange }: Props) {
-  // console.log("🚀 ===== CodeEditor ===== value:", value);
   return (
     <CodeMirror
       value={value}

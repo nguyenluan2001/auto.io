@@ -4,9 +4,11 @@ import { Icon } from '@iconify/react';
 import { v4 as uuidv4 } from 'uuid';
 import { enqueueSnackbar } from 'notistack';
 import { ControlButton, useReactFlow } from 'reactflow';
+import { isEmpty } from 'lodash';
 import ThemeConfig, { ITheme } from '@/theme/Theme';
 import { axiosInstance } from '@/utils/axios';
 import { useFlow } from '@/store/flow';
+import { useHistory } from '@/store/history';
 
 const RootStyle = styled(Stack)(({ theme }: { theme?: ITheme }) => ({
   position: 'absolute',
@@ -25,31 +27,36 @@ const RootStyle = styled(Stack)(({ theme }: { theme?: ITheme }) => ({
   },
 }));
 
-const ActionIconStyle = styled(Stack)(({ theme }: { theme?: ITheme }) => ({
-  height: '32px',
-  width: '32px',
-  borderRadius: '4px',
-  cursor: 'pointer',
-  '&:hover': {
-    background: theme?.palette.background.light,
-  },
-}));
+const ActionIconStyle = styled(Stack)(
+  ({ theme, disabled }: { theme?: ITheme; disabled?: boolean }) => ({
+    height: '32px',
+    width: '32px',
+    borderRadius: '4px',
+    cursor: disabled ? 'not-allowed' : 'pointer',
+    '&:hover': {
+      background: theme?.palette.background.light,
+    },
+  })
+);
 
 function BottomToolbar() {
   const [isRunning, setIsRunning] = useState(false);
   const [processUUID, setProcessUUID] = useState('');
   const { uuid } = useFlow();
+  const { onUndo, onRedo, undo, redo } = useHistory();
   const { zoomIn, zoomOut, fitView } = useReactFlow();
   const actions = [
     {
       icon: 'material-symbols-light:undo',
       tooltip: 'Undo',
-      handler: () => {},
+      handler: !isEmpty(undo) ? onUndo : () => {},
+      disabled: isEmpty(undo),
     },
     {
       icon: 'material-symbols-light:redo',
       tooltip: 'Redo',
-      handler: () => {},
+      handler: !isEmpty(redo) ? onRedo : () => {},
+      disabled: isEmpty(redo),
     },
     {
       icon: 'material-symbols-light:zoom-in-rounded',
@@ -111,6 +118,7 @@ function BottomToolbar() {
           {actions?.map((action, index) => (
             <Tooltip key={index} title={action.tooltip}>
               <ActionIconStyle
+                disabled={action.disabled}
                 alignItems="center"
                 justifyContent="center"
                 onClick={action.handler}
