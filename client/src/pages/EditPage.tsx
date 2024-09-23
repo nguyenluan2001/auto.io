@@ -65,7 +65,7 @@ function EditPage() {
   //     nodes,
   //     edges,
   //   });
-  // }, [flowUUID, name, description, nodes, edges]);
+  // }, [flowUUID, name, description, nodes, edges.length]);
 
   useEffect(() => {
     onGetHistory(currentId as string);

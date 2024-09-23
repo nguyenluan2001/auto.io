@@ -5,13 +5,18 @@ import {
   getConnectedEdges,
   Edge,
   Node,
+  NodeToolbar,
+  Position,
 } from 'reactflow';
 import { Icon } from '@iconify/react';
 import { v4 as uuidv4 } from 'uuid';
 import { ICustomNodeProps } from 'models';
+import 'iconify-icon';
+import React from 'react';
 import { useFlow } from '@/store/flow';
 import Theme from '@/theme';
 import ThemeConfig, { ITheme } from '@/theme/Theme';
+import Iconify from '../common/iconify';
 
 interface Props {
   node: ICustomNodeProps;
@@ -51,10 +56,6 @@ function Toolbar({ node }: Props) {
   const addNode = useFlow((state: any) => state.addNode);
   const handleDuplicateNode = (e) => {
     e.stopPropagation();
-    console.log('Click duplicate');
-    // return true;
-
-    console.log('🚀 ===== handleDuplicate ===== node:', node);
     const { xPos, yPos } = node;
     const newNode = {
       ...node,
@@ -64,17 +65,17 @@ function Toolbar({ node }: Props) {
         y: yPos + 50,
       },
     };
-    console.log('🚀 ===== handleDuplicate ===== newNode:', newNode);
-    addNode((nds: Node[]) => nds.concat(newNode));
+    addNode((nds: Node[]) => nds.concat(newNode as Node));
   };
   const handleDeleteNode = (e) => {
     e.stopPropagation();
-    alert('Delete node');
-    return true;
     const newEdges = [node].reduce((acc, _node) => {
-      const incomers = getIncomers(_node as Node, nodes, edges);
-      const outgoers = getOutgoers(_node as Node, nodes, edges);
-      const connectedEdges = getConnectedEdges([_node as Node], edges);
+      const incomers = getIncomers(_node as unknown as Node, nodes, edges);
+      const outgoers = getOutgoers(_node as unknown as Node, nodes, edges);
+      const connectedEdges = getConnectedEdges(
+        [_node as unknown as Node],
+        edges
+      );
 
       const remainingEdges = acc.filter(
         (edge: Edge) => !connectedEdges.includes(edge)
@@ -110,27 +111,22 @@ function Toolbar({ node }: Props) {
             height: 'fit-content',
             zIndex: 100000,
           }}
+          style={{}}
         >
-          <Tooltip placement="top" title="Delete">
-            <IconStyled onClick={handleDeleteNode}>
-              <Icon style={{ fontSize: 12 }} icon="mdi:delete-outline" />
-            </IconStyled>
-          </Tooltip>
-          <Tooltip placement="top" title="Copy" onClick={handleDeleteNode}>
-            <IconStyled>
-              <Icon
-                style={{ fontSize: 12 }}
-                icon="heroicons-outline:clipboard-copy"
-              />
-            </IconStyled>
-          </Tooltip>
           <Tooltip placement="top" title="Duplicate">
             <IconStyled onClick={handleDuplicateNode}>
-              <Icon
-                onClick={(e) => e.stopPropagation()}
+              <Iconify
                 style={{ fontSize: 12 }}
                 id={`duplicate-icon-${node?.id}`}
                 icon="humbleicons:duplicate"
+              />
+            </IconStyled>
+          </Tooltip>
+          <Tooltip placement="top" title="Delete">
+            <IconStyled onClick={handleDeleteNode}>
+              <Iconify
+                style={{ fontSize: 12, color: 'red' }}
+                icon="mdi:delete-outline"
               />
             </IconStyled>
           </Tooltip>

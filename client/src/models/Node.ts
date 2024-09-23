@@ -7,6 +7,7 @@ export interface ICustomNodeProps {
     key: string;
     selected: string;
     title: string;
+    numOfHandler?: number;
     icon: {
       body: string;
       weight: number;

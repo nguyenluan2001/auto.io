@@ -38,17 +38,18 @@ import { axiosInstance } from '@/utils/axios';
 import CustomDialog from '../common/CustomDialog';
 import FieldTitle from '../common/FieldTitle';
 import CustomTextField from '../common/CustomTextField';
+import { ITheme } from '@/theme/Theme';
 
 type Props = {
   workflow: Workflow;
   refetch: () => void;
 };
 
-const StyledWorkflowItem = styled(Card)(({ theme }) => ({
-  background: theme.palette.background.darker,
+const StyledWorkflowItem = styled(Card)(({ theme }: { theme?: ITheme }) => ({
+  background: theme?.palette.background.darker,
   boxSizing: 'border-box',
   [`&:hover`]: {
-    border: `1px solid ${theme.palette.border.main}`,
+    border: `1px solid ${theme?.palette.border.main}`,
   },
 }));
 

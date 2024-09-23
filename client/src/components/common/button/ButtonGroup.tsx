@@ -1,6 +1,7 @@
 import plusIcon from '@iconify/icons-mdi/plus';
 import { Icon } from '@iconify/react';
 import { Button, ButtonGroup as MuiButtonGroup, styled } from '@mui/material';
+import { ITheme } from '@/theme/Theme';
 
 type Props = {
   title: string;
@@ -21,16 +22,18 @@ function ButtonGroup({ onClickCreate, onClickDropdown, title }: Props) {
   );
 }
 
-const StyledButtonGroup = styled(MuiButtonGroup)(({ theme }) => ({
-  borderRadius: '6px',
-  [`& .MuiButton-root`]: {
-    background: theme.palette.anchor.main,
-    color: 'white',
-    fontSize: '0.87rem',
-    lineHeight: '1.25rem',
-    fontWeight: 700,
-    textTransform: 'none',
-  },
-}));
+const StyledButtonGroup = styled(MuiButtonGroup)(
+  ({ theme }: { theme?: ITheme }) => ({
+    borderRadius: '6px',
+    [`& .MuiButton-root`]: {
+      background: theme?.palette.anchor.main,
+      color: 'white',
+      fontSize: '0.87rem',
+      lineHeight: '1.25rem',
+      fontWeight: 700,
+      textTransform: 'none',
+    },
+  })
+);
 
 export default ButtonGroup;

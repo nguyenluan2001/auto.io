@@ -16,7 +16,6 @@ import sitemapOutline from '@iconify/icons-mdi/sitemap-outline';
 import databaseIcon from '@iconify/icons-mdi/database';
 import { Icon, IconifyIcon } from '@iconify/react';
 import UserPopover from './UserPopover';
-import { customStyled } from '@/theme/styled';
 
 const EXPANDED_SIDEBAR_WIDTH = 180;
 const COLLAPSED_SIDEBAR_WIDTH = 60;

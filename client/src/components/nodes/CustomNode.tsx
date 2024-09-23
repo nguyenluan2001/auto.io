@@ -41,8 +41,7 @@ function CustomNode(node: ICustomNodeProps) {
   const { setSelectedNode, selectedNode } = useFlow();
   const [status, setStatus] = useState(null);
   const handleClickNode = () => {
-    console.log('click node');
-    setSelectedNode(node);
+    setSelectedNode(node as unknown as Node);
   };
   const icon = useMemo(() => {
     const nodeConfig = generateNode({
